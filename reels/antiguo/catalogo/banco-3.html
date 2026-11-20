@@ -1,0 +1,405 @@
+<title>Animaciones reels 3</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&family=Playfair+Display:ital,wght@1,800&family=Archivo+Black&display=swap">
+<style>
+/* Layout: cabecera + barra fija de filtros + rejilla de fichas (pantalla 9:16 que se mueve, voto debajo) */
+:root{--bg:#f3f1ee;--panel:#fff;--ink:#17171c;--mute:#6c6a73;--line:#e1ddd8;--accent:#3b4cff;--accent-ink:#fff;--yes:#16a34a;--yes-bg:#dcf5e5;--no:#d62f4b;--no-bg:#fde3e8}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#121216;--panel:#1c1c22;--ink:#f2f0ed;--mute:#9b98a3;--line:#2e2e36;--accent:#7c89ff;--accent-ink:#0d0e1a;--yes:#4ade80;--yes-bg:#12301e;--no:#ff6b84;--no-bg:#3a141d;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#121216;--panel:#1c1c22;--ink:#f2f0ed;--mute:#9b98a3;--line:#2e2e36;--accent:#7c89ff;--accent-ink:#0d0e1a;--yes:#4ade80;--yes-bg:#12301e;--no:#ff6b84;--no-bg:#3a141d;color-scheme:dark}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font:400 14px/1.45 Inter,system-ui,sans-serif;padding-inline:max(16px,env(safe-area-inset-left,0px)) max(16px,env(safe-area-inset-right,0px));padding-block:28px 40px}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);background:var(--bg);z-index:30}
+.wrap{max-width:1180px;margin:0 auto}
+h1{font:800 30px/1.1 'Space Grotesk',Inter,sans-serif;margin:0 0 8px;letter-spacing:-.02em;text-wrap:balance}
+.lead{max-width:62ch;color:var(--mute);margin:0 0 20px}
+.bar{position:sticky;top:env(safe-area-inset-top,0px);z-index:20;background:var(--bg);padding:10px 0;border-bottom:1px solid var(--line);display:flex;flex-wrap:wrap;gap:10px 16px;align-items:center;margin-bottom:22px}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chip{border:1px solid var(--line);background:var(--panel);color:var(--ink);border-radius:999px;padding:6px 12px;font:600 12px Inter,sans-serif;cursor:pointer}
+.chip[aria-pressed="true"]{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+.chip:focus-visible,.vb:focus-visible,.copy:focus-visible,.stage:focus-visible,textarea:focus-visible,input:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.count{margin-left:auto;font-size:12px;color:var(--mute);font-variant-numeric:tabular-nums}
+.copy{background:var(--accent);color:var(--accent-ink);border:0;border-radius:10px;padding:9px 16px;font:800 13px Inter,sans-serif;cursor:pointer}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(248px,1fr));gap:18px}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:18px;padding:14px;display:flex;flex-direction:column;gap:10px;min-width:0}
+.card[data-v="1"]{border-color:var(--yes);box-shadow:0 0 0 2px var(--yes-bg)}
+.card[data-v="-1"]{opacity:.62}
+.card[data-v="-1"] .stage{filter:grayscale(.6)}
+.stage{position:relative;width:216px;height:384px;border-radius:22px;overflow:hidden;margin:0 auto;box-shadow:0 6px 18px rgba(0,0,0,.18);cursor:pointer;max-width:100%}
+.meta{display:flex;flex-direction:column;gap:3px}
+.nm{font:800 15px/1.2 'Space Grotesk',Inter,sans-serif}
+.fr{font:600 10px Inter,sans-serif;letter-spacing:.06em;text-transform:uppercase;color:var(--mute)}
+.ds{font-size:12.5px;color:var(--mute)}
+.votes{display:flex;gap:8px}
+.vb{flex:1;border:1px solid var(--line);background:var(--bg);color:var(--ink);border-radius:10px;padding:9px 6px;font:700 13px Inter,sans-serif;cursor:pointer}
+.vb.y[aria-pressed="true"]{background:var(--yes);border-color:var(--yes);color:#fff}
+.vb.n[aria-pressed="true"]{background:var(--no);border-color:var(--no);color:#fff}
+.note{width:100%;border:1px solid var(--line);background:var(--bg);color:var(--ink);border-radius:8px;padding:7px 9px;font:400 12px Inter,sans-serif}
+.out{margin-top:30px;background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:16px}
+.out h2{margin:0 0 6px;font:800 18px 'Space Grotesk',Inter,sans-serif}
+.out p{margin:0 0 10px;color:var(--mute);font-size:13px}
+textarea{width:100%;min-height:200px;border:1px solid var(--line);border-radius:10px;background:var(--bg);color:var(--ink);padding:10px;font:12px/1.5 ui-monospace,Menlo,monospace}
+.empty{padding:40px 0;color:var(--mute);text-align:center}
+
+/* ===== piezas de las animaciones (siempre sobre su propio fondo, no cambian con el tema) ===== */
+.abs{position:absolute}.ly{position:absolute;inset:0;overflow:hidden}
+.cam{position:absolute;inset:0;transform-origin:50% 40%}
+.hv{font-family:'Archivo Black',Impact,sans-serif;line-height:1}
+.ser{font-family:'Playfair Display',Georgia,serif;font-style:italic;font-weight:800}
+.sc{position:absolute;left:0;right:0;bottom:21%;text-align:center;font:800 17px Inter,sans-serif;color:#fff;text-shadow:0 2px 7px rgba(0,0,0,.65);padding:0 10px}
+.cp{font:italic 800 13px 'Playfair Display',Georgia,serif;text-transform:uppercase;text-align:center;color:#1b1b1f;text-shadow:0 2px 3px rgba(0,0,0,.22)}
+.c3{background:#fff;border-radius:14px;box-shadow:0 16px 24px -8px rgba(0,0,0,.38),0 3px 6px rgba(0,0,0,.18)}
+.ic{width:54px;height:54px;border-radius:16px;display:grid;place-items:center;font-size:26px;box-shadow:0 12px 18px -6px rgba(0,0,0,.4),inset 0 1px 0 rgba(255,255,255,.75),inset 0 -4px 7px rgba(0,0,0,.14)}
+.chip2{position:absolute;left:10px;top:10px;background:rgba(0,0,0,.55);color:#fff;font:700 10px Inter,sans-serif;padding:4px 8px;border-radius:99px;letter-spacing:.05em}
+.sub{position:absolute;left:0;right:0;bottom:0;height:60%;--hd:30%;--ht:8%;--bt:42%;--sk:#d9a57f;--sh:#2b2118;--cl:#1e1e24}
+.sub.full{height:100%;--ht:22%;--bt:52%}
+.sub .hd{position:absolute;left:50%;top:var(--ht);width:var(--hd);aspect-ratio:1/1.1;transform:translateX(-50%);border-radius:48%;background:var(--sk)}
+.sub .hd::before{content:"";position:absolute;inset:-7% -5% 50% -5%;border-radius:50% 50% 30% 30%;background:var(--sh)}
+.sub .hd::after{content:"";position:absolute;left:28%;top:52%;width:9%;aspect-ratio:1;border-radius:50%;background:#2a1a12;box-shadow:19px 0 0 #2a1a12}
+.sub .bd{position:absolute;left:14%;right:14%;top:var(--bt);bottom:-30%;border-radius:46% 46% 0 0/30% 30% 0 0;background:var(--cl)}
+.a{animation-duration:var(--d,.6s);animation-delay:var(--s,0s);animation-fill-mode:both;animation-timing-function:var(--e,cubic-bezier(.2,.9,.3,1.25))}
+.pop{animation-name:kPop}.up{animation-name:kUp}.dn{animation-name:kDn}.lf{animation-name:kLf}.rt{animation-name:kRt}.fd{animation-name:kFd}
+.tag{position:absolute;font:700 10px Inter,sans-serif;padding:3px 8px;border-radius:99px;background:#fff;color:#111;box-shadow:0 4px 8px rgba(0,0,0,.25)}
+@property --p{syntax:'<number>';inherits:false;initial-value:0}
+.don{width:112px;height:112px;border-radius:50%;background:conic-gradient(#ff7a1a calc(var(--p)*1%),#e6e6ee 0);-webkit-mask:radial-gradient(circle,transparent 55%,#000 56%);mask:radial-gradient(circle,transparent 55%,#000 56%)}
+@keyframes kPop{from{opacity:0;transform:scale(.35)}60%{opacity:1;transform:scale(1.12)}to{opacity:1;transform:scale(1)}}
+@keyframes kUp{from{opacity:0;transform:translateY(46px)}to{opacity:1;transform:none}}
+@keyframes kDn{from{opacity:0;transform:translateY(-46px)}to{opacity:1;transform:none}}
+@keyframes kLf{from{opacity:0;transform:translateX(-70px)}to{opacity:1;transform:none}}
+@keyframes kRt{from{opacity:0;transform:translateX(70px)}to{opacity:1;transform:none}}
+@keyframes kFd{from{opacity:0}to{opacity:1}}
+@keyframes kWin{0%{opacity:0}6%{opacity:1}94%{opacity:1}100%{opacity:0}}
+@keyframes kWinP{0%{opacity:0;transform:scale(.6)}8%{opacity:1;transform:scale(1.08)}14%{transform:scale(1)}90%{opacity:1}100%{opacity:0}}
+@keyframes kAp{from{opacity:0}to{opacity:1}}
+@keyframes kFlash{0%{opacity:0}40%{opacity:1}100%{opacity:0}}
+@keyframes kZin{from{transform:scale(1.4)}to{transform:scale(1)}}
+@keyframes kZout{from{transform:scale(1.22)}to{transform:scale(1)}}
+@keyframes kBreath{from{transform:scale(1)}to{transform:scale(1.07)}}
+@keyframes kPunch{from{transform:scale(1)}to{transform:scale(1.17)}}
+@keyframes kWO{to{transform:translateX(-110%);filter:blur(10px)}}
+@keyframes kWI{from{transform:translateX(110%);filter:blur(10px)}to{transform:none;filter:none}}
+@keyframes kThru{0%{transform:scale(1);opacity:1}65%{opacity:1}100%{transform:scale(16);opacity:0}}
+@keyframes kGrow{from{transform:scaleX(0)}to{transform:scaleX(1)}}
+@keyframes kGrowY{from{transform:scaleY(0)}to{transform:scaleY(1)}}
+@keyframes kF1{0%,28%{filter:none}34%,100%{filter:grayscale(1) brightness(.72)}}
+@keyframes kF2{0%,28%{filter:grayscale(1) brightness(.72)}34%,62%{filter:none}68%,100%{filter:grayscale(1) brightness(.72)}}
+@keyframes kF3{0%,62%{filter:grayscale(1) brightness(.72)}68%,100%{filter:none}}
+@keyframes kRing{from{transform:scale(.8);opacity:.7}to{transform:scale(1.7);opacity:0}}
+@keyframes kGrad{from{background-position:0 0}to{background-position:0 120px}}
+@keyframes kFloat{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
+@keyframes kCar{0%{transform:translateX(125%)}14%,86%{transform:none}100%{transform:translateX(-125%)}}
+@keyframes kStripe{from{background-position:0 0}to{background-position:72px 0}}
+@keyframes kHue{from{filter:hue-rotate(0)}to{filter:hue-rotate(210deg)}}
+@keyframes kTilt{0%{transform:rotateY(-26deg) rotateX(10deg)}50%{transform:rotateY(20deg) rotateX(-7deg)}100%{transform:rotateY(-6deg) rotateX(3deg)}}
+@keyframes kSheen{from{transform:translateX(-120%)}to{transform:translateX(160%)}}
+@keyframes kFan{from{opacity:0;transform:translateY(70px) rotate(0)}to{opacity:1;transform:translateX(var(--x)) rotate(var(--r))}}
+@keyframes kDot{0%{transform:translateY(-110px);opacity:0}45%{transform:translateY(0);opacity:1}60%{transform:translateY(-22px)}78%{transform:translateY(0)}90%{transform:translateY(-6px)}100%{transform:translateY(0)}}
+@keyframes kMarq{from{transform:translateX(0)}to{transform:translateX(-45%)}}
+@keyframes kMarqR{from{transform:translateX(-45%)}to{transform:translateX(0)}}
+@keyframes kType{from{width:0}to{width:150px}}
+@keyframes kBlink{50%{opacity:0}}
+@keyframes kTog{from{background:#c8c8cf}to{background:#34c759}}
+@keyframes kKnob{from{transform:none}to{transform:translateX(26px)}}
+@keyframes kCurs{0%{transform:translate(70px,150px)}60%{transform:translate(0,0)}72%{transform:translate(0,0) scale(.82)}84%{transform:translate(0,0) scale(1)}100%{transform:translate(0,0)}}
+@keyframes kEq{from{transform:scaleY(.2)}to{transform:scaleY(1)}}
+@keyframes kFillW{from{width:82%}to{width:30%}}
+@keyframes kHandL{from{left:82%}to{left:30%}}
+@keyframes kFillC{from{background:#ffd27a}to{background:#e0245e}}
+@keyframes kRise{0%{opacity:0;transform:translate(0,0) scale(.5)}12%{opacity:1}50%{transform:translate(-14px,-150px) scale(1)}100%{opacity:0;transform:translate(10px,-310px) scale(1.1)}}
+@keyframes kCoin{0%{transform:rotateY(0) scale(0)}20%{transform:rotateY(180deg) scale(1.1)}100%{transform:rotateY(900deg) scale(1)}}
+@keyframes kDraw{from{stroke-dashoffset:1}to{stroke-dashoffset:0}}
+@keyframes kDon{to{--p:75}}
+@keyframes kNoti{0%{transform:translateY(-120px);opacity:0}55%{transform:translateY(6px);opacity:1}75%{transform:translateY(-2px)}100%{transform:none;opacity:1}}
+@keyframes kPhone{from{opacity:0;transform:translateY(340px) rotate(9deg)}to{opacity:1;transform:translateY(0) rotate(-3deg)}}
+@keyframes kDim{0%{opacity:0}10%,82%{opacity:.62}100%{opacity:0}}
+@keyframes kSweep{from{transform:translateX(-130%) skewX(-18deg)}to{transform:translateX(160%) skewX(-18deg)}}
+@keyframes kBok{0%{opacity:0;transform:translateY(40px)}25%{opacity:.8}100%{opacity:0;transform:translateY(-300px)}}
+@keyframes kScan{from{left:6%}to{left:92%}}
+@keyframes kOpenK{from{transform:scale(4.4)}to{transform:scale(1)}}
+@keyframes kDouble{0%{transform:scale(1)}12%{transform:scale(1.12)}24%{transform:scale(1)}42%{transform:scale(1.17)}100%{transform:scale(1.17)}}
+@keyframes kPanK{from{transform:translateX(0)}to{transform:translateX(-170px)}}
+@keyframes kB1{from{filter:blur(0)}to{filter:blur(7px)}}
+@keyframes kB2{from{filter:blur(7px)}to{filter:blur(0)}}
+@keyframes kBand{from{transform:translateX(-160px) skewX(-14deg)}to{transform:translateX(340px) skewX(-14deg)}}
+@keyframes kPhoto{to{transform:scale(.88) rotate(-2.5deg);border-radius:10px;box-shadow:0 18px 30px rgba(0,0,0,.4)}}
+@keyframes kPanelDown{from{top:0;border-radius:0}to{top:44%;border-radius:26px 26px 0 0}}
+@keyframes kTopH{from{height:60%}to{height:32%}}
+@keyframes kPanelT{from{top:58%}to{top:30%}}
+@keyframes kClip{from{clip-path:inset(0 0 0 100%)}to{clip-path:inset(0 0 0 0)}}
+@keyframes kDivL{from{left:100%}to{left:0}}
+@keyframes kS1{0%,24%{transform:scale(1.08);opacity:1}30%,100%{transform:scale(.94);opacity:.45}}
+@keyframes kS2{0%,24%{transform:scale(.94);opacity:.45}30%,52%{transform:scale(1.08);opacity:1}58%,100%{transform:scale(.94);opacity:.45}}
+@keyframes kS3{0%,52%{transform:scale(.94);opacity:.45}58%,100%{transform:scale(1.08);opacity:1}}
+@keyframes kFeed{0%,22%{transform:translateY(0)}34%,58%{transform:translateY(-270px)}70%,100%{transform:translateY(-540px)}}
+@keyframes kPx1{from{transform:translateX(-8px)}to{transform:translateX(8px)}}
+@keyframes kPx2{from{transform:translateX(-20px)}to{transform:translateX(20px)}}
+@keyframes kPx3{from{transform:translateX(-36px)}to{transform:translateX(36px)}}
+@keyframes kFlip{to{transform:rotateY(180deg)}}
+@keyframes kFly{to{transform:translate(170px,-50px) rotate(20deg);opacity:0}}
+@keyframes kPick{to{transform:scale(1.14)}}
+@keyframes kDimO{to{opacity:.3;transform:scale(.92)}}
+@keyframes kMv{from{transform:translate(var(--x0),var(--y0))}to{transform:translate(var(--x1),var(--y1))}}
+@keyframes kYel{to{color:#ffe14a;opacity:1}}
+@keyframes kInk{to{color:#111;text-shadow:none}}
+@keyframes kPress{0%{transform:scale(1)}50%{transform:scale(.8)}100%{transform:scale(1)}}
+@keyframes kHideAt{from{opacity:1}to{opacity:0}}
+@keyframes kKnobS{to{transform:translateX(24px)}}
+@keyframes kDon0{from{--p:100}to{--p:0}}
+@keyframes kSeg{0%,28%{transform:translateX(0)}44%,68%{transform:translateX(60px)}84%,100%{transform:translateX(120px)}}
+@keyframes kLup{to{transform:scale(1.7)}}
+@keyframes kGridMove{from{background-position:0 0}to{background-position:48px 48px}}
+@keyframes kBlurGrow{from{filter:blur(0) brightness(1)}to{filter:blur(9px) brightness(.55)}}
+@keyframes kGreen{to{background:#18a957;border-color:#18a957}}
+@keyframes kKey{0%{transform:none}40%,100%{transform:translateY(5px);box-shadow:0 1px 0 #c9c9d1,0 4px 6px rgba(0,0,0,.2)}}
+@keyframes kStripeBar{from{background-position:0 0}to{background-position:28px 0}}
+@keyframes kBtn{from{background:#2f5bff}to{background:#18a957}}
+@keyframes kRot{0%{transform:rotate(0)}30%,62%{transform:rotate(-4deg) scale(1.09)}100%{transform:rotate(0) scale(1)}}
+@keyframes kPanV{from{transform:translateY(0)}to{transform:translateY(-250px)}}
+@keyframes kPanH{0%,25%{transform:translateX(0)}60%,100%{transform:translateX(-216px)}}
+@keyframes kHand{from{transform:rotate(0)}to{transform:rotate(270deg)}}
+@keyframes kNeedle{from{transform:rotate(-80deg)}to{transform:rotate(64deg)}}
+@keyframes kPlay{from{left:0}to{left:100%}}
+@keyframes kPie{to{--p:100}}
+@keyframes kDark{to{background:#1c1c22}}
+@keyframes kInv{to{background:#4a4a56}}
+@keyframes kSwapA{0%,30%{transform:none}60%,100%{transform:translateY(48px)}}
+@keyframes kSwapB{0%,30%{transform:none}60%,100%{transform:translateY(-48px)}}
+@keyframes kTab{0%,30%{transform:translateX(0)}50%,100%{transform:translateX(66px)}}
+@keyframes kPanelUp{from{top:44%;border-radius:26px 26px 0 0}to{top:0;border-radius:0}}
+@keyframes kClipV{from{clip-path:inset(0 0 100% 0)}to{clip-path:inset(0)}}
+@keyframes kDivT{from{top:0}to{top:100%}}
+@keyframes kRetro{to{transform:translateY(34%) scale(.64);border-radius:30px}}
+@keyframes kSelBox{from{width:0;height:0}to{width:140px;height:96px}}
+@keyframes kBlueFill{to{background:#2f5bff;border-color:#2f5bff}}
+@keyframes kHeatIn{from{opacity:0;transform:scale(.4)}to{opacity:1;transform:scale(1)}}
+@keyframes kSelW{from{width:0}to{width:100%}}
+@keyframes kSide{to{transform:translate(-58px,60px) scale(.66)}}
+@keyframes kSlideD{from{transform:translateY(-100%)}to{transform:none}}
+@keyframes kStamp{0%{opacity:0;transform:scale(2.2) rotate(-8deg)}70%{opacity:1;transform:scale(.94) rotate(-8deg)}100%{opacity:1;transform:scale(1) rotate(-8deg)}}
+@keyframes kStripeD{from{background-position:0 0}to{background-position:56px 0}}
+@keyframes kDotMove{from{background-position:0 0}to{background-position:22px 22px}}
+@keyframes kHl{to{background:#e6ecff}}
+@keyframes kRise2{0%{opacity:0;transform:translateY(0)}20%{opacity:1}100%{opacity:0;transform:translateY(-44px)}}
+@keyframes kHandL2{from{left:0}to{left:80%}}
+@keyframes kW80{from{width:0}to{width:80%}}
+@media (prefers-reduced-motion:reduce){.stage *{animation-duration:.01s!important;animation-delay:0s!important;animation-iteration-count:1!important}}
+@media (max-width:520px){.grid{grid-template-columns:1fr}.count{margin-left:0;width:100%}}
+</style>
+
+<div class="wrap">
+  <h1>Tanda final de animaciones</h1>
+  <p class="lead">Las últimas 50, pensadas con lo que has elegido en las dos tandas: pantalla dividida, datos, comparativas, pantallas con cursor y diagramas. Poco texto y sin adornos. Misma mecánica: 👍 o 👎, nota opcional y copiar al final.</p>
+  <div class="bar">
+    <div class="chips" id="cats" role="group" aria-label="Tipo de animación"></div>
+    <div class="chips" id="sts" role="group" aria-label="Estado del voto"></div>
+    <span class="count" id="cnt"></span>
+    <button class="copy" id="copy" type="button">Copiar mi selección</button>
+  </div>
+  <div class="grid" id="grid"></div>
+  <div class="empty" id="empty" hidden>No hay animaciones con ese filtro.</div>
+  <section class="out" aria-labelledby="oh">
+    <h2 id="oh">Mi selección</h2>
+    <p>Esto es lo que me pegarás. Si el botón de copiar no funciona, selecciona el texto y cópialo a mano.</p>
+    <textarea id="out" readonly aria-label="Texto de mi selección"></textarea>
+  </section>
+</div>
+
+<script>
+const ROOM='linear-gradient(165deg,#527549,#1c2a21)',PLUM='linear-gradient(170deg,#6b2142,#2a0e1a)',DARK='#14151a',CREAM='#f6efe6';
+const W=(s,l)=>`animation:kWin ${l}s ${s}s both`,WP=(s,l)=>`animation:kWinP ${l}s ${s}s both`;
+const sub=(c='',st='')=>`<div class="sub ${c}" style="${st}"><i class="hd"></i><i class="bd"></i></div>`;
+const sc=(t,s,l,x='')=>`<div class="sc" style="${WP(s,l)};${x}">${t}</div>`;
+const ic=(e,g,x='')=>`<div class="ic" style="background:${g};${x}">${e}</div>`;
+const G={blue:'linear-gradient(145deg,#6ab7ff,#2f5bff)',pink:'linear-gradient(145deg,#ff9ac0,#e0245e)',yel:'linear-gradient(145deg,#ffe27a,#ffb300)',grn:'linear-gradient(145deg,#8be8a8,#18a957)',vio:'linear-gradient(145deg,#c7a6ff,#6a3df0)',org:'linear-gradient(145deg,#ffc58a,#ff6a1a)',wht:'linear-gradient(145deg,#fff,#e9e9ef)'};
+const cur=`<svg width="22" height="26" viewBox="0 0 22 26" style="filter:drop-shadow(0 3px 3px rgba(0,0,0,.4))"><path d="M2 1l17 12-7.5 1.6L15 23l-3.6 1.6-3.4-8.3L2 21z" fill="#fff" stroke="#111" stroke-width="1.6" stroke-linejoin="round"/></svg>`;
+const D=[];const add=(id,cat,name,from,desc,bg,html,t=4600)=>D.push({id,cat,name,from,desc,bg,html,t});
+const CATS={camara:'Cámara y cortes',dividida:'Pantalla dividida',completa:'Pantalla completa',texto:'Texto y subtítulos',elementos:'Elementos y emojis',fondos:'Fondos'};
+
+const mk=(c,t,bg='#18a957')=>`<div style="width:${c}px;height:${c}px;border-radius:50%;background:${bg};color:#fff;display:grid;place-items:center;font:800 ${c*.55}px Inter;box-shadow:0 8px 14px rgba(0,0,0,.3)">${t}</div>`;
+const mini=(g,x='')=>`<div style="position:absolute;inset:0;background:${g};overflow:hidden;${x}">${sub('','height:62%;--hd:44%;--ht:14%;--bt:52%;--cl:#fff')}</div>`;
+const SP=(top,o={})=>`<div class="abs" style="left:0;right:0;top:0;height:${o.h||47}%;display:grid;place-items:center">${top}</div><div class="abs a up" style="left:0;right:0;top:${o.t||44}%;bottom:0;border-radius:26px 26px 0 0;background:${ROOM};box-shadow:0 -8px 20px rgba(0,0,0,.28);--d:.55s">${sub('','height:100%;--ht:-16%;--bt:28%')}</div>`;
+const bars=(arr,c='linear-gradient(#ff9a4d,#d4601a)')=>arr.map((h,i)=>`<i style="flex:1;height:${h}%;border-radius:4px 4px 0 0;background:${c};transform-origin:bottom;animation:kGrowY .5s ${.4+i*.18}s both"></i>`).join('');
+const ph=(w,x='')=>`<i style="display:block;height:9px;width:${w}px;border-radius:5px;background:#e7e7ee;${x}"></i>`;
+
+/* ---------- CÁMARA Y CORTES ---------- */
+add('tres-planos','camara','Tres planos: general, medio y cerca','Idea nueva','Cada corte se acerca un poco más que el anterior. Sube la tensión sin cambiar de cámara.',ROOM,
+`<div class="ly">${sub('full')}${sc('GENERAL',.2,1)}</div><div class="ly" style="background:${ROOM};animation:kAp .01s 1.2s both"><div class="cam" style="transform:scale(1.2)">${sub('full')}</div>${sc('MEDIO',1.3,1)}</div><div class="ly" style="background:${ROOM};animation:kAp .01s 2.4s both"><div class="cam" style="transform:scale(1.45)">${sub('full')}</div>${sc('CERCA',2.5,1.5)}</div>`,4100);
+add('retrocede-tarjeta','camara','El plano retrocede y entra la tarjeta','Idea nueva','La cámara se aleja, tu imagen se hace pequeña abajo y arriba aparece la pantalla.','#fff',
+`<div class="c3 abs a pop" style="left:44px;right:44px;top:50px;height:120px;display:grid;place-items:center;--s:1.7s"><div class="hv" style="font-size:32px;color:#17171c">+86%</div></div><div class="ly" style="background:${ROOM};box-shadow:0 -8px 20px rgba(0,0,0,.3);animation:kRetro .8s 1s cubic-bezier(.6,0,.2,1) both">${sub('full')}</div>`,4000);
+add('paneo-vertical','camara','Paneo vertical sobre una pantalla larga','Idea nueva','La cámara baja despacio por una pantalla más alta que el encuadre, enseñando todo sin cortes.','#fff',
+`<div class="abs" style="left:30px;right:30px;top:60px;animation:kPanV 4s ease-in-out both"><div class="c3" style="height:420px;padding:14px">${[['#d6ecff',60],['#ffd0dc',90],['#fff3b0',60],['#d9f7e3',90],['#e1d8ff',60]].map(b=>`<div style="height:${b[1]}px;border-radius:12px;background:${b[0]};margin-bottom:12px"></div>`).join('')}</div></div>`,4400);
+add('foco-entre-tarjetas','camara','El foco pasa de una tarjeta a otra','Idea nueva','Dos pantallas a distinta distancia: nítida la primera, desenfocada la segunda, y luego se intercambian.','#fff',
+`<div class="c3 abs" style="left:36px;right:36px;top:60px;height:110px;background:#d6ecff;animation:kB1 .6s 1.8s both;display:grid;place-items:center;font:800 30px Inter;color:#2f5bff">A</div><div class="c3 abs" style="left:36px;right:36px;top:200px;height:110px;background:#d9f7e3;filter:blur(7px);animation:kB2 .6s 1.8s both;display:grid;place-items:center;font:800 30px Inter;color:#18a957">B</div>`,4000);
+add('sujeto-circulo','camara','Tú en un círculo sobre la pantalla','Idea nueva','La pantalla ocupa todo y tú quedas en un círculo pequeño en una esquina, con borde blanco y sombra.','#fff',
+`<div class="c3 abs a fd" style="left:20px;right:20px;top:60px;height:230px;padding:16px;display:flex;gap:9px;align-items:flex-end">${bars([30,45,40,60,75,95])}</div><div class="abs a pop" style="left:16px;bottom:18px;width:92px;height:92px;border-radius:50%;overflow:hidden;border:4px solid #fff;box-shadow:0 12px 20px rgba(0,0,0,.4);background:${ROOM};--s:1s">${sub('full','--hd:44%')}</div>`,4200);
+add('paneo-hasta-tarjeta','camara','Paneo desde ti hasta la tarjeta','Idea nueva','La cámara se desplaza de lado, de ti a una pantalla que estaba al lado, como un barrido suave.',ROOM,
+`<div class="abs" style="left:0;top:0;bottom:0;width:432px;animation:kPanH 3.4s cubic-bezier(.6,0,.3,1) both"><div class="abs" style="left:0;top:0;width:216px;bottom:0;background:${ROOM}">${sub('full')}</div><div class="abs" style="left:216px;top:0;width:216px;bottom:0;background:#fff"><div class="c3 abs" style="left:30px;right:30px;top:140px;height:104px;display:flex;gap:7px;align-items:flex-end;padding:14px">${bars([40,55,50,80])}</div></div></div>`,4200);
+add('giro-ligero','camara','Pequeño giro de cámara en la palabra clave','Idea nueva','La imagen se inclina unos 4 grados mientras se acerca y vuelve a su sitio, como un golpe con carácter.',ROOM,
+`<div class="cam a" style="animation-name:kRot;--d:1.1s;--s:1.1s;--e:ease-in-out">${sub('full')}</div>${sc('¡OJO!',1.1,2)}`,3600);
+add('sujeto-lado','camara','Tú te apartas a un lado y entra la tarjeta','Idea nueva','Te desplazas y te haces más pequeño hacia una esquina, y en el hueco entra la pantalla.',ROOM,
+`<div class="c3 abs a pop" style="left:78px;right:14px;top:50px;height:150px;--s:1.6s;display:flex;gap:6px;align-items:flex-end;padding:12px">${bars([45,60,50,90])}</div><div class="cam" style="animation:kSide .8s 1s cubic-bezier(.6,0,.2,1) both;transform-origin:50% 100%">${sub('full')}</div>`,4000);
+
+/* ---------- PANTALLA DIVIDIDA ---------- */
+add('sandwich','dividida','Sándwich: pantalla arriba y abajo, tú en medio','Idea nueva','Tú ocupas una franja central y arriba y abajo aparecen dos pantallas distintas.','#fff',
+`<div class="c3 abs a dn" style="left:20px;right:20px;top:14px;height:76px;display:flex;gap:7px;align-items:flex-end;padding:10px;--d:.5s">${bars([40,70,55,90])}</div><div class="abs a fd" style="left:0;right:0;top:100px;bottom:100px;background:${ROOM};--d:.5s">${sub('full','--ht:12%;--bt:44%')}</div><div class="c3 abs a up" style="left:20px;right:20px;bottom:14px;height:76px;padding:20px 16px;--d:.5s;--s:.3s"><div style="height:14px;border-radius:8px;background:#e7e7ee;overflow:hidden"><i style="display:block;height:100%;background:linear-gradient(90deg,#6ab7ff,#2f5bff);transform-origin:left;animation:kGrow 1.4s 1s both"></i></div></div>`,3800);
+add('datos-arriba','dividida','Datos arriba, tú abajo','Idea nueva','Un gráfico de barras crece en la mitad de arriba mientras hablas en la de abajo.','#fff',
+SP(`<div class="c3" style="width:160px;height:110px;padding:12px;display:flex;gap:8px;align-items:flex-end">${bars([30,45,40,65,80,100])}</div>`),4000);
+add('flujo-arriba','dividida','Diagrama arriba, tú abajo','Idea nueva','Tres piezas conectadas con flechas se dibujan arriba para explicar un proceso mientras hablas.','#fff',
+SP(`<svg width="200" height="80" viewBox="0 0 200 80">${[[68,.9],[132,1.6]].map(l=>`<path pathLength="1" d="M${l[0]-14} 40H${l[0]+14}M${l[0]+8} 34L${l[0]+14} 40L${l[0]+8} 46" stroke="#17171c" stroke-width="3" fill="none" stroke-linecap="round" stroke-linejoin="round" stroke-dasharray="1" style="animation:kDraw .5s ${l[1]}s both"/>`).join('')}${[[8,'#2f5bff',.2],[76,'#ffb300',1.1],[144,'#18a957',1.8]].map(n=>`<rect x="${n[0]}" y="16" width="48" height="48" rx="14" fill="${n[1]}" style="animation:kPop .4s ${n[2]}s both;transform-origin:${n[0]+24}px 40px"/>`).join('')}</svg>`),4000);
+add('ui-arriba','dividida','Botón con cursor arriba, tú abajo','Idea nueva','Arriba un cursor pulsa un botón y cambia a «listo», como un mini tutorial, mientras hablas abajo.','#fff',
+SP(`<div style="position:relative;width:120px;height:44px"><div class="a pop" style="position:absolute;inset:0;border-radius:99px;display:grid;place-items:center;box-shadow:0 12px 18px -6px rgba(47,91,255,.5);--s:.2s;animation-name:kPop,kBtn;animation-duration:.4s,.2s;animation-delay:.2s,1.5s;animation-fill-mode:both"><b style="grid-area:1/1;color:#fff;font:800 13px Inter;animation:kHideAt .01s 1.5s both">Probar</b><b style="grid-area:1/1;color:#fff;font:800 13px Inter;animation:kAp .01s 1.5s both">✓ Listo</b></div><div class="abs" style="left:76px;top:16px;--x0:50px;--y0:46px;--x1:0px;--y1:0px;animation:kMv 1.1s .3s cubic-bezier(.4,0,.2,1) both">${cur}</div></div>`),4000);
+add('diagonal','dividida','División en diagonal','Idea nueva','La pantalla de arriba y tú abajo se separan con un corte inclinado en vez de recto.','#fff',
+`<div class="ly a dn" style="--d:.5s;clip-path:polygon(0 0,100% 0,100% 40%,0 52%);background:linear-gradient(135deg,#d6ecff,#fff)"><div class="c3 abs a pop" style="left:50px;right:50px;top:50px;height:96px;--s:.6s;display:flex;gap:7px;align-items:flex-end;padding:12px">${bars([40,60,50,90])}</div></div><div class="ly a up" style="--d:.5s;clip-path:polygon(0 46%,100% 34%,100% 100%,0 100%);background:${ROOM}">${sub('full','--ht:34%;--bt:62%')}</div>`,4000);
+add('sale-de-detras','dividida','La tarjeta sale de detrás de ti','Idea nueva','Tu cuerpo tapa la tarjeta al principio y ella sube por detrás de ti hasta quedar encima del hombro.','#fff',
+`<div class="c3 abs a up" style="left:26px;right:26px;top:50px;height:200px;background:linear-gradient(135deg,#d6ecff,#9bb8ff);--s:.7s;--d:.9s;display:grid;place-items:start center;padding-top:30px"><div class="hv" style="font-size:38px;color:#17171c">×3</div></div>${sub('','height:58%;--cl:#2b2d36;--ht:12%')}`,3800);
+add('tres-filas','dividida','Tres filas de barras comparadas','Idea nueva','Arriba tres filas con una barra cada una que crecen a distinta longitud para comparar de un vistazo.','#fff',
+SP(`<div style="width:170px">${[['#ff8fae',50],['#ffc53d',75],['#3ddc84',100]].map((r,i)=>`<div style="height:20px;border-radius:7px;background:#ececf3;margin:${i?9:0}px 0 0;overflow:hidden"><i style="display:block;height:100%;width:${r[1]}%;border-radius:7px;background:${r[0]};transform-origin:left;animation:kGrow .7s ${.4+i*.45}s both"></i></div>`).join('')}</div>`),4000);
+add('contador-arriba','dividida','Cifra que sube arriba, tú abajo','Idea nueva','Una cifra grande cuenta arriba hasta su valor con una barrita de color debajo.','#fff',
+SP(`<div style="text-align:center"><div class="hv" style="font-size:46px;color:#17171c"><span data-count="2.4" data-dec="1" data-suf="M" data-dur="1400" data-delay=".4">0</span></div><i style="display:block;margin:6px auto 0;height:5px;width:90px;border-radius:3px;background:#2f5bff;transform-origin:left;animation:kGrow .7s 1.6s both"></i></div>`),3800);
+add('sujeto-vuelve','dividida','La pantalla se cierra y vuelves a completa','Idea nueva','Empiezas en dividida y tu panel sube hasta ocupar todo, tapando la animación.','#fff',
+`<div class="abs c3 a pop" style="left:48px;right:48px;top:50px;height:100px;--s:.2s;display:flex;gap:7px;align-items:flex-end;padding:14px">${bars([40,60,50,95])}</div><div class="abs" style="left:0;right:0;bottom:0;top:44%;border-radius:26px 26px 0 0;background:${ROOM};box-shadow:0 -8px 20px rgba(0,0,0,.28);animation:kPanelUp .7s 1.9s cubic-bezier(.6,0,.2,1) both">${sub('full','--ht:12%;--bt:44%')}</div>`,4000);
+add('cortina-vertical','dividida','Cortina de antes y después hacia abajo','Idea nueva','Una línea baja por la imagen y deja el «después» en color encima del «antes» en gris.','#fff',
+`<div class="abs c3" style="left:33px;top:64px;width:150px;height:240px;overflow:hidden;border-radius:18px">${mini('linear-gradient(#ffb3c7,#6a3df0)','filter:grayscale(1) brightness(.8)')}<div class="abs" style="inset:0;animation:kClipV 1.6s .8s ease-in-out both">${mini('linear-gradient(#ffb3c7,#6a3df0)')}</div><i class="abs" style="left:0;right:0;height:3px;background:#fff;box-shadow:0 0 10px #fff;animation:kDivT 1.6s .8s ease-in-out both"></i></div>`,3800);
+add('ab-elige','dividida','Dos opciones lado a lado y una gana','Idea nueva','A y B arriba; B crece con un tick verde y A se apaga.','#fff',
+SP(`<div style="display:flex;gap:14px"><div class="c3" style="width:76px;height:76px;background:#ffd0dc;display:grid;place-items:center;font:800 26px Inter;color:#e0245e;animation:kDimO .4s 1.8s both">A</div><div class="c3" style="position:relative;width:76px;height:76px;background:#d9f7e3;display:grid;place-items:center;font:800 26px Inter;color:#18a957;animation:kPick .4s 1.8s both;box-shadow:0 0 0 4px #18a957,0 14px 20px -6px rgba(0,0,0,.4)">B<div class="abs a pop" style="right:-10px;top:-10px;--s:2s">${mk(24,'✓')}</div></div></div>`),4000);
+
+/* ---------- PANTALLA COMPLETA ---------- */
+add('embudo','completa','Embudo con cifras que bajan','Idea nueva','Tres barras cada vez más estrechas, con su cifra, enseñan cuánta gente se queda en cada paso.','#fff',
+`${[[170,'#6ab7ff',1000,0],[120,'#ffc53d',420,.7],[70,'#3ddc84',90,1.4]].map((f,i)=>`<div class="abs" style="left:${108-f[0]/2}px;top:${110+i*76}px;width:${f[0]}px;height:62px;border-radius:14px;background:${f[1]};box-shadow:0 14px 18px -8px rgba(0,0,0,.35);display:grid;place-items:center;transform-origin:center;animation:kPop .5s ${f[3]}s both"><b class="hv" style="font-size:22px;color:#17171c"><span data-count="${f[2]}" data-delay="${f[3]+.2}" data-dur="800">0</span></b></div>`).join('')}`,3800);
+add('carrera-barras','completa','Dos barras en carrera','Idea nueva','Dos barras horizontales salen a la vez: una se para pronto y la otra llega hasta el final.','#fff',
+`${[['#c9cdd8',45,0,'A'],['#3ddc84',100,.1,'B']].map((b,i)=>`<div class="abs" style="left:18px;right:18px;top:${150+i*66}px;display:flex;gap:10px;align-items:center"><div class="ic" style="width:34px;height:34px;font-size:15px;font-weight:800;background:${i?G.grn:G.wht};color:${i?'#fff':'#777'}">${b[3]}</div><div style="flex:1;height:24px;border-radius:99px;background:#ececf3;overflow:hidden"><i style="display:block;width:${b[1]}%;height:100%;border-radius:99px;background:${b[0]};transform-origin:left;animation:kGrow ${i?2.2:1.3}s .4s cubic-bezier(.3,.7,.3,1) both"></i></div></div>`).join('')}<div class="abs a pop" style="right:18px;top:122px;--s:2.6s">${mk(30,'↑')}</div>`,4000);
+add('precio-cambia','completa','Precio tachado y precio nuevo','Idea nueva','Una cifra se tacha con una raya roja y sale otra más pequeña en verde, en la misma tarjeta.','#fff',
+`<div class="c3 abs a up" style="left:28px;right:28px;top:130px;height:130px;--d:.5s;display:grid;place-items:center;text-align:center"><div><span class="hv" style="position:relative;font-size:34px;color:#8a8a96">99 €<i style="position:absolute;left:-4px;right:-4px;top:50%;height:4px;border-radius:2px;background:#e0245e;transform-origin:left;animation:kGrow .3s 1s both"></i></span><div class="hv a pop" style="font-size:44px;color:#18a957;margin-top:6px;--s:1.5s">0 €</div></div></div>`,3800);
+add('calendario-ticks','completa','Calendario con días marcados','Idea nueva','Un mes en cuadrícula; los días se van marcando en verde uno a uno para enseñar constancia.','#fff',
+`<div class="c3 abs a up" style="left:18px;right:18px;top:110px;padding:12px;--d:.5s"><div style="height:18px;border-radius:7px;background:linear-gradient(90deg,#6ab7ff,#2f5bff);margin-bottom:10px"></div><div style="display:grid;grid-template-columns:repeat(7,1fr);gap:6px">${Array.from({length:28},(_,i)=>`<i style="aspect-ratio:1;border-radius:50%;background:#eceef4;display:block;${[0,1,2,4,5,7,8,9,10,12,14,15,16,17,18,21,22].includes(i)?`animation:kGreen .2s ${.8+[0,1,2,4,5,7,8,9,10,12,14,15,16,17,18,21,22].indexOf(i)*.13}s both`:''}"></i>`).join('')}</div></div>`,4400);
+add('arbol-decision','completa','Árbol de decisión sí / no','Idea nueva','Una pieza arriba se divide en dos caminos: uno acaba en tick verde y el otro en cruz roja.','#fff',
+`<svg class="abs" style="left:0;top:0" width="216" height="384" viewBox="0 0 216 384">${['M108 150V190L52 230','M108 190L164 230'].map((d,i)=>`<path pathLength="1" d="${d}" fill="none" stroke="#17171c" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" stroke-dasharray="1" style="animation:kDraw .6s ${.8+i*.3}s both"/>`).join('')}</svg>${ic('❓',G.blue,'position:absolute;left:81px;top:96px;animation:kPop .5s .2s cubic-bezier(.2,.9,.3,1.3) both')}<div class="abs a pop" style="left:26px;top:232px;--s:1.5s">${mk(52,'✕','#e0245e')}</div><div class="abs a pop" style="left:138px;top:232px;--s:1.8s">${mk(52,'✓')}</div>`,3800);
+add('pasos-stepper','completa','Pasos 1-2-3 que se completan','Idea nueva','Tres círculos unidos por una línea que se rellena; cada paso se enciende en azul al llegar.','#fff',
+`<div class="abs" style="left:34px;right:34px;top:206px;height:6px;border-radius:3px;background:#e1e4ee"><i style="display:block;height:100%;border-radius:3px;background:#2f5bff;transform-origin:left;animation:kGrow 2.2s .5s linear both"></i></div>${[0,1,2].map(i=>`<div class="abs" style="left:${14+i*78}px;top:186px;width:46px;height:46px;border-radius:50%;border:4px solid #e1e4ee;background:#fff;display:grid;place-items:center;font:800 18px Inter;color:#fff;animation:kBlueFill .2s ${.5+i*1.1}s both">${i+1}</div>`).join('')}`,3800);
+add('grafico-circular','completa','Gráfico circular que se reparte','Idea nueva','Un círculo se va rellenando con tres colores y aparecen los porcentajes de cada parte.','#fff',
+`<div class="abs" style="left:48px;top:120px;width:120px;height:120px;border-radius:50%;--p:0;background:conic-gradient(#2f5bff 0 calc(var(--p)*.45%),#ffb300 0 calc(var(--p)*.8%),#e0245e 0 calc(var(--p)*1%),#ececf3 0);box-shadow:0 16px 22px -8px rgba(0,0,0,.35);animation:kPie 1.4s .3s ease-out both"></div>${[['45%','#2f5bff',22,100,1.7],['35%','#ffb300',84,206,1.9],['20%','#e0245e',146,206,2.1]].map(p=>`<span class="tag a pop" style="left:${p[2]}px;top:268px;font-size:13px;background:${p[1]};color:#fff;--s:${p[4]}s">${p[0]}</span>`).join('')}`,3800);
+add('ranking-reordena','completa','Ranking que se reordena','Idea nueva','Tres filas con barra; la de abajo sube al primer puesto y la de arriba baja un lugar.','#fff',
+`${[['#ffd0dc','1',60,'kSwapA',0],['#d9f7e3','2',90,'kSwapB',1],['#d6ecff','3',40,'',2]].map(r=>`<div class="c3 abs" style="left:20px;right:20px;top:${112+r[4]*48}px;height:40px;background:${r[0]};display:flex;align-items:center;gap:10px;padding:0 12px;${r[3]?`animation:${r[3]} .6s 1.4s cubic-bezier(.6,0,.2,1) both`:''}"><b class="hv" style="font-size:16px">${r[1]}</b><i style="height:10px;width:${r[2]}%;border-radius:5px;background:rgba(0,0,0,.2)"></i></div>`).join('')}`,3800);
+add('kpis-2x2','completa','Cuatro indicadores a la vez','Idea nueva','Cuatro cuadros con una cifra cada uno que cuentan a la vez hasta su valor.','#fff',
+`${[['12','K','#2f5bff',0,0],['3.4','M','#18a957',1,0],['98','%','#ff6a1a',0,1],['40','×','#e0245e',1,1]].map((k,i)=>`<div class="c3 abs a pop" style="left:${16+k[3]*94}px;top:${120+k[4]*94}px;width:84px;height:84px;display:grid;place-items:center;--s:${.1+i*.15}s"><div class="hv" style="font-size:24px;color:${k[2]}"><span data-count="${k[0]}" data-dec="${k[0]==='3.4'?1:0}" data-suf="${k[1]}" data-delay="${.4+i*.15}" data-dur="1000">0</span></div></div>`).join('')}`,3800);
+add('planes-columnas','completa','Tres columnas, la del medio destaca','Idea nueva','Tres columnas de comparación con ticks; la central sube un poco con un borde de color.','#fff',
+`${[[16,'#eceef4',2,0,0],[78,'#fff',4,1,.2],[140,'#eceef4',1,0,.4]].map(c=>`<div class="c3 abs a up" style="left:${c[0]}px;top:${c[3]?100:116}px;width:60px;height:${c[3]?190:158}px;background:${c[1]};padding:12px 8px;--s:${c[4]}s;${c[3]?'box-shadow:0 0 0 3px #2f5bff,0 18px 26px -8px rgba(0,0,0,.4)':''}"><i style="display:block;height:20px;border-radius:7px;background:${c[3]?'#2f5bff':'#c9cdd8'};margin-bottom:12px"></i>${Array.from({length:c[2]},(_,j)=>`<b class="a pop" style="display:block;color:#18a957;font-size:15px;text-align:center;margin-top:6px;--s:${.8+c[4]+j*.25}s">✓</b>`).join('')}</div>`).join('')}`,3800);
+add('reloj-tiempo','completa','Reloj que da vueltas y ahorra tiempo','Idea nueva','Una esfera con una aguja que gira y, al parar, una etiqueta con el tiempo ahorrado.','#fff',
+`<div class="c3 abs a pop" style="left:58px;top:130px;width:100px;height:100px;border-radius:50%;--s:.2s">${Array.from({length:12},(_,i)=>`<i class="abs" style="left:48px;top:6px;width:4px;height:8px;border-radius:2px;background:#c9cdd8;transform:rotate(${i*30}deg);transform-origin:2px 44px"></i>`).join('')}<i class="abs" style="left:48px;top:14px;width:4px;height:38px;border-radius:2px;background:#17171c;transform-origin:2px 36px;animation:kHand 1.8s .6s cubic-bezier(.5,0,.3,1) both"></i><i class="abs" style="left:44px;top:46px;width:12px;height:12px;border-radius:50%;background:#2f5bff"></i></div><span class="tag a pop" style="left:62px;top:262px;background:#18a957;color:#fff;font-size:15px;padding:5px 14px;--s:2.5s">−3 h</span>`,3800);
+
+/* ---------- TEXTO ---------- */
+add('callout-linea','texto','Línea que señala con una etiqueta','Idea nueva','Un punto marca una parte de la pantalla y una línea lleva a una etiqueta corta («AQUÍ»).','#fff',
+`<div class="c3 abs a up" style="left:20px;right:20px;top:130px;height:130px;padding:14px;--d:.5s;display:flex;gap:8px;align-items:flex-end">${bars([40,55,50,70,60,90])}</div><svg class="abs" style="left:0;top:0" width="216" height="384" viewBox="0 0 216 384"><circle cx="172" cy="162" r="6" fill="#e0245e" style="animation:kPop .3s 1s both;transform-origin:172px 162px"/><path pathLength="1" d="M172 156L172 100L130 100" fill="none" stroke="#e0245e" stroke-width="3" stroke-linecap="round" stroke-dasharray="1" style="animation:kDraw .6s 1.3s both"/></svg><span class="tag a pop" style="left:70px;top:88px;background:#e0245e;color:#fff;font-size:12px;--s:1.9s">AQUÍ</span>`,3800);
+add('sello-tick','texto','Sello verde estampado sobre el elemento','Idea nueva','Un tick grande cae sobre una tarjeta como un sello, con un pequeño golpe.','#fff',
+`<div class="c3 abs a up" style="left:34px;right:34px;top:130px;height:130px;padding:16px;--d:.5s"><div style="height:20px;border-radius:7px;background:linear-gradient(90deg,#6ab7ff,#2f5bff)"></div><i style="display:block;height:9px;border-radius:5px;background:#e7e7ee;margin-top:14px"></i><i style="display:block;height:9px;width:70%;border-radius:5px;background:#e7e7ee;margin-top:9px"></i></div><div class="abs" style="right:26px;top:215px;opacity:0;animation:kStamp .35s 1.2s cubic-bezier(.3,1.4,.5,1) both">${mk(64,'✓')}</div>`,3400);
+add('ordinal-esquina','texto','Número de puesto en la esquina de la tarjeta','Idea nueva','Una pequeña insignia «#1» se pega en la esquina de la tarjeta y sube de tamaño un instante.','#fff',
+`<div class="c3 abs a up" style="left:34px;right:34px;top:130px;height:130px;--d:.5s;background:linear-gradient(135deg,#d6ecff,#9bb8ff)"></div><div class="hv abs a pop" style="left:20px;top:112px;background:#17171c;color:#fff;border-radius:12px;padding:6px 12px;font-size:20px;box-shadow:0 10px 16px rgba(0,0,0,.35);--s:.9s">#1</div>`,3400);
+
+/* ---------- ELEMENTOS ---------- */
+add('menu-desplegable','elementos','Menú desplegable con una opción elegida','Idea nueva','Un cursor abre una lista, resalta una opción y la elige con un tick.','#f1f3f9',
+`<div class="c3 abs a up" style="left:28px;right:28px;top:110px;height:40px;--d:.4s;display:flex;align-items:center;justify-content:space-between;padding:0 14px">${ph(70)}<b style="color:#8a8a96">▾</b></div><div class="c3 abs" style="left:28px;right:28px;top:156px;padding:6px;transform-origin:top;animation:kGrowY .35s .9s both">${[0,1,2].map(i=>`<div style="height:30px;border-radius:9px;display:flex;align-items:center;justify-content:space-between;padding:0 10px;${i==1?'animation:kHl .2s 2s both':''}">${ph([60,76,50][i])}${i==1?`<b class="a pop" style="color:#18a957;--s:2.2s">✓</b>`:''}</div>`).join('')}</div><div class="abs" style="left:60px;top:120px;--x0:30px;--y0:20px;--x1:20px;--y1:80px;animation:kMv 1.8s .5s ease-in-out both">${cur}</div>`,3800);
+add('casillas','elementos','Casillas que se marcan una a una','Idea nueva','Tres casillas con su línea de texto se rellenan en azul con tick, de arriba abajo.','#f1f3f9',
+`<div class="c3 abs a up" style="left:20px;right:20px;top:120px;padding:16px;--d:.5s">${[0,1,2].map(i=>`<div style="display:flex;align-items:center;gap:12px;${i?'margin-top:16px':''}"><i style="width:24px;height:24px;border-radius:7px;border:3px solid #c9cdd8;display:grid;place-items:center;color:#fff;font:800 13px Inter;animation:kBlueFill .2s ${1+i*.7}s both"><b class="a pop" style="--s:${1+i*.7}s;display:block">✓</b></i>${ph([90,70,100][i])}</div>`).join('')}</div>`,3800);
+add('timeline-edicion','elementos','Línea de tiempo de edición con cabezal','Idea nueva','Clips de colores en pistas y una línea blanca que recorre el vídeo, como en un programa de edición.',DARK,
+`<div class="abs a up" style="left:12px;right:12px;top:150px;height:110px;border-radius:14px;background:#22232b;padding:12px;--d:.5s;box-shadow:0 18px 26px rgba(0,0,0,.5)">${[[['#6ab7ff',30],['#ffc53d',40],['#6ab7ff',24]],[['#3ddc84',50],['#ff8fae',40]],[['#a98bff',70],['#ffc53d',24]]].map((tr,i)=>`<div style="display:flex;gap:3px;margin-bottom:8px">${tr.map((c,j)=>`<i style="height:20px;border-radius:5px;background:${c[0]};width:${c[1]}%;transform-origin:left;animation:kGrow .4s ${.4+i*.2+j*.15}s both"></i>`).join('')}</div>`).join('')}<div class="abs" style="left:12px;right:12px;top:6px;bottom:6px"><i class="abs" style="top:0;bottom:0;width:3px;background:#fff;border-radius:2px;box-shadow:0 0 8px rgba(255,255,255,.8);animation:kPlay 3s 1s linear both"></i></div></div>`,4600);
+add('seleccion-texto','elementos','Cursor que selecciona una línea','Idea nueva','Un cursor arrastra sobre una línea de texto y se queda marcada en azul claro.','#fff',
+`<div class="c3 abs a up" style="left:20px;right:20px;top:120px;padding:16px;--d:.5s">${[100,80,95,60].map((w,i)=>`<div style="position:relative;margin-bottom:12px;height:14px">${ph(w*1.5,'height:12px;margin-top:1px')}${i==1?`<i style="position:absolute;left:-3px;top:-2px;height:18px;width:${w*1.5+6}px;border-radius:4px;background:rgba(47,91,255,.28);transform-origin:left;animation:kGrow .9s 1s both"></i>`:''}</div>`).join('')}</div><div class="abs" style="left:34px;top:178px;--x0:0px;--y0:0px;--x1:120px;--y1:0px;animation:kMv .9s 1s ease-in-out both">${cur}</div>`,3600);
+add('contador-seguidores','elementos','Seguidores que suben con «+1»','Idea nueva','Una cifra grande sube de golpe y pequeñas pastillas «+1» verdes aparecen y se van.','#fff',
+`<div class="hv abs" style="left:0;right:0;top:150px;text-align:center;font-size:48px;color:#17171c"><span data-count="10.4" data-dec="1" data-suf="K" data-dur="2000" data-delay=".3">0</span></div><div class="cp abs" style="left:0;right:0;top:214px;${W(.4,3)}">seguidores</div>${[[40,.6],[120,1.1],[160,1.7],[70,2.2]].map(p=>`<span class="tag" style="left:${p[0]}px;top:122px;background:#18a957;color:#fff;animation:kRise2 1s ${p[1]}s ease-out both">+1</span>`).join('')}`,4000);
+add('terminal','elementos','Ventana de comandos que escribe sola','Idea nueva','Una ventana oscura escribe una orden y debajo salen líneas con tick verde.','#fff',
+`<div class="abs a up" style="left:14px;right:14px;top:130px;border-radius:14px;background:#17171c;padding:12px;--d:.5s;box-shadow:0 20px 28px -8px rgba(0,0,0,.55);font:600 11px ui-monospace,Menlo,monospace;color:#d9dbe6"><div style="display:flex;gap:4px;margin-bottom:10px"><i style="width:7px;height:7px;border-radius:50%;background:#ff5f57"></i><i style="width:7px;height:7px;border-radius:50%;background:#febc2e"></i><i style="width:7px;height:7px;border-radius:50%;background:#28c840"></i></div><div style="overflow:hidden;white-space:nowrap;width:0;animation:kType 1.2s .6s steps(14) both"><span style="color:#6cf06c">$</span> crear reel</div><div style="margin-top:6px;color:#6cf06c;animation:kAp .01s 2s both">✓ corte</div><div style="margin-top:4px;color:#6cf06c;animation:kAp .01s 2.5s both">✓ subtítulos</div><div style="margin-top:4px;color:#6cf06c;animation:kAp .01s 3s both">✓ listo</div></div>`,4200);
+add('pestanas','elementos','Pestañas con subrayado que se desliza','Idea nueva','Tres pestañas y una barra azul que se desliza de una a otra mientras cambia el contenido.','#f1f3f9',
+`<div class="c3 abs a up" style="left:14px;right:14px;top:120px;height:150px;--d:.5s;overflow:hidden"><div style="display:grid;grid-template-columns:repeat(3,1fr);padding:14px 0 0;text-align:center;font:700 11px Inter;color:#17171c"><span>Uno</span><span>Dos</span><span>Tres</span></div><div style="height:3px;background:#e7e7ee;margin-top:10px;position:relative"><i style="position:absolute;left:0;top:0;width:66px;height:3px;background:#2f5bff;animation:kTab 4s .4s ease-in-out both"></i></div><div style="padding:14px">${[['#d6ecff',.2],['#ffd0dc',2],['#d9f7e3',3.2]].map((c,i)=>`<div class="abs" style="left:14px;right:14px;top:70px;height:60px;border-radius:12px;background:${c[0]};animation:kAp .01s ${c[1]}s both;${i<2?'':''}"></div>`).join('')}</div></div>`,4600);
+add('mapa-calor','elementos','Cuadrícula que se enciende como mapa de calor','Idea nueva','Una rejilla de celdas se ilumina con intensidad distinta; las más intensas, en naranja fuerte.','#fff',
+`<div class="c3 abs a up" style="left:22px;right:22px;top:120px;padding:12px;--d:.5s"><div style="display:grid;grid-template-columns:repeat(6,1fr);gap:5px">${Array.from({length:30},(_,i)=>{const v=[.2,.4,.9,.3,.6,.15,.5,.8,.35,1,.25,.7][(i*7)%12];return `<i style="aspect-ratio:1;border-radius:6px;background:rgba(255,106,26,${v});animation:kHeatIn .3s ${.5+(i%6)*.12+Math.floor(i/6)*.12}s both"></i>`}).join('')}</div></div>`,3600);
+add('velocimetro','elementos','Velocímetro con aguja','Idea nueva','Una media luna de colores y una aguja que sube hasta la zona verde, con la cifra contando.','#fff',
+`<div class="abs a pop" style="left:38px;top:130px;width:140px;height:76px;--s:.2s"><svg width="140" height="76" viewBox="0 0 140 76"><path d="M10 70A60 60 0 0 1 130 70" fill="none" stroke="#ff8fae" stroke-width="14" stroke-dasharray="63 200" pathLength="190"/><path d="M10 70A60 60 0 0 1 130 70" fill="none" stroke="#ffc53d" stroke-width="14" stroke-dasharray="0 63 63 200" pathLength="190"/><path d="M10 70A60 60 0 0 1 130 70" fill="none" stroke="#3ddc84" stroke-width="14" stroke-dasharray="0 126 64 200" pathLength="190"/></svg><i class="abs" style="left:67px;top:20px;width:6px;height:52px;border-radius:3px;background:#17171c;transform-origin:3px 50px;animation:kNeedle 1.8s .6s cubic-bezier(.4,0,.2,1) both"></i></div><div class="hv abs" style="left:0;right:0;top:234px;text-align:center;font-size:36px;color:#18a957"><span data-count="92" data-suf="%" data-delay=".6" data-dur="1800">0</span></div>`,3800);
+add('modo-oscuro','elementos','Interruptor que oscurece la tarjeta','Idea nueva','Un interruptor se activa y toda la tarjeta pasa de blanca a oscura con un cambio suave.','#f1f3f9',
+`<div class="c3 abs a up" style="left:24px;right:24px;top:120px;height:130px;padding:16px;--d:.5s;animation-name:kUp,kDark;animation-duration:.5s,.6s;animation-delay:0s,1.8s"><div style="display:flex;justify-content:space-between;align-items:center"><div style="width:52px;height:28px;border-radius:99px;background:#c8c8cf;position:relative;animation:kTog .25s 1.6s both"><i style="position:absolute;left:3px;top:3px;width:22px;height:22px;border-radius:50%;background:#fff;box-shadow:0 2px 5px rgba(0,0,0,.35);animation:kKnobS .25s 1.6s both"></i></div><span style="font-size:20px">☀️</span></div><i style="display:block;height:10px;border-radius:5px;background:#e7e7ee;margin-top:22px"></i><i style="display:block;height:10px;width:60%;border-radius:5px;background:#e7e7ee;margin-top:10px"></i></div>`,3800);
+add('recuadro-captura','elementos','Recuadro de captura de pantalla','Idea nueva','Un cursor dibuja un recuadro punteado sobre una zona, como al hacer una captura.','#fff',
+`<div class="c3 abs a up" style="left:14px;right:14px;top:110px;height:170px;--d:.5s;display:grid;grid-template-columns:1fr 1fr;gap:8px;padding:12px">${['#d6ecff','#ffd0dc','#fff3b0','#d9f7e3'].map(c=>`<i style="border-radius:10px;background:${c}"></i>`).join('')}</div><div class="abs" style="left:34px;top:134px;border:2px dashed #17171c;border-radius:6px;background:rgba(47,91,255,.12);animation:kSelBox .9s 1s ease-out both"></div><div class="abs" style="left:34px;top:134px;--x0:0px;--y0:0px;--x1:140px;--y1:96px;animation:kMv .9s 1s ease-out both">${cur}</div>`,3600);
+add('formulario','elementos','Formulario que se rellena y se envía','Idea nueva','Dos campos escriben solos y un botón se pulsa y cambia a «enviado».','#f1f3f9',
+`<div class="c3 abs a up" style="left:20px;right:20px;top:110px;padding:16px;--d:.5s">${[.6,1.6].map((t,i)=>`<div style="height:34px;border-radius:9px;border:2px solid #dfe3ef;margin-bottom:12px;padding:6px 10px"><div style="overflow:hidden;white-space:nowrap;width:0;height:18px;background:linear-gradient(90deg,#c9cdd8,#c9cdd8) left center/100% 8px no-repeat;animation:kType .8s ${t}s steps(10) both;max-width:${[110,90][i]}px"></div></div>`).join('')}<div style="height:38px;border-radius:99px;display:grid;place-items:center;animation:kBtn .2s 3s both;background:#2f5bff"><b style="grid-area:1/1;color:#fff;font:800 13px Inter;animation:kHideAt .01s 3s both">Enviar</b><b style="grid-area:1/1;color:#fff;font:800 13px Inter;animation:kAp .01s 3s both">✓ Enviado</b></div></div><div class="abs" style="left:100px;top:230px;--x0:60px;--y0:90px;--x1:0px;--y1:0px;animation:kMv .8s 2.2s ease-out both"><div style="animation:kPress .25s 2.95s both">${cur}</div></div>`,4600);
+add('slider-valor','elementos','Deslizador con burbuja de valor','Idea nueva','Una bolita se arrastra por una barra y una burbuja encima muestra el número que sube.','#fff',
+`<div class="abs a up" style="left:22px;right:22px;top:190px;height:12px;border-radius:6px;background:#e1e4ee;--d:.5s"><i style="position:absolute;left:0;top:0;height:100%;border-radius:6px;background:#2f5bff;animation:kW80 2s .8s ease-in-out both"></i><i class="abs" style="top:-7px;width:26px;height:26px;margin-left:-13px;border-radius:50%;background:#fff;box-shadow:0 4px 10px rgba(0,0,0,.35);animation:kHandL2 2s .8s ease-in-out both"></i></div><div class="hv abs" style="left:0;right:0;top:120px;text-align:center;font-size:44px;color:#2f5bff"><span data-count="80" data-delay=".8" data-dur="2000">0</span></div>`,4000);
+
+/* ---------- FONDOS ---------- */
+add('degradado-lento','fondos','Degradado que cambia de tono despacio','Idea nueva','El color de fondo se desplaza suavemente de un tono a otro mientras la tarjeta se queda.','#fff',
+`<div class="ly" style="background:linear-gradient(160deg,#8fd3ff,#fff 50%,#ffe0f0);animation:kHue 5s ease-in-out both"></div><div class="c3 abs a pop" style="left:44px;right:44px;top:150px;height:92px;display:grid;place-items:center;--s:.3s"><div class="hv" style="font-size:26px;color:#17171c">TEMA</div></div>`,5200);
+add('fondo-puntos','fondos','Fondo de puntos en movimiento','Idea nueva','Una rejilla de puntos muy suaves se desliza en diagonal detrás de la tarjeta.','#f4f6ff',
+`<div class="ly" style="background-image:radial-gradient(#c3c9e0 1.6px,transparent 1.6px);background-size:22px 22px;animation:kDotMove 2.6s linear infinite"></div><div class="c3 abs a up" style="left:44px;right:44px;top:150px;height:92px;display:grid;place-items:center;--d:.5s"><div class="hv" style="font-size:26px;color:#17171c">IDEA</div></div>`,4200);
+add('fondo-diagonales','fondos','Fondo de rayas diagonales suaves','Idea nueva','Rayas diagonales muy claras que avanzan despacio dan vida al fondo blanco sin distraer.','#fff',
+`<div class="ly" style="background:repeating-linear-gradient(135deg,#f1f4ff 0 14px,#fff 14px 28px);background-size:56px 56px;animation:kStripeD 2.4s linear infinite"></div><div class="c3 abs a up" style="left:44px;right:44px;top:150px;height:92px;display:grid;place-items:center;--d:.5s"><div class="hv" style="font-size:26px;color:#17171c">PASO</div></div>`,4200);
+add('oscuro-a-claro','fondos','Fondo que pasa de oscuro a claro','Idea nueva','Empiezas sobre un fondo oscuro y, al entrar la pantalla, todo se aclara de golpe suave.',DARK,
+`<div class="ly" style="background:#f4f6ff;"></div><div class="ly" style="background:${DARK};animation:kHideAt .6s 1.2s both"></div>${sub('full')}<div class="c3 abs a pop" style="left:44px;right:44px;top:150px;height:92px;display:grid;place-items:center;--s:1.5s"><div class="hv" style="font-size:26px;color:#17171c">LUZ</div></div>`,3800);
+
+/* ================= PÁGINA ================= */
+let V={},N={},cat='todas',st='todas';
+try{V=JSON.parse(localStorage.getItem('anim-v3')||'{}');N=JSON.parse(localStorage.getItem('anim-n3')||'{}')}catch(e){}
+const save=()=>{try{localStorage.setItem('anim-v3',JSON.stringify(V));localStorage.setItem('anim-n3',JSON.stringify(N))}catch(e){}};
+const $=s=>document.querySelector(s),grid=$('#grid');
+const reduce=matchMedia('(prefers-reduced-motion:reduce)').matches;
+
+function mount(s,d){
+  s._tok=(s._tok||0)+1;const tok=s._tok;s.style.background=d.bg;s.innerHTML=d.html;
+  s.querySelectorAll('[data-count]').forEach(el=>{
+    const to=parseFloat(el.dataset.count),dec=+el.dataset.dec||0,pre=el.dataset.pre||'',suf=el.dataset.suf||'',dl=(+el.dataset.delay||0)*1000,du=+el.dataset.dur||1200;
+    const t0=performance.now()+dl;
+    const f=now=>{if(s._tok!==tok)return;const p=Math.max(0,Math.min(1,(now-t0)/du)),e=1-Math.pow(1-p,3);el.textContent=pre+(to*e).toFixed(dec)+suf;if(p<1)requestAnimationFrame(f)};requestAnimationFrame(f);
+  });
+  s.querySelectorAll('[data-scr]').forEach(el=>{
+    const fin=el.dataset.scr,dl=(+el.dataset.delay||0)*1000,du=+el.dataset.dur||1000,t0=performance.now()+dl,ch='ABCDEFGHIJKLMNÑOPQRSTUVWXYZ#%&@';
+    const f=now=>{if(s._tok!==tok)return;const p=Math.max(0,Math.min(1,(now-t0)/du));
+      el.textContent=p<=0?' ':fin.split('').map((c,i)=>c===' '?' ':(i/fin.length<p-.1?c:ch[Math.floor(Math.random()*ch.length)])).join('');
+      if(p<1)requestAnimationFrame(f)};requestAnimationFrame(f);
+  });
+}
+
+function build(){
+  grid.innerHTML='';
+  D.forEach((d,i)=>{
+    const c=document.createElement('article');c.className='card';c.id='c-'+d.id;c.dataset.cat=d.cat;
+    c.innerHTML=`<div class="stage" role="button" tabindex="0" aria-label="Ver otra vez: ${d.name}"></div>
+    <div class="meta"><span class="fr">${i+1} · ${CATS[d.cat]} · ${d.from}</span><span class="nm">${d.name}</span><span class="ds">${d.desc}</span></div>
+    <div class="votes"><button class="vb y" type="button" aria-pressed="false">👍 Me gusta</button><button class="vb n" type="button" aria-pressed="false">👎 No</button></div>
+    <input class="note" type="text" id="n-${d.id}" placeholder="Nota opcional (ej. más lenta, otro color)" aria-label="Nota sobre ${d.name}">`;
+    grid.appendChild(c);
+    const s=c.querySelector('.stage');
+    const play=()=>mount(s,d);
+    s.addEventListener('click',play);s.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();play()}});
+    let tm=null;
+    new IntersectionObserver(es=>{es[0].isIntersecting?(play(),!reduce&&(tm=setInterval(play,d.t))):(clearInterval(tm),tm=null)},{threshold:.35}).observe(s);
+    const [by,bn]=c.querySelectorAll('.vb'),ni=c.querySelector('.note');ni.value=N[d.id]||'';
+    const paint=()=>{c.dataset.v=V[d.id]||0;by.setAttribute('aria-pressed',V[d.id]===1);bn.setAttribute('aria-pressed',V[d.id]===-1)};
+    by.onclick=()=>{V[d.id]=V[d.id]===1?0:1;paint();after()};
+    bn.onclick=()=>{V[d.id]=V[d.id]===-1?0:-1;paint();after()};
+    ni.oninput=()=>{N[d.id]=ni.value;save();text()};
+    paint();
+  });
+}
+function after(){save();text();filter()}
+function filter(){
+  let n=0;
+  D.forEach(d=>{const c=$('#c-'+d.id),v=V[d.id]||0;
+    const ok=(cat==='todas'||d.cat===cat)&&(st==='todas'||(st==='si'&&v===1)||(st==='no'&&v===-1)||(st==='sin'&&v===0));
+    c.hidden=!ok;if(ok)n++});
+  $('#empty').hidden=n>0;
+  const y=D.filter(d=>V[d.id]===1).length,no=D.filter(d=>V[d.id]===-1).length;
+  $('#cnt').textContent=`${y} me gustan · ${no} no · ${D.length-y-no} sin votar`;
+}
+function text(){
+  const L=D.filter(d=>V[d.id]===1),R=D.filter(d=>V[d.id]===-1);
+  const line=(d,i)=>`${i+1}. [${d.id}] ${d.name} (${CATS[d.cat]}): ${d.desc}${N[d.id]?` NOTA: ${N[d.id]}`:''}`;
+  $('#out').value=`ANIMACIONES PARA REELS (TANDA FINAL) - MI SELECCIÓN (${new Date().toLocaleDateString('es-ES')})\n\nME GUSTAN (${L.length}):\n${L.map(line).join('\n')||'(ninguna todavía)'}\n\nNO ME GUSTAN (${R.length}):\n${R.map(line).join('\n')||'(ninguna)'}\n\nSIN VOTAR: ${D.length-L.length-R.length}`;
+}
+function chips(el,items,get,set){
+  el.innerHTML='';items.forEach(([k,l])=>{const b=document.createElement('button');b.type='button';b.className='chip';b.textContent=l;b.setAttribute('aria-pressed',get()===k);b.onclick=()=>{set(k);el.querySelectorAll('.chip').forEach(x=>x.setAttribute('aria-pressed','false'));b.setAttribute('aria-pressed','true');filter()};el.appendChild(b)});
+}
+chips($('#cats'),[['todas','Todas'],...Object.entries(CATS)],()=>cat,k=>cat=k);
+chips($('#sts'),[['todas','Todas'],['si','👍'],['no','👎'],['sin','Sin votar']],()=>st,k=>st=k);
+$('#copy').onclick=async()=>{
+  const o=$('#out'),b=$('#copy');text();
+  try{await navigator.clipboard.writeText(o.value);b.textContent='¡Copiado!'}catch(e){o.select();b.textContent='Selecciona y copia abajo'}
+  setTimeout(()=>b.textContent='Copiar mi selección',2200);
+};
+build();text();filter();
+</script>

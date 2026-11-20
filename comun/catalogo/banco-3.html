@@ -1,0 +1,373 @@
+<title>Animaciones YouTube 3</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&family=Archivo:wght@500;700;800;900&display=swap">
+<style>
+:root{--bg:#f3f1ee;--panel:#fff;--ink:#17171c;--mute:#6c6a73;--line:#e1ddd8;--accent:#0f9d8a;--accent-ink:#fff;--yes:#16a34a;--yes-bg:#dcf5e5;--no:#d62f4b;--no-bg:#fde3e8}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#121216;--panel:#1c1c22;--ink:#f2f0ed;--mute:#9b98a3;--line:#2e2e36;--accent:#4fe3cc;--accent-ink:#06201b;--yes:#4ade80;--yes-bg:#12301e;--no:#ff6b84;--no-bg:#3a141d;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#121216;--panel:#1c1c22;--ink:#f2f0ed;--mute:#9b98a3;--line:#2e2e36;--accent:#4fe3cc;--accent-ink:#06201b;--yes:#4ade80;--yes-bg:#12301e;--no:#ff6b84;--no-bg:#3a141d;color-scheme:dark}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font:400 14px/1.45 Inter,system-ui,sans-serif;padding-inline:max(16px,env(safe-area-inset-left,0px)) max(16px,env(safe-area-inset-right,0px));padding-block:28px 40px}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);background:var(--bg);z-index:30}
+.wrap{max-width:1240px;margin:0 auto}
+h1{font:800 30px/1.1 Archivo,Inter,sans-serif;margin:0 0 8px;letter-spacing:-.02em;text-wrap:balance}
+.lead{max-width:66ch;color:var(--mute);margin:0 0 20px}
+.bar{position:sticky;top:env(safe-area-inset-top,0px);z-index:20;background:var(--bg);padding:10px 0;border-bottom:1px solid var(--line);display:flex;flex-wrap:wrap;gap:10px 16px;align-items:center;margin-bottom:22px}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chip{border:1px solid var(--line);background:var(--panel);color:var(--ink);border-radius:999px;padding:6px 12px;font:600 12px Inter,sans-serif;cursor:pointer}
+.chip[aria-pressed="true"]{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+.chip:focus-visible,.vb:focus-visible,.copy:focus-visible,.stage:focus-visible,textarea:focus-visible,input:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.count{margin-left:auto;font-size:12px;color:var(--mute);font-variant-numeric:tabular-nums}
+.copy{background:var(--accent);color:var(--accent-ink);border:0;border-radius:10px;padding:9px 16px;font:800 13px Inter,sans-serif;cursor:pointer}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(352px,1fr));gap:18px}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:18px;padding:14px;display:flex;flex-direction:column;gap:10px;min-width:0}
+.card[data-v="1"]{border-color:var(--yes);box-shadow:0 0 0 2px var(--yes-bg)}
+.card[data-v="-1"]{opacity:.62}
+.card[data-v="-1"] .stage{filter:grayscale(.6)}
+.stage{position:relative;width:320px;height:180px;border-radius:14px;overflow:hidden;margin:0 auto;box-shadow:0 6px 18px rgba(0,0,0,.18);cursor:pointer;max-width:100%;isolation:isolate}
+.meta{display:flex;flex-direction:column;gap:3px}
+.nm{font:800 15px/1.2 Archivo,Inter,sans-serif}
+.fr{font:600 10px Inter,sans-serif;letter-spacing:.06em;text-transform:uppercase;color:var(--mute)}
+.ds{font-size:12.5px;color:var(--mute)}
+.votes{display:flex;gap:8px}
+.vb{flex:1;border:1px solid var(--line);background:var(--bg);color:var(--ink);border-radius:10px;padding:9px 6px;font:700 13px Inter,sans-serif;cursor:pointer}
+.vb.y[aria-pressed="true"]{background:var(--yes);border-color:var(--yes);color:#fff}
+.vb.n[aria-pressed="true"]{background:var(--no);border-color:var(--no);color:#fff}
+.note{width:100%;border:1px solid var(--line);background:var(--bg);color:var(--ink);border-radius:8px;padding:7px 9px;font:400 12px Inter,sans-serif}
+.out{margin-top:30px;background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:16px}
+.out h2{margin:0 0 6px;font:800 18px Archivo,Inter,sans-serif}
+.out p{margin:0 0 10px;color:var(--mute);font-size:13px}
+textarea{width:100%;min-height:200px;border:1px solid var(--line);border-radius:10px;background:var(--bg);color:var(--ink);padding:10px;font:12px/1.5 ui-monospace,Menlo,monospace}
+.empty{padding:40px 0;color:var(--mute);text-align:center}
+
+/* ===== piezas (sobre su propio fondo; no cambian con el tema) ===== */
+.stage{--mint:#66e6d2;--ink2:#111;color:#111;font-family:Archivo,Inter,sans-serif}
+.abs{position:absolute}.ly{position:absolute;inset:0;overflow:hidden}
+.forest{background:linear-gradient(90deg,#55683a 0,#9aa05a 24%,#c9a45c 40%,#738a48 64%,#4d6338 100%)}
+.forest::before{content:"";position:absolute;inset:0;background:radial-gradient(circle at 16% 28%,rgba(255,236,170,.6) 0 13px,transparent 14px),radial-gradient(circle at 84% 20%,rgba(255,255,255,.5) 0 16px,transparent 17px),radial-gradient(circle at 72% 62%,rgba(255,220,140,.45) 0 11px,transparent 12px),radial-gradient(circle at 30% 70%,rgba(255,255,255,.3) 0 9px,transparent 10px);filter:blur(4px)}
+.pp{position:absolute;left:50%;bottom:0;width:150px;height:150px;transform:translateX(-50%);transform-origin:50% 100%}
+.pp .h{position:absolute;left:50%;top:6px;width:50px;height:58px;margin-left:-25px;border-radius:46% 46% 48% 48%;background:#e2b48f}
+.pp .h::before{content:"";position:absolute;left:-3px;right:-3px;top:-5px;height:26px;border-radius:50% 50% 30% 30%;background:#241a14}
+.pp .h::after{content:"";position:absolute;left:12px;top:26px;width:5px;height:5px;border-radius:50%;background:#2a1a12;box-shadow:19px 0 0 #2a1a12}
+.pp .b{position:absolute;left:8px;right:8px;top:70px;bottom:-40px;border-radius:44% 44% 0 0/36% 36% 0 0;background:#2e5694}
+.pp .b::before{content:"";position:absolute;left:50%;top:0;width:34px;height:40px;margin-left:-17px;background:#f1f1f1;clip-path:polygon(0 0,100% 0,50% 100%)}
+.sb{position:absolute;left:0;right:0;bottom:10px;text-align:center;font:800 16px/1.1 Archivo,Inter,sans-serif;color:#fff;text-shadow:0 2px 6px rgba(0,0,0,.6);padding:0 10px}
+.cd{background:#fff;border-radius:12px;box-shadow:0 8px 20px rgba(0,0,0,.10),0 1px 3px rgba(0,0,0,.10)}
+.mt{display:inline-block;background:var(--mint);color:#0b1f1c;font:900 12px/1 Archivo,Inter,sans-serif;text-transform:uppercase;border-radius:6px;padding:6px 9px;letter-spacing:.01em;white-space:nowrap}
+.hv{font-family:Archivo,Inter,sans-serif;font-weight:900;letter-spacing:-.02em;line-height:1}
+.cap{font:900 7px/1 Archivo,Inter,sans-serif;text-transform:uppercase;letter-spacing:.03em;color:#555}
+.phn{position:absolute;border-radius:14px;background:#0e0e10;padding:3px;box-shadow:0 8px 18px rgba(0,0,0,.28)}
+.phn .sc2{position:relative;width:100%;height:100%;border-radius:11px;overflow:hidden;background:#fff}
+.tkv{position:absolute;inset:0;background:linear-gradient(170deg,#8aa062,#3d4c2e 70%,#26301d)}
+.tkv::before{content:"";position:absolute;left:28%;bottom:0;width:44%;height:42%;border-radius:40% 40% 0 0;background:#e9e4dc}
+.tkv::after{content:"";position:absolute;left:39%;bottom:38%;width:22%;aspect-ratio:1;border-radius:50%;background:#c79670;box-shadow:0 -3px 0 1px #3a2a20}
+.ln{display:block;height:5px;border-radius:3px;background:#dcdce2}
+.dots{background-image:radial-gradient(#2a2a30 1px,transparent 1.3px);background-size:4px 4px}
+.bg-dots{background-color:#f7f7f7;background-image:radial-gradient(#e0e0e4 1px,transparent 1.2px);background-size:12px 12px}
+.ico{position:absolute;display:grid;place-items:center;border-radius:22%;box-shadow:0 3px 8px rgba(0,0,0,.22);font-size:15px}
+.cu{position:absolute;filter:drop-shadow(0 2px 2px rgba(0,0,0,.35))}
+.wr{position:absolute;left:30px;right:30px;top:74px;height:32px;border-radius:10px;display:flex;align-items:center;gap:7px;padding:0 9px;background:var(--b0);color:var(--c0);box-shadow:0 5px 14px rgba(0,0,0,.12);font:800 10px Archivo,Inter,sans-serif}
+.wr small{display:block;font:500 6px Inter;opacity:.6}
+.wr em{margin-left:auto;font:900 12px Archivo;font-style:normal;letter-spacing:-.02em}
+@property --p{syntax:'<number>';inherits:false;initial-value:0}
+@keyframes kPop{from{opacity:0;transform:scale(.4)}60%{opacity:1;transform:scale(1.1)}to{opacity:1;transform:scale(1)}}
+@keyframes kUp{from{opacity:0;transform:translateY(26px)}to{opacity:1;transform:none}}
+@keyframes kDn{from{opacity:0;transform:translateY(-26px)}to{opacity:1;transform:none}}
+@keyframes kLf{from{opacity:0;transform:translateX(-50px)}to{opacity:1;transform:none}}
+@keyframes kRt{from{opacity:0;transform:translateX(60px)}to{opacity:1;transform:none}}
+@keyframes kFd{from{opacity:0}to{opacity:1}}
+@keyframes kOut{to{opacity:0;transform:scale(.85)}}
+@keyframes kWin{0%{opacity:0}8%{opacity:1}92%{opacity:1}100%{opacity:0}}
+@keyframes kWinP{0%{opacity:0;transform:scale(.7)}9%{opacity:1;transform:scale(1.06)}15%{transform:scale(1)}90%{opacity:1}100%{opacity:0}}
+@keyframes kAp{from{opacity:0}to{opacity:1}}
+@keyframes kHide{from{opacity:1}to{opacity:0}}
+@keyframes kZin{from{transform:scale(1.4)}to{transform:scale(1)}}
+@keyframes kPunch{0%{transform:scale(1)}100%{transform:scale(1.22)}}
+@keyframes kGrow{from{transform:scaleX(0)}to{transform:scaleX(1)}}
+@keyframes kGrowY{from{transform:scaleY(0)}to{transform:scaleY(1)}}
+@keyframes kDraw{from{stroke-dashoffset:1}to{stroke-dashoffset:0}}
+@keyframes kMv{from{transform:translate(var(--x0,0),var(--y0,0)) scale(var(--s0,1))}to{transform:translate(var(--x1,0),var(--y1,0)) scale(var(--s1,1))}}
+@keyframes kHop{0%{opacity:0;transform:translateY(-34px) scale(.7)}45%{opacity:1;transform:translateY(0) scale(1.06)}62%{transform:translateY(-10px)}80%{transform:translateY(0)}92%{transform:translateY(-3px)}100%{transform:none;opacity:1}}
+@keyframes kBlurIn{from{opacity:0;filter:blur(8px);transform:translateY(8px)}to{opacity:1;filter:none;transform:none}}
+@keyframes kBlurOut{to{opacity:0;filter:blur(10px)}}
+@keyframes kBlur1{from{filter:blur(8px)}to{filter:blur(0)}}
+@keyframes kWh{from{transform:translateY(var(--y0)) scale(var(--s0));opacity:var(--o0)}to{transform:translateY(var(--y1)) scale(var(--s1));opacity:var(--o1)}}
+@keyframes kWh2{from{transform:translateY(var(--y1)) scale(var(--s1));opacity:var(--o1)}to{transform:translateY(var(--y2)) scale(var(--s2));opacity:var(--o2)}}
+@keyframes kWc{from{background:var(--b0);color:var(--c0)}to{background:var(--b1);color:var(--c1)}}
+@keyframes kWc2{from{background:var(--b1);color:var(--c1)}to{background:var(--b2);color:var(--c2)}}
+@keyframes kSlideL{to{transform:translateX(-120%)}}
+@keyframes kSlideR{from{transform:translateX(120%)}to{transform:none}}
+@keyframes kType{from{width:0}to{width:var(--w,90px)}}
+@keyframes kFlash{0%{opacity:0}35%{opacity:1}100%{opacity:0}}
+@keyframes kSel{from{background:#fff}to{background:var(--c,#2f5bff)}}
+@keyframes kHalo{0%{box-shadow:0 0 0 0 rgba(102,230,210,.9)}100%{box-shadow:0 0 0 14px rgba(102,230,210,0)}}
+@keyframes kPress{0%{transform:scale(1)}50%{transform:scale(.8)}100%{transform:scale(1)}}
+@keyframes kClipR{from{clip-path:inset(0 100% 0 0)}to{clip-path:inset(0)}}
+@keyframes kClipD{from{clip-path:inset(0 0 100% 0)}to{clip-path:inset(0)}}
+@keyframes kHighl{from{background-size:0 100%}to{background-size:100% 100%}}
+@keyframes kPan{from{transform:translateX(0)}to{transform:translateX(var(--dx,-160px))}}
+@keyframes kStripe{from{background-position:0 0}to{background-position:28px 0}}
+@keyframes kDotsBg{from{background-position:0 0}to{background-position:12px 12px}}
+@keyframes kSlot{from{transform:translateX(0)}to{transform:translateX(-62%)}}
+@keyframes kFloat{0%,100%{transform:translateY(0)}50%{transform:translateY(-5px)}}
+@keyframes kTw{0%,100%{opacity:.25}50%{opacity:1}}
+@keyframes kGlow{from{box-shadow:0 0 0 rgba(102,230,210,0)}to{box-shadow:0 0 22px rgba(102,230,210,.85),0 0 0 2px #66e6d2 inset}}
+@keyframes kNum{from{opacity:1}to{opacity:1}}
+@keyframes kW50{from{width:100%}to{width:50%}}
+@keyframes kCircF{from{transform:none;clip-path:circle(280px at 160px 72px)}to{transform:translate(122px,72px) scale(.5);clip-path:circle(52px at 160px 72px)}}
+@keyframes kCircC{from{transform:none;clip-path:circle(52px at 160px 72px)}to{transform:translate(122px,72px) scale(.5);clip-path:circle(52px at 160px 72px)}}
+@keyframes kOp1{to{opacity:.4;transform:scale(.92)}}
+@keyframes kOp2{from{opacity:.4;transform:scale(.92)}to{opacity:1;transform:scale(1)}}
+@keyframes kOp3{to{opacity:.4;transform:scale(.94)}}
+@keyframes kBig{to{transform:scale(1.18)}}
+@keyframes kOff{from{offset-distance:0%}to{offset-distance:100%}}
+@keyframes kBlurFast{from{filter:blur(7px)}to{filter:blur(0)}}
+@keyframes kGradMove{from{background-position:0 0}to{background-position:100% 100%}}
+.pc{display:inline-block;background:#ffc08a;color:#2a1405;font:900 11px/1 Archivo,Inter,sans-serif;text-transform:uppercase;border-radius:6px;padding:6px 9px;white-space:nowrap}
+.hlp{background:linear-gradient(#ffc08a,#ffc08a) 0 100%/0 100% no-repeat;animation:kHighl .5s 1s both;padding:0 3px}
+.ring{width:84px;height:84px;border-radius:50%;background:conic-gradient(#ff9f5a calc(var(--p)*1%),#ececf0 0);-webkit-mask:radial-gradient(circle,transparent 58%,#000 59%);mask:radial-gradient(circle,transparent 58%,#000 59%)}
+@keyframes kFlip3{from{transform:rotateY(0)}to{transform:rotateY(180deg)}}
+@keyframes kShrinkCard{from{transform:none;clip-path:inset(0 round 0)}to{transform:translate(-92px,0) scale(.56);clip-path:inset(0 round 26px)}}
+@keyframes kRingFill{to{--p:72}}
+@keyframes kSpin{to{transform:rotate(360deg)}}
+@keyframes kSpinR{to{transform:rotate(-360deg)}}
+@keyframes kRing{0%{transform:scale(.8);opacity:.8}100%{transform:scale(2.2);opacity:0}}
+@keyframes kScrollY{from{transform:translateY(0)}to{transform:translateY(-190px)}}
+@keyframes kRotIn{from{transform:perspective(500px) rotateY(-75deg);opacity:0}to{transform:perspective(500px) rotateY(0);opacity:1}}
+@keyframes kMorph{from{left:138px;top:68px;width:44px;height:44px;border-radius:12px}to{left:56px;top:40px;width:208px;height:100px;border-radius:14px}}
+@keyframes kBord{from{box-shadow:0 0 0 0 transparent}to{box-shadow:0 0 0 3px #ffb27a}}
+@keyframes kWx{from{transform:translateX(var(--y0)) scale(var(--s0));opacity:var(--o0)}to{transform:translateX(var(--y1)) scale(var(--s1));opacity:var(--o1)}}
+@keyframes kWx2{from{transform:translateX(var(--y1)) scale(var(--s1));opacity:var(--o1)}to{transform:translateX(var(--y2)) scale(var(--s2));opacity:var(--o2)}}
+@keyframes kPeachC{to{color:#ffc08a}}
+@keyframes kStrike{from{transform:scaleX(0)}to{transform:scaleX(1)}}
+@keyframes kPeachBg{to{background:#ffc08a;border-color:#ffc08a}}
+@keyframes kKnob2{to{transform:translateX(14px)}}
+@keyframes kStar{from{opacity:.2;transform:scale(.5)}to{opacity:1;transform:scale(1)}}
+@keyframes kWinL{0%{opacity:0;transform:translateX(-60px)}10%{opacity:1;transform:none}90%{opacity:1}100%{opacity:0}}
+@keyframes kMv2{from{transform:translate(0,-44px)}to{transform:translate(0,-88px)}}
+@keyframes kPeachC2{to{color:#aaa;text-decoration:line-through}}
+@keyframes kNoti{0%{transform:translateY(-70px);opacity:0}55%{transform:translateY(6px);opacity:1}75%{transform:translateY(-2px)}100%{transform:none;opacity:1}}
+@keyframes kFly{to{transform:translateX(200px) rotate(10deg);opacity:0}}
+@keyframes kSweep2{from{left:-120px}to{left:340px}}
+@keyframes kSelW2{to{background:#fff}}
+@keyframes kMarq{from{transform:translateX(0)}to{transform:translateX(-50%)}}
+@keyframes kRip{0%{transform:scale(.3);opacity:.7}100%{transform:scale(2.4);opacity:0}}
+@keyframes kSlotY{0%,22%{transform:translateY(0)}30%,52%{transform:translateY(-28px)}60%,100%{transform:translateY(-56px)}}
+@keyframes kBarW{from{width:0}to{width:var(--w,80%)}}
+@keyframes kHeat{from{opacity:0;transform:scale(.4)}to{opacity:1;transform:scale(1)}}
+@keyframes kFan3{from{opacity:0;transform:translateY(40px) rotate(0)}to{opacity:1;transform:rotate(var(--r))}}
+@keyframes kGrowH{from{height:0}to{height:60px}}
+@keyframes kPeachG{to{background:#34c759}}
+@keyframes kBlink{50%{opacity:.15}}
+@keyframes kStamp{0%{opacity:0;transform:scale(2.2) rotate(-12deg)}70%{opacity:1;transform:scale(.92)}100%{opacity:1;transform:scale(1)}}
+@keyframes kSlideL{to{transform:translateX(-100%)}}
+@media (prefers-reduced-motion:reduce){.stage *{animation-duration:.01s!important;animation-delay:0s!important;animation-iteration-count:1!important}}
+@media (max-width:520px){.grid{grid-template-columns:1fr}.count{margin-left:0;width:100%}}
+</style>
+
+<div class="wrap">
+  <h1>Animaciones para YouTube · tanda 3 (final)</h1>
+  <p class="lead">La última tanda, hecha con lo que elegiste en las dos anteriores (casi todo te gustó): tarjetas redondeadas, poco texto, ritmo rápido y naranja claro de acento. Todas son ideas nuevas. Pulsa 👍 o 👎, añade una nota y copia tu selección al final.</p>
+  <div class="bar">
+    <div class="chips" id="cats" role="group" aria-label="Tipo de animación"></div>
+    <div class="chips" id="sts" role="group" aria-label="Estado del voto"></div>
+    <span class="count" id="cnt"></span>
+    <button class="copy" id="copy" type="button">Copiar mi selección</button>
+  </div>
+  <div class="grid" id="grid"></div>
+  <div class="empty" id="empty" hidden>No hay animaciones con ese filtro.</div>
+  <section class="out" aria-labelledby="oh">
+    <h2 id="oh">Mi selección</h2>
+    <p>Esto es lo que me pegarás. Si el botón de copiar no funciona, selecciona el texto y cópialo a mano.</p>
+    <textarea id="out" readonly aria-label="Texto de mi selección"></textarea>
+  </section>
+</div>
+
+<script>
+const MINT='#66e6d2',FOREST='forest';
+const W=(s,l)=>`animation:kWin ${l}s ${s}s both`,WP=(s,l)=>`animation:kWinP ${l}s ${s}s both`;
+const P=(x='',sc=1)=>`<div class="ly forest" style="${x}"><div class="pp" style="transform:translateX(-50%) scale(${sc})"><i class="h"></i><i class="b"></i></div></div>`;
+const sb=(t,s,l,x='')=>`<div class="sb" style="${WP(s,l)};${x}">${t}</div>`;
+const cu=(x,y,st='')=>`<svg class="cu" width="14" height="17" viewBox="0 0 22 26" style="left:${x}px;top:${y}px;${st}"><path d="M2 1l17 12-7.5 1.6L15 23l-3.6 1.6-3.4-8.3L2 21z" fill="#fff" stroke="#111" stroke-width="1.8" stroke-linejoin="round"/></svg>`;
+const ph=(x,y,w,h,inner='<i class="tkv"></i>',st='')=>`<div class="phn" style="left:${x}px;top:${y}px;width:${w}px;height:${h}px;${st}"><div class="sc2">${inner}</div></div>`;
+const ico=(x,y,s,bg,t='',st='')=>`<div class="ico" style="left:${x}px;top:${y}px;width:${s}px;height:${s}px;background:${bg};font-size:${Math.round(s*.5)}px;${st}">${t}</div>`;
+const ln=(w,x='')=>`<i class="ln" style="width:${w}px;${x}"></i>`;
+const D=[];const add=(id,cat,name,from,desc,bg,html,t=4600)=>D.push({id,cat,name,from,desc,bg,html,t});
+const CATS={camara:'Cámara y ritmo',texto:'Texto y subtítulos',tarjetas:'Tarjetas y listas',cifras:'Cifras y gráficos',movil:'Móvil y vídeo real',iconos:'Iconos y transiciones',fondos:'Fondos'};
+const WHITE='#f7f7f7',BLACK='#101012';
+const wheel=(items,start,t1,t2)=>{
+  const SL=s=>{const a=Math.min(Math.abs(s),3);return{y:s*38,s:[1,.93,.85,.8][a],o:[1,.6,.22,0][a],d:a===0}};
+  return items.map((it,i)=>{const A=SL(i-start),B=SL(i-start-1),C=SL(i-start-2);
+    const bc=x=>x.d?'#111':'#fff',cc=x=>x.d?'#fff':'#222';
+    return `<div class="wr" style="--y0:${A.y}px;--y1:${B.y}px;--y2:${C.y}px;--s0:${A.s};--s1:${B.s};--s2:${C.s};--o0:${A.o};--o1:${B.o};--o2:${C.o};--b0:${bc(A)};--b1:${bc(B)};--b2:${bc(C)};--c0:${cc(A)};--c1:${cc(B)};--c2:${cc(C)};animation:kWh .5s ${t1}s cubic-bezier(.5,0,.2,1) both,kWc .5s ${t1}s both,kWh2 .5s ${t2}s cubic-bezier(.5,0,.2,1) forwards,kWc2 .5s ${t2}s forwards"><i style="width:18px;height:18px;border-radius:5px;background:${it[0]};flex:none"></i><span>${it[1]}<small>${it[2]}</small></span><em>${it[3]}</em></div>`}).join('')};
+</script>
+<script>
+/* ---------- CÁMARA Y RITMO ---------- */
+add('corte-escala-alterna','camara','Dos encuadres que alternan con cada frase','Idea nueva','Con cada frase corta el plano alterna entre uno normal y otro un poco más cerca, con la cabeza siempre entera. Rompe la monotonía sin cambiar de cámara.','#000',
+`${P()}<div class="ly" style="animation:kAp .01s 1.2s both,kHide .01s 2.4s forwards"><div class="ly" style="transform:scale(1.14);transform-origin:50% 80%">${P()}</div></div><div class="ly" style="animation:kAp .01s 3.6s both"><div class="ly" style="transform:scale(1.14);transform-origin:50% 80%">${P()}</div></div>${sb('one',.2,.9)}${sb('two',1.3,1)}${sb('three',2.5,1)}${sb('four',3.7,1)}`,4800);
+add('pip-rectangulo-esquina','camara','Tu imagen en un recuadro redondeado de esquina','Idea nueva','Mientras se enseña la pantalla, tú quedas en un recuadro pequeño con esquinas redondas abajo a la derecha (en vez de círculo).',WHITE,
+`<div class="cd abs" style="left:30px;right:30px;top:20px;height:118px;padding:14px;animation:kUp .45s .1s both"><div style="font:800 12px Archivo">Weekly report</div><div style="display:flex;gap:10px;align-items:flex-end;height:64px;margin-top:12px">${[40,60,50,80,100].map((h,i)=>`<i style="flex:1;height:${h}%;background:${i===4?'#111':'#ececf0'};border-radius:5px 5px 0 0;transform-origin:bottom;animation:kGrowY .5s ${.5+i*.15}s both"></i>`).join('')}</div></div><div class="abs" style="right:14px;bottom:10px;width:90px;height:56px;border-radius:12px;overflow:hidden;box-shadow:0 8px 18px rgba(0,0,0,.28);animation:kPop .45s .9s both">${P('',.5)}</div>`,4000);
+add('tu-delante-de-tarjeta','camara','Tú delante de una tarjeta grande','Idea nueva','Una tarjeta de fondo ocupa el centro y tú apareces recortado delante, abajo, como un presentador delante de la pantalla.',WHITE,
+`<div class="cd abs" style="left:40px;right:40px;top:14px;height:96px;display:grid;place-items:center;animation:kUp .45s .1s both"><b class="hv" style="font-size:32px">+210%</b></div><div class="abs" style="left:0;right:0;bottom:0;height:100px;overflow:hidden;animation:kUp .5s .6s both"><div class="pp" style="bottom:0"><i class="h"></i><i class="b"></i></div></div>`,3600);
+add('fondo-blanco-detras-de-ti','camara','Tu fondo se vuelve blanco y quedas recortado','Idea nueva','El fondo de bosque se funde en blanco y te quedas tú recortado sobre blanco; luego entran tarjetas a los lados.',WHITE,
+`<div class="ly" style="background:${WHITE}"><div class="pp"><i class="h"></i><i class="b"></i></div></div><div class="ly forest" style="animation:kHide .8s 1.2s both"><div class="pp"><i class="h"></i><i class="b"></i></div></div><div class="cd abs" style="left:14px;top:46px;width:70px;height:40px;display:grid;place-items:center;font:800 11px Archivo;animation:kLf .4s 2.2s both">Fast</div><div class="cd abs" style="right:14px;top:70px;width:70px;height:40px;display:grid;place-items:center;font:800 11px Archivo;animation:kRt .4s 2.6s both">Simple</div>`,4000);
+add('tres-franjas-tu-medio','camara','Tarjeta a cada lado y tú en el centro','Idea nueva','Una franja vertical central con tu plano y dos tarjetas a los lados que cambian de contenido.',WHITE,
+`<div class="abs" style="left:112px;width:96px;top:0;bottom:0;overflow:hidden;animation:kFd .3s both">${P('',.6)}</div>${[[16,'Before',.5],[216,'After',1.2]].map(c=>`<div class="cd abs" style="left:${c[0]}px;top:54px;width:88px;height:72px;display:grid;place-items:center;font:800 14px Archivo;animation:kPop .4s ${c[2]}s both">${c[1]}</div>`).join('')}`,3400);
+add('cambio-encuadre-con-flash','camara','Corte con destello blanco suave','Idea nueva','Entre dos planos tuyos, un destello blanco muy corto marca el cambio y ayuda a que el corte no se note brusco.','#000',
+`${P()}<div class="ly" style="animation:kAp .01s 1.6s both"><div class="ly" style="transform:scale(1.25);transform-origin:50% 80%">${P()}</div></div><div class="ly" style="background:#fff;animation:kFlash .4s 1.4s both"></div>${sb('and then',.3,1.1)}${sb('boom',1.8,1.6)}`,3800);
+
+/* ---------- TEXTO Y SUBTÍTULOS ---------- */
+add('subtitulo-una-palabra','texto','Una palabra de subtítulo cada vez, grande','Idea nueva','Subtítulos de una sola palabra, grandes, en el centro de la parte baja: la palabra cambia y entra con pequeño rebote. Muy ágil.','#000',
+`${P()}${['ONE','WORD','AT','A TIME'].map((w,i)=>`<div class="sb" style="bottom:20px;font-size:26px;${WP(.2+i*.55,.55)}">${w}</div>`).join('')}`,3200);
+add('frase-blanco-y-gris','texto','Frase con parte en negro y parte en gris','Idea nueva','Una frase sobre blanco con dos tonos: lo importante en negro grueso y lo demás en gris claro, en dos tamaños.',WHITE,
+`<div class="abs" style="left:34px;right:34px;top:52px;font:800 24px/1.1 Archivo;color:#222"><span style="color:#b4b4bc;font-size:15px;display:block;animation:kBlurIn .4s .2s both">no code,</span><span style="display:block;animation:kBlurIn .4s .7s both">no team,</span><span style="color:#b4b4bc;font-size:15px;display:block;animation:kBlurIn .4s 1.2s both">just</span><span style="display:block;animation:kBlurIn .4s 1.7s both">you.</span></div>`,3600);
+add('cita-tarjeta','texto','Cita corta en una tarjeta con comillas','Idea nueva','Una tarjeta blanca con unas comillas grandes en naranja y una frase corta; el nombre aparece debajo en pequeño.',WHITE,
+`<div class="cd abs" style="left:50px;right:50px;top:34px;height:112px;padding:14px 16px;animation:kPop .45s .1s both"><b style="font:900 34px/1 Archivo;color:#ffc08a">“</b><div style="font:800 13px/1.25 Archivo;margin-top:-4px;animation:kFd .4s .7s both">It changed how we work.</div><div style="font:600 7px Inter;color:#888;margin-top:12px;animation:kFd .4s 1.3s both">— Laura, founder</div></div>`,3400);
+add('pregunta-respuesta-tarjetas','texto','Pregunta y respuesta en dos tarjetas','Idea nueva','Una tarjeta gris con la pregunta y, debajo, una negra con la respuesta que entra con rebote.',WHITE,
+`<div class="cd abs" style="left:60px;right:60px;top:30px;height:44px;display:grid;place-items:center;font:700 12px Inter;color:#666;animation:kUp .4s .1s both">Does it work?</div><div class="abs" style="left:60px;right:60px;top:90px;height:50px;border-radius:12px;background:#111;color:#ffc08a;display:grid;place-items:center;font:900 18px Archivo;box-shadow:0 10px 22px rgba(0,0,0,.28);animation:kPop .45s 1.3s both">Yes.</div>`,3400);
+add('etiqueta-con-linea-senala','texto','Etiqueta con una línea que señala un elemento','Idea nueva','Una píldora naranja claro con una línea fina que se dibuja hasta el detalle de la tarjeta al que se refiere.',WHITE,
+`<div class="cd abs" style="left:150px;top:46px;width:140px;height:80px;padding:12px;animation:kUp .45s .1s both"><div style="font:800 10px Archivo">Total</div><div class="hv" style="font-size:24px;margin-top:6px">$482</div></div><svg class="abs" style="left:0;top:0" width="320" height="180" viewBox="0 0 320 180" fill="none" stroke="#222" stroke-width="1.4" stroke-linecap="round"><path pathLength="1" d="M96 96L150 96" stroke-dasharray="1" style="animation:kDraw .4s .8s both"/></svg><span class="pc abs" style="left:24px;top:86px;animation:kPop .35s .5s both">THIS NUMBER</span>`,3400);
+add('puntos-progreso-pasos','texto','Indicador de pasos con puntos','Idea nueva','Tres puntos en la parte alta que se van rellenando según avanzas («1 de 3»), con el título del paso debajo.',WHITE,
+`<div class="abs" style="left:0;right:0;top:34px;display:flex;justify-content:center;gap:8px">${[0,1,2].map(i=>`<i style="width:${i?8:8}px;height:8px;border-radius:99px;background:#dcdce2;animation:kPeachBg .2s ${.4+i*1.2}s both"></i>`).join('')}</div><div class="abs" style="left:0;right:0;top:70px;text-align:center;font:900 22px Archivo">${['Plan','Build','Launch'].map((t,i)=>`<div style="position:absolute;left:0;right:0;${WP(.3+i*1.2,1.1)}">${t}</div>`).join('')}</div>`,4000);
+add('palabra-cambia-tragaperras','texto','Una palabra que cambia como en una máquina','Idea nueva','Una palabra de la frase gira en vertical y se queda en la buena (difícil → rápido → fácil).',WHITE,
+`<div class="abs" style="left:0;right:0;top:66px;text-align:center;font:800 22px Archivo;color:#222;display:flex;justify-content:center;gap:7px;align-items:center">it’s<span style="display:inline-block;height:28px;overflow:hidden;background:#ffc08a;border-radius:6px;padding:0 6px"><span style="display:block;animation:kSlotY 2.2s .3s cubic-bezier(.5,0,.2,1) both">${['slow','hard','easy'].map(w=>`<span style="display:block;height:28px;line-height:28px">${w}</span>`).join('')}</span></span></div>`,3600);
+add('lista-viñetas-aparece','texto','Tres viñetas cortas que entran una a una','Idea nueva','Tres líneas cortas con un punto naranja que entran de una en una, con mucho aire alrededor.',WHITE,
+`<div class="abs" style="left:70px;top:38px">${['Simple','Fast','Free'].map((t,i)=>`<div style="display:flex;align-items:center;gap:10px;margin-bottom:12px;font:800 20px Archivo;animation:kLf .4s ${.3+i*.6}s both"><i style="width:9px;height:9px;border-radius:50%;background:#ffa86a"></i>${t}</div>`).join('')}</div>`,3200);
+
+/* ---------- TARJETAS Y LISTAS ---------- */
+add('tarjeta-video-reproduce','tarjetas','Tarjeta de vídeo con barra de reproducción','Idea nueva','Una tarjeta con miniatura de vídeo, un botón de play que se pulsa y una barra que avanza.',WHITE,
+`<div class="cd abs" style="left:76px;right:76px;top:24px;height:122px;padding:6px;animation:kUp .45s .1s both"><div style="position:relative;height:84px;border-radius:8px;overflow:hidden"><i class="tkv"></i><i class="abs" style="left:50%;top:50%;width:26px;height:26px;margin:-13px;border-radius:50%;background:rgba(255,255,255,.9);display:grid;place-items:center;font-style:normal;font-size:10px;animation:kPress .3s 1s both">▶</i></div><div style="height:4px;border-radius:2px;background:#e8e8ec;margin:9px 4px 0;overflow:hidden"><i style="display:block;height:100%;background:#ff9f5a;--w:100%;animation:kBarW 2s 1.2s linear both"></i></div></div>`,4000);
+add('tarjetas-abanico','tarjetas','Tarjetas que se abren en abanico','Idea nueva','Tres tarjetas aparecen juntas y se abren en abanico desde un punto, para enseñar varias opciones a la vez.',WHITE,
+`${[-14,0,14].map((r,i)=>`<div class="cd abs" style="left:116px;top:34px;width:88px;height:112px;display:grid;place-items:center;font:900 22px Archivo;transform-origin:50% 120%;--r:${r}deg;animation:kFan3 .6s ${.3+i*.15}s cubic-bezier(.2,.9,.3,1.15) both">${['A','B','C'][i]}</div>`).join('')}`,3400);
+add('tarjeta-perfil-seguir','tarjetas','Tarjeta de perfil con botón de seguir','Idea nueva','Una tarjeta con avatar, nombre y un botón «Follow» que se pulsa y pasa a «Following» en naranja claro.',WHITE,
+`<div class="cd abs" style="left:70px;right:70px;top:42px;height:96px;padding:14px;animation:kPop .45s .1s both"><div style="display:flex;gap:10px;align-items:center"><i style="width:34px;height:34px;border-radius:50%;background:linear-gradient(135deg,#caa27e,#6b5a4a)"></i><div><b style="font:800 11px Archivo">Ana Pérez</b><div style="font:500 7px Inter;color:#888;margin-top:2px">@anaperez · 12.4K</div></div></div><div style="margin-top:12px;height:22px;border-radius:99px;background:#111;color:#fff;display:grid;place-items:center;font:800 9px Archivo;animation:kPeachBg .2s 1.8s both,kPress .25s 1.75s both"><span style="grid-area:1/1;animation:kHide .01s 1.8s both">Follow</span><span style="grid-area:1/1;color:#2a1405;animation:kAp .01s 1.8s both">Following ✓</span></div></div>${cu(0,0,'left:0;top:0;--x0:260px;--y0:160px;--x1:158px;--y1:122px;animation:kMv .8s .9s cubic-bezier(.4,0,.2,1) both')}`,3800);
+add('chat-burbujas','tarjetas','Conversación con burbujas que entran','Idea nueva','Burbujas de chat de dos personas, cortas, que entran una tras otra con un pequeño rebote.',WHITE,
+`${[['l','Is it free?',.3],['r','Yes, forever',1.1],['l','No catch?',1.9],['r','None',2.7]].map((m,i)=>`<div class="abs" style="${m[0]==='l'?'left:54px':'right:54px'};top:${20+i*36}px;background:${m[0]==='l'?'#fff':'#ffc08a'};box-shadow:0 4px 10px rgba(0,0,0,.08);border-radius:12px;padding:7px 12px;font:700 10px Inter;animation:kPop .35s ${m[2]}s both">${m[1]}</div>`).join('')}`,4200);
+add('busqueda-escribe-resultado','tarjetas','Barra de búsqueda que escribe y da un resultado','Idea nueva','Una barra con un icono redondeado y una lupa; se escribe una palabra y debajo aparece la tarjeta resultado.',WHITE,
+`<div class="cd abs" style="left:40px;right:40px;top:26px;height:34px;display:flex;align-items:center;gap:8px;padding:0 10px;animation:kUp .4s .1s both"><i style="width:20px;height:20px;border-radius:6px;background:#2f6bff;flex:none"></i><span style="font:500 10px Inter;color:#444;overflow:hidden;white-space:nowrap;width:0;animation:kType 1s .6s steps(11) both;--w:86px">caesar salad</span></div><div class="cd abs" style="left:40px;right:40px;top:72px;height:54px;display:flex;align-items:center;gap:10px;padding:0 10px;animation:kUp .4s 1.9s both"><i style="width:34px;height:34px;border-radius:7px;background:linear-gradient(135deg,#9ccf6a,#4d8f2f)"></i><div><b style="font:800 10px Archivo">Caesar salad</b><div style="font:500 7px Inter;color:#888;margin-top:3px">420 kcal</div></div></div>`,3800);
+add('tarjeta-descarga-progreso','tarjetas','Tarjeta de descarga con barra y tick final','Idea nueva','Una tarjeta con barra de progreso que se llena y, al terminar, se convierte en un tick con «Done».',WHITE,
+`<div class="cd abs" style="left:70px;right:70px;top:54px;height:62px;padding:12px 14px;animation:kUp .4s .1s both"><div style="display:flex;justify-content:space-between;font:800 9px Archivo"><span>Exporting…</span><span style="animation:kHide .01s 2s both"><span data-count="100" data-delay=".5" data-dur="1500">0</span>%</span><span style="position:absolute;right:14px;animation:kPop .3s 2s both;color:#12a050">✓ Done</span></div><div style="height:6px;border-radius:3px;background:#ececf0;margin-top:12px;overflow:hidden"><i style="display:block;height:100%;background:#ff9f5a;--w:100%;animation:kBarW 1.5s .5s ease-in-out both,kPeachG .2s 2s forwards"></i></div></div>`,3600);
+add('tarjeta-evento-calendario','tarjetas','Evento que se añade al calendario','Idea nueva','Una tarjeta de día con una franja naranja clara que aparece como evento nuevo y se estira a su duración.',WHITE,
+`<div class="cd abs" style="left:70px;right:70px;top:14px;height:152px;padding:10px 12px;animation:kUp .4s .1s both"><div style="font:800 9px Archivo">Tuesday</div>${[0,1,2,3].map(i=>`<div style="height:26px;border-top:1px solid #f0f0f2;margin-top:${i?0:6}px;font:500 6px Inter;color:#aaa;padding-top:3px">${9+i}:00</div>`).join('')}<div class="abs" style="left:46px;right:14px;top:56px;height:0;border-radius:6px;background:#ffc08a;font:800 8px Archivo;padding:5px 7px;overflow:hidden;animation:kGrowH .6s 1s both">Record video</div></div>`,3400);
+add('tarjetas-scroll-horizontal','tarjetas','Fila de tarjetas que se desliza sin parar','Idea nueva','Una fila larga de tarjetas pequeñas que se desplaza despacio hacia un lado, como un carrusel infinito.',WHITE,
+`<div class="abs" style="left:0;top:50px;display:flex;gap:10px;width:max-content;animation:kMarq 7s linear infinite">${Array.from({length:12},(_,i)=>`<div class="cd" style="width:74px;height:80px;flex:none;display:grid;place-items:center;font:900 20px Archivo;color:${i%3===0?'#ff9f5a':'#111'}">${(i%6)+1}</div>`).join('')}</div>`,5200);
+
+/* ---------- CIFRAS Y GRÁFICOS ---------- */
+add('contador-tiempo','cifras','Contador de tiempo que corre','Idea nueva','Un cronómetro grande con minutos y segundos que avanza rápido y se queda en el tiempo final.',WHITE,
+`<div class="abs hv" style="left:0;right:0;top:56px;text-align:center;font-size:48px;font-variant-numeric:tabular-nums"><span data-count="2" data-delay=".2" data-dur="1400">0</span>:<span data-count="47" data-delay=".2" data-dur="1400" data-pad="1">0</span></div><div class="abs cap" style="left:0;right:0;top:118px;text-align:center;font-size:8px;animation:kFd .4s 1.6s both">TO FIRST SALE</div>`,3400);
+add('barras-horizontales-comparar','cifras','Barras horizontales comparadas','Idea nueva','Tres barras que se alargan a distinta longitud con su nombre y valor, la más larga en negro.',WHITE,
+`${[['You',100,'#111','4.8M'],['Them',55,'#ffc08a','2.6M'],['Others',28,'#e0e0e6','1.3M']].map((b,i)=>`<div class="abs cap" style="left:40px;top:${30+i*40}px;font-size:8px">${b[0]}</div><div class="abs" style="left:40px;top:${42+i*40}px;width:240px;height:18px;border-radius:6px;background:#ececf0"><i style="display:block;height:100%;border-radius:6px;background:${b[2]};--w:${b[1]}%;animation:kBarW .8s ${.3+i*.4}s cubic-bezier(.3,.8,.3,1) both"></i><b class="hv abs" style="right:6px;top:4px;font-size:10px;color:#666;animation:kFd .3s ${1+i*.4}s both">${b[3]}</b></div>`).join('')}`,3800);
+add('barras-dia-resaltada','cifras','Barras por día con una resaltada','Idea nueva','Siete barras pequeñas, una por día; todas grises y una se enciende en naranja con su valor encima.',WHITE,
+`${[30,44,38,60,52,100,48].map((h,i)=>`<div class="abs" style="left:${54+i*30}px;bottom:34px;width:22px;height:${h*.9}px;border-radius:6px 6px 0 0;background:${i===5?'#ff9f5a':'#e4e4ea'};transform-origin:bottom;animation:kGrowY .5s ${.1+i*.1}s both"></div><span class="abs cap" style="left:${54+i*30}px;width:22px;text-align:center;bottom:20px;font-size:6px">${'MTWTFSS'[i]}</span>`).join('')}<span class="pc abs" style="left:190px;top:22px;font-size:9px;animation:kPop .35s 1.4s both">$1,240</span>`,3600);
+add('cifra-multiplicador','cifras','Multiplicador grande: x3','Idea nueva','Un «×3» enorme que entra con rebote, con una frase corta debajo en gris.',WHITE,
+`<div class="abs" style="left:0;right:0;top:44px;text-align:center;animation:kPop .5s .2s both"><div class="hv" style="font-size:64px">×<span data-count="3" data-delay=".3" data-dur="700">0</span></div><div style="font:700 10px Inter;color:#9a9aa2;margin-top:6px;animation:kFd .4s 1s both">in just one month</div></div>`,3200);
+add('mapa-calor-celdas','cifras','Cuadrícula de celdas que se iluminan','Idea nueva','Una cuadrícula de celdas grises; unas cuantas se encienden en distintos tonos de naranja, como un mapa de actividad.',WHITE,
+`<div class="abs" style="left:78px;top:30px;display:grid;grid-template-columns:repeat(9,20px);gap:4px">${Array.from({length:45},(_,i)=>{const v=((i*7)%10);const c=v>7?'#ff8a3a':v>5?'#ffb27a':v>3?'#ffd9b8':'#ececf0';return `<i style="height:20px;border-radius:5px;background:${c};animation:kHeat .3s ${(i*.045).toFixed(2)}s both"></i>`}).join('')}</div>`,3600);
+add('linea-hitos-tiempo','cifras','Línea de tiempo con tres hitos','Idea nueva','Una línea que se dibuja de izquierda a derecha con tres puntos y su fecha y cifra encima.',WHITE,
+`<i class="abs" style="left:34px;right:34px;top:102px;height:3px;border-radius:2px;background:#d9d9df;transform-origin:left;animation:kGrow 1.8s .2s both"></i>${[['Jan','$0',.5],['Mar','$12K',1.2],['Jun','$90K',1.9]].map((m,i)=>`<i class="abs" style="left:${54+i*106}px;top:96px;width:15px;height:15px;border-radius:50%;background:${i===2?'#ff9f5a':'#111'};animation:kPop .3s ${m[2]}s both"></i><div class="abs" style="left:${34+i*106}px;width:56px;text-align:center;top:60px;animation:kUp .35s ${m[2]+.1}s both"><b class="hv" style="font-size:15px">${m[1]}</b></div><span class="abs cap" style="left:${34+i*106}px;width:56px;text-align:center;top:122px;font-size:7px">${m[0]}</span>`).join('')}`,3600);
+add('tabla-tres-columnas','cifras','Tabla de tres columnas con tick y cruz','Idea nueva','Una tabla corta comparando tú y otros: filas que entran y marcas ✓ y ✗ que aparecen una a una.',WHITE,
+`<div class="cd abs" style="left:46px;right:46px;top:20px;height:140px;padding:8px 12px;animation:kUp .4s .1s both"><div style="display:flex;font:800 7px Archivo;color:#999;height:20px;align-items:center"><span style="flex:1"></span><span style="width:44px;text-align:center">YOU</span><span style="width:44px;text-align:center">OTHERS</span></div>${['Free','Fast','No code'].map((t,i)=>`<div style="display:flex;align-items:center;height:32px;border-top:1px solid #f0f0f2;font:700 10px Inter"><span style="flex:1">${t}</span><b style="width:44px;text-align:center;color:#12a050;animation:kPop .3s ${.7+i*.5}s both">✓</b><b style="width:44px;text-align:center;color:#e5322d;animation:kPop .3s ${.95+i*.5}s both">✗</b></div>`).join('')}</div>`,3600);
+
+/* ---------- MÓVIL Y VÍDEO REAL ---------- */
+add('movil-y-cifra-lado','movil','Móvil con vídeo real y una cifra al lado','Idea nueva','Un móvil con un vídeo real a un lado y, al otro, una cifra que corre con su etiqueta. El contraste real/dibujado que te gustó.',WHITE,
+`${ph(60,12,74,156,'<i class="tkv"></i>','animation:kLf .5s .1s both')}<div class="abs" style="left:152px;top:62px;animation:kRt .5s .6s both"><div class="hv" style="font-size:34px"><span data-count="208606" data-c="1" data-delay=".7" data-dur="1500">0</span></div><span class="pc" style="font-size:8px;margin-top:8px">VIEWS</span></div>`,3600);
+add('movil-cambia-pantalla','movil','El móvil pasa de una pantalla a otra','Idea nueva','Dentro del móvil, una pantalla se desliza hacia un lado y entra la siguiente, para enseñar un flujo de dos pasos.',WHITE,
+ph(112,8,96,166,`<div style="position:absolute;inset:0;background:#fff7ef"><div class="hv" style="position:absolute;left:0;right:0;top:50px;text-align:center;font-size:12px">All set ✓</div><i style="position:absolute;left:14px;right:14px;top:110px;height:18px;border-radius:9px;background:#ffc08a"></i></div><div style="position:absolute;inset:0;animation:kSlideL .45s 1.6s cubic-bezier(.6,0,.2,1) both"><div style="position:absolute;inset:0;background:#fff"></div><div class="hv" style="position:absolute;left:0;right:0;top:50px;text-align:center;font-size:12px">Welcome</div><i style="position:absolute;left:14px;right:14px;top:110px;height:18px;border-radius:9px;background:#111"></i></div>`,'animation:kUp .5s .1s both'),3400);
+add('movil-toque-ondas','movil','Toque en la pantalla con onda','Idea nueva','Un círculo con onda marca dónde toca el dedo en la pantalla y el botón cambia a naranja.',WHITE,
+ph(112,8,96,166,`<div style="position:absolute;inset:0;background:#fff"></div><div style="position:absolute;left:12px;right:12px;top:70px;height:24px;border-radius:12px;background:#111;animation:kPeachBg .2s 1.3s both"></div><i style="position:absolute;left:50%;top:82px;width:22px;height:22px;margin:-11px;border-radius:50%;background:rgba(255,160,90,.55);animation:kRip .8s 1.2s both"></i>`,'animation:kUp .5s .1s both'),3200);
+add('movil-grabando','movil','Pantalla de grabación con punto rojo','Idea nueva','Un móvil con el visor de la cámara y un punto rojo parpadeando con un contador de tiempo, para hablar de grabar vídeos.',WHITE,
+ph(112,8,96,166,`<i class="tkv"></i><i style="position:absolute;left:8px;top:10px;width:8px;height:8px;border-radius:50%;background:#e5322d;animation:kBlink .8s infinite"></i><b class="hv" style="position:absolute;left:20px;top:8px;font-size:9px;color:#fff">REC 0:12</b><i style="position:absolute;left:50%;bottom:10px;width:24px;height:24px;margin-left:-12px;border-radius:50%;border:3px solid #fff"></i>`,'animation:kUp .5s .1s both'),3000);
+add('moviles-abanico','movil','Móviles abiertos en abanico','Idea nueva','Tres móviles salen de un punto y se abren en abanico ligero, cada uno con un vídeo distinto.',WHITE,
+`${[-12,0,12].map((r,i)=>ph(126,16,68,142,`<i class="tkv" style="filter:hue-rotate(${i*80}deg)"></i>`,`transform-origin:50% 130%;--r:${r}deg;animation:kFan3 .6s ${.2+i*.15}s cubic-bezier(.2,.9,.3,1.15) both`)).join('')}`,3200);
+add('movil-inclinado-sombra','movil','Móvil inclinado con sombra suave','Idea nueva','Un móvil ligeramente girado y flotando, con una sombra que se mueve debajo, para un plano más elegante.',WHITE,
+`<div class="abs" style="left:116px;top:10px;width:88px;height:156px;transform:rotate(-8deg);animation:kFloat 2.6s ease-in-out infinite">${ph(0,0,88,156,'<i class="tkv"></i>')}</div><i class="abs" style="left:112px;top:166px;width:100px;height:8px;border-radius:50%;background:rgba(0,0,0,.14);filter:blur(4px)"></i>`,3600);
+
+/* ---------- ICONOS Y TRANSICIONES ---------- */
+add('iconos-todos-menos-uno','iconos','Muchos iconos y todos se apagan menos uno','Idea nueva','Una cuadrícula de iconos de colores; de golpe todos se apagan y solo queda uno encendido y un poco más grande.',WHITE,
+Array.from({length:32},(_,i)=>{const me=i===13;return ico(26+(i%8)*35,22+Math.floor(i/8)*34,26,['#e5322d','#2f6bff','#111','#f5b400','#12c2a5','#8a4fff','#ff7a1a','#34c759'][(i*3)%8],'●',`color:#fff;animation:kPop .3s ${(i*.025).toFixed(2)}s both${me?',kBig .4s 1.8s both;z-index:2':',kOp3 .4s 1.8s forwards'}`)}).join(''),3400);
+add('icono-flecha-icono','iconos','Un icono se convierte en otro con flecha','Idea nueva','Dos iconos con una flecha que se dibuja entre ellos: de esta herramienta a esta otra.',WHITE,
+`${ico(78,64,50,'#111','C','color:#ffc08a;font-weight:900;animation:kPop .4s .1s both')}<svg class="abs" style="left:0;top:0" width="320" height="180" viewBox="0 0 320 180" fill="none" stroke="#222" stroke-width="1.8" stroke-linecap="round"><path pathLength="1" d="M140 90H178M170 83L178 90L170 97" stroke-dasharray="1" style="animation:kDraw .5s .7s both"/></svg>${ico(190,64,50,'linear-gradient(135deg,#ffb27a,#ff8a5a)','✿','animation:kPop .4s 1.3s both')}`,3200);
+add('icono-con-precio','iconos','Icono con etiqueta de precio que salta','Idea nueva','Un icono grande y, a su lado, una etiqueta con el precio que sale con un salto.',WHITE,
+`${ico(96,56,64,'linear-gradient(135deg,#6b5ce7,#3a2fb0)','U','color:#fff;font-weight:900;animation:kPop .4s .1s both;border-radius:16px')}<div class="abs" style="left:176px;top:64px;animation:kHop .55s 1s both"><div class="cd" style="padding:8px 12px"><b class="hv" style="font-size:17px">$65K</b><span style="font:600 7px Inter;color:#999">/mo</span></div></div><div class="abs cap" style="left:90px;top:128px;width:76px;text-align:center;font-size:7px;animation:kFd .3s .4s both">Umax</div>`,3200);
+add('iconos-llueven','iconos','Iconos que caen y rebotan al suelo','Idea nueva','Iconos de aplicaciones que caen desde arriba y rebotan una vez sobre una línea suave, uno tras otro.',WHITE,
+`<i class="abs" style="left:30px;right:30px;top:140px;height:1px;background:#e2e2e7"></i>${[0,1,2,3,4].map(i=>ico(34+i*52,96,40,['#e5594f','#6b5ce7','#ffb27a','#12c2a5','#3a4fa8'][i],'●',`color:#fff;border-radius:11px;animation:kHop .7s ${.2+i*.3}s both`)).join('')}`,3600);
+add('iconos-marquesina','iconos','Fila de iconos que corre sin parar','Idea nueva','Una fila continua de iconos que se desplaza lateral muy suave, como un muro de aplicaciones.',WHITE,
+`<div class="abs" style="left:0;top:34px;display:flex;gap:12px;width:max-content;animation:kMarq 6s linear infinite">${Array.from({length:16},(_,i)=>`<i style="width:38px;height:38px;border-radius:10px;flex:none;background:${['#e5322d','#2f6bff','#111','#f5b400','#12c2a5','#8a4fff','#ff7a1a','#34c759'][i%8]};box-shadow:0 4px 10px rgba(0,0,0,.18)"></i>`).join('')}</div><div class="abs" style="left:0;top:102px;display:flex;gap:12px;width:max-content;animation:kMarq 8s linear infinite reverse">${Array.from({length:16},(_,i)=>`<i style="width:38px;height:38px;border-radius:10px;flex:none;background:${['#34c759','#ff7a1a','#8a4fff','#12c2a5','#f5b400','#111','#2f6bff','#e5322d'][i%8]};box-shadow:0 4px 10px rgba(0,0,0,.18)"></i>`).join('')}</div>`,5200);
+add('icono-sello-tick','iconos','Icono con tick que se estampa','Idea nueva','Un icono aparece y un tick verde pequeño se estampa en una esquina para decir «hecho / verificado».',WHITE,
+`${ico(126,54,68,'linear-gradient(135deg,#ffb27a,#ff8a5a)','✿','animation:kPop .4s .1s both;border-radius:17px;font-size:30px')}<i class="abs" style="left:176px;top:46px;width:26px;height:26px;border-radius:50%;background:#34c759;color:#fff;display:grid;place-items:center;font:900 14px Archivo;font-style:normal;box-shadow:0 4px 10px rgba(0,0,0,.25);animation:kStamp .45s 1s both">✓</i>`,3200);
+add('pila-apps-abanico','iconos','Pila de iconos que se reparte en fila','Idea nueva','Los iconos empiezan apilados en el centro y se reparten en fila, cada uno con su nombre, en un movimiento fluido.',WHITE,
+[['#e5594f','Cal'],['#6b5ce7','Umax'],['#c97a2b','Cat'],['#12c2a5','Zero']].map((a,i)=>`<div class="abs" style="left:${140+(i-1.5)*0}px;top:62px;width:40px;text-align:center;--x0:0px;--x1:${(i-1.5)*58}px;animation:kMv .7s ${.9+i*.1}s cubic-bezier(.3,.8,.3,1.1) both"><div class="ico" style="position:relative;width:40px;height:40px;background:${a[0]};border-radius:11px;color:#fff">●</div><div class="cap" style="margin-top:6px;font-size:7px;animation:kFd .3s 1.7s both">${a[1]}</div></div>`).join(''),3400);
+add('logo-aparece-escala','iconos','Logo que aparece con una pequeña escala','Idea nueva','Un logo grande que entra desde pequeño con un rebote suave y un anillo que se abre detrás.',WHITE,
+`<i class="abs" style="left:124px;top:44px;width:72px;height:72px;border-radius:50%;border:2px solid #ffb27a;animation:kRing 1.4s .5s both"></i>${ico(124,44,72,'#111','C','color:#ffc08a;font-weight:900;border-radius:19px;font-size:38px;animation:kPop .5s .2s both')}<div class="abs hv" style="left:0;right:0;top:128px;text-align:center;font-size:14px;animation:kFd .4s 1s both">Cocopix</div>`,3200);
+
+/* ---------- FONDOS ---------- */
+add('fondo-negro-puntos','fondos','Negro con puntitos tenues','Idea nueva','Un fondo negro con una rejilla de puntos casi invisibles que se mueve despacio, para las preguntas y listas en negro.',BLACK,
+`<div class="ly" style="background-image:radial-gradient(#2a2a30 1px,transparent 1.3px);background-size:12px 12px;animation:kDotsBg 3s linear infinite"></div><div class="abs" style="left:0;right:0;top:70px;text-align:center;color:#fff;font:800 18px Archivo;animation:kBlurIn .5s .3s both">Why now?</div>`,4000);
+add('fondo-vineta-suave','fondos','Blanco con borde ligeramente más gris','Idea nueva','Un blanco roto con una vigneta muy suave en los bordes que centra la mirada en la tarjeta.','#f7f7f7',
+`<div class="ly" style="background:radial-gradient(ellipse at 50% 50%,#fff 30%,#ececef 100%)"></div><div class="cd abs" style="left:80px;right:80px;top:64px;height:52px;display:grid;place-items:center;animation:kUp .5s .2s both"><b style="font:800 14px Archivo">Focus</b></div>`,3400);
+add('fondo-bandas-suaves','fondos','Bandas suaves de color que se deslizan','Idea nueva','Tres bandas anchas muy pálidas (blanco, melocotón y menta) que se deslizan despacio por detrás, para dar movimiento sin ruido.','#fff',
+`<div class="ly" style="background:linear-gradient(100deg,#fff 0 30%,#ffe9d6 30% 52%,#e0f8f3 52% 74%,#fff 74%);background-size:200% 100%;animation:kDotsBg 6s linear infinite"></div><div class="cd abs" style="left:80px;right:80px;top:64px;height:52px;display:grid;place-items:center;animation:kUp .5s .2s both"><b style="font:800 14px Archivo">Soft</b></div>`,4400);
+let V={},N={},cat='todas',st='todas';
+try{V=JSON.parse(localStorage.getItem('yt-v3')||'{}');N=JSON.parse(localStorage.getItem('yt-n3')||'{}')}catch(e){}
+const save=()=>{try{localStorage.setItem('yt-v3',JSON.stringify(V));localStorage.setItem('yt-n3',JSON.stringify(N))}catch(e){}};
+const $=s=>document.querySelector(s),grid=$('#grid');
+const reduce=matchMedia('(prefers-reduced-motion:reduce)').matches;
+function mount(s,d){
+  s._tok=(s._tok||0)+1;const tok=s._tok;s.style.background=d.bg;s.innerHTML=d.html;
+  s.querySelectorAll('[data-count]').forEach(el=>{
+    const to=parseFloat(el.dataset.count),from=parseFloat(el.dataset.from||0),dec=+el.dataset.dec||0,pre=el.dataset.pre||'',suf=el.dataset.suf||'',dl=(+el.dataset.delay||0)*1000,du=+el.dataset.dur||1200,cm=el.dataset.c==='1';
+    const fmt=v=>{const n=dec?v.toFixed(dec):String(Math.round(v));return pre+(cm?Number(n).toLocaleString('en-US',{minimumFractionDigits:dec,maximumFractionDigits:dec}):n)+suf};
+    el.textContent=fmt(from);
+    const t0=performance.now()+dl;
+    const f=now=>{if(s._tok!==tok)return;const p=Math.max(0,Math.min(1,(now-t0)/du)),e=1-Math.pow(1-p,3);el.textContent=fmt(from+(to-from)*e);if(p<1)requestAnimationFrame(f)};requestAnimationFrame(f);
+  });
+}
+function build(){
+  grid.innerHTML='';
+  D.forEach((d,i)=>{
+    const c=document.createElement('article');c.className='card';c.id='c-'+d.id;c.dataset.cat=d.cat;
+    c.innerHTML=`<div class="stage" role="button" tabindex="0" aria-label="Ver otra vez: ${d.name}"></div>
+    <div class="meta"><span class="fr">${i+1} · ${CATS[d.cat]} · ${d.from}</span><span class="nm">${d.name}</span><span class="ds">${d.desc}</span></div>
+    <div class="votes"><button class="vb y" type="button" aria-pressed="false">👍 Me gusta</button><button class="vb n" type="button" aria-pressed="false">👎 No</button></div>
+    <input class="note" type="text" id="n-${d.id}" placeholder="Nota opcional (ej. más lenta, otro color)" aria-label="Nota sobre ${d.name}">`;
+    grid.appendChild(c);
+    const s=c.querySelector('.stage');
+    const play=()=>mount(s,d);
+    s.addEventListener('click',play);s.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();play()}});
+    let tm=null;
+    new IntersectionObserver(es=>{es[0].isIntersecting?(play(),!reduce&&(tm=setInterval(play,d.t))):(clearInterval(tm),tm=null)},{threshold:.35}).observe(s);
+    const [by,bn]=c.querySelectorAll('.vb'),ni=c.querySelector('.note');ni.value=N[d.id]||'';
+    const paint=()=>{c.dataset.v=V[d.id]||0;by.setAttribute('aria-pressed',V[d.id]===1);bn.setAttribute('aria-pressed',V[d.id]===-1)};
+    by.onclick=()=>{V[d.id]=V[d.id]===1?0:1;paint();after()};
+    bn.onclick=()=>{V[d.id]=V[d.id]===-1?0:-1;paint();after()};
+    ni.oninput=()=>{N[d.id]=ni.value;save();text()};
+    paint();
+  });
+}
+function after(){save();text();filter()}
+function filter(){
+  let n=0;
+  D.forEach(d=>{const c=$('#c-'+d.id),v=V[d.id]||0;
+    const ok=(cat==='todas'||d.cat===cat)&&(st==='todas'||(st==='si'&&v===1)||(st==='no'&&v===-1)||(st==='sin'&&v===0));
+    c.hidden=!ok;if(ok)n++});
+  $('#empty').hidden=n>0;
+  const y=D.filter(d=>V[d.id]===1).length,no=D.filter(d=>V[d.id]===-1).length;
+  $('#cnt').textContent=`${y} me gustan · ${no} no · ${D.length-y-no} sin votar`;
+}
+function text(){
+  const L=D.filter(d=>V[d.id]===1),R=D.filter(d=>V[d.id]===-1);
+  const line=(d,i)=>`${i+1}. [${d.id}] ${d.name} (${CATS[d.cat]}): ${d.desc}${N[d.id]?` NOTA: ${N[d.id]}`:''}`;
+  $('#out').value=`ANIMACIONES PARA YOUTUBE (TANDA 3) - MI SELECCIÓN (${new Date().toLocaleDateString('es-ES')})\n\nME GUSTAN (${L.length}):\n${L.map(line).join('\n')||'(ninguna todavía)'}\n\nNO ME GUSTAN (${R.length}):\n${R.map(line).join('\n')||'(ninguna)'}\n\nSIN VOTAR: ${D.length-L.length-R.length}`;
+}
+function chips(el,items,get,set){
+  el.innerHTML='';items.forEach(([k,l])=>{const b=document.createElement('button');b.type='button';b.className='chip';b.textContent=l;b.setAttribute('aria-pressed',get()===k);b.onclick=()=>{set(k);el.querySelectorAll('.chip').forEach(x=>x.setAttribute('aria-pressed','false'));b.setAttribute('aria-pressed','true');filter()};el.appendChild(b)});
+}
+chips($('#cats'),[['todas','Todas'],...Object.entries(CATS)],()=>cat,k=>cat=k);
+chips($('#sts'),[['todas','Todas'],['si','👍'],['no','👎'],['sin','Sin votar']],()=>st,k=>st=k);
+$('#copy').onclick=async()=>{
+  const o=$('#out'),b=$('#copy');text();
+  try{await navigator.clipboard.writeText(o.value);b.textContent='¡Copiado!'}catch(e){o.select();b.textContent='Selecciona y copia abajo'}
+  setTimeout(()=>b.textContent='Copiar mi selección',2200);
+};
+build();text();filter();
+
+</script>

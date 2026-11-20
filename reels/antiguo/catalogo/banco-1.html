@@ -1,0 +1,339 @@
+<title>Banco de animaciones</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&family=Playfair+Display:ital,wght@1,800&family=Archivo+Black&display=swap">
+<style>
+/* Layout: cabecera + barra fija de filtros + rejilla de fichas (pantalla 9:16 que se mueve, voto debajo) */
+:root{--bg:#f3f1ee;--panel:#fff;--ink:#17171c;--mute:#6c6a73;--line:#e1ddd8;--accent:#3b4cff;--accent-ink:#fff;--yes:#16a34a;--yes-bg:#dcf5e5;--no:#d62f4b;--no-bg:#fde3e8}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#121216;--panel:#1c1c22;--ink:#f2f0ed;--mute:#9b98a3;--line:#2e2e36;--accent:#7c89ff;--accent-ink:#0d0e1a;--yes:#4ade80;--yes-bg:#12301e;--no:#ff6b84;--no-bg:#3a141d;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#121216;--panel:#1c1c22;--ink:#f2f0ed;--mute:#9b98a3;--line:#2e2e36;--accent:#7c89ff;--accent-ink:#0d0e1a;--yes:#4ade80;--yes-bg:#12301e;--no:#ff6b84;--no-bg:#3a141d;color-scheme:dark}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font:400 14px/1.45 Inter,system-ui,sans-serif;padding-inline:max(16px,env(safe-area-inset-left,0px)) max(16px,env(safe-area-inset-right,0px));padding-block:28px 40px}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);background:var(--bg);z-index:30}
+.wrap{max-width:1180px;margin:0 auto}
+h1{font:800 30px/1.1 'Space Grotesk',Inter,sans-serif;margin:0 0 8px;letter-spacing:-.02em;text-wrap:balance}
+.lead{max-width:62ch;color:var(--mute);margin:0 0 20px}
+.bar{position:sticky;top:env(safe-area-inset-top,0px);z-index:20;background:var(--bg);padding:10px 0;border-bottom:1px solid var(--line);display:flex;flex-wrap:wrap;gap:10px 16px;align-items:center;margin-bottom:22px}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chip{border:1px solid var(--line);background:var(--panel);color:var(--ink);border-radius:999px;padding:6px 12px;font:600 12px Inter,sans-serif;cursor:pointer}
+.chip[aria-pressed="true"]{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+.chip:focus-visible,.vb:focus-visible,.copy:focus-visible,.stage:focus-visible,textarea:focus-visible,input:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.count{margin-left:auto;font-size:12px;color:var(--mute);font-variant-numeric:tabular-nums}
+.copy{background:var(--accent);color:var(--accent-ink);border:0;border-radius:10px;padding:9px 16px;font:800 13px Inter,sans-serif;cursor:pointer}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(248px,1fr));gap:18px}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:18px;padding:14px;display:flex;flex-direction:column;gap:10px;min-width:0}
+.card[data-v="1"]{border-color:var(--yes);box-shadow:0 0 0 2px var(--yes-bg)}
+.card[data-v="-1"]{opacity:.62}
+.card[data-v="-1"] .stage{filter:grayscale(.6)}
+.stage{position:relative;width:216px;height:384px;border-radius:22px;overflow:hidden;margin:0 auto;box-shadow:0 6px 18px rgba(0,0,0,.18);cursor:pointer;max-width:100%}
+.meta{display:flex;flex-direction:column;gap:3px}
+.nm{font:800 15px/1.2 'Space Grotesk',Inter,sans-serif}
+.fr{font:600 10px Inter,sans-serif;letter-spacing:.06em;text-transform:uppercase;color:var(--mute)}
+.ds{font-size:12.5px;color:var(--mute)}
+.votes{display:flex;gap:8px}
+.vb{flex:1;border:1px solid var(--line);background:var(--bg);color:var(--ink);border-radius:10px;padding:9px 6px;font:700 13px Inter,sans-serif;cursor:pointer}
+.vb.y[aria-pressed="true"]{background:var(--yes);border-color:var(--yes);color:#fff}
+.vb.n[aria-pressed="true"]{background:var(--no);border-color:var(--no);color:#fff}
+.note{width:100%;border:1px solid var(--line);background:var(--bg);color:var(--ink);border-radius:8px;padding:7px 9px;font:400 12px Inter,sans-serif}
+.out{margin-top:30px;background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:16px}
+.out h2{margin:0 0 6px;font:800 18px 'Space Grotesk',Inter,sans-serif}
+.out p{margin:0 0 10px;color:var(--mute);font-size:13px}
+textarea{width:100%;min-height:200px;border:1px solid var(--line);border-radius:10px;background:var(--bg);color:var(--ink);padding:10px;font:12px/1.5 ui-monospace,Menlo,monospace}
+.empty{padding:40px 0;color:var(--mute);text-align:center}
+
+/* ===== piezas de las animaciones (siempre sobre su propio fondo, no cambian con el tema) ===== */
+.abs{position:absolute}.ly{position:absolute;inset:0;overflow:hidden}
+.cam{position:absolute;inset:0;transform-origin:50% 40%}
+.hv{font-family:'Archivo Black',Impact,sans-serif;line-height:1}
+.ser{font-family:'Playfair Display',Georgia,serif;font-style:italic;font-weight:800}
+.sc{position:absolute;left:0;right:0;bottom:21%;text-align:center;font:800 17px Inter,sans-serif;color:#fff;text-shadow:0 2px 7px rgba(0,0,0,.65);padding:0 10px}
+.cp{font:italic 800 13px 'Playfair Display',Georgia,serif;text-transform:uppercase;text-align:center;color:#1b1b1f;text-shadow:0 2px 3px rgba(0,0,0,.22)}
+.c3{background:#fff;border-radius:14px;box-shadow:0 16px 24px -8px rgba(0,0,0,.38),0 3px 6px rgba(0,0,0,.18)}
+.ic{width:54px;height:54px;border-radius:16px;display:grid;place-items:center;font-size:26px;box-shadow:0 12px 18px -6px rgba(0,0,0,.4),inset 0 1px 0 rgba(255,255,255,.75),inset 0 -4px 7px rgba(0,0,0,.14)}
+.chip2{position:absolute;left:10px;top:10px;background:rgba(0,0,0,.55);color:#fff;font:700 10px Inter,sans-serif;padding:4px 8px;border-radius:99px;letter-spacing:.05em}
+.sub{position:absolute;left:0;right:0;bottom:0;height:60%;--hd:30%;--ht:8%;--bt:42%;--sk:#d9a57f;--sh:#2b2118;--cl:#1e1e24}
+.sub.full{height:100%;--ht:22%;--bt:52%}
+.sub .hd{position:absolute;left:50%;top:var(--ht);width:var(--hd);aspect-ratio:1/1.1;transform:translateX(-50%);border-radius:48%;background:var(--sk)}
+.sub .hd::before{content:"";position:absolute;inset:-7% -5% 50% -5%;border-radius:50% 50% 30% 30%;background:var(--sh)}
+.sub .hd::after{content:"";position:absolute;left:28%;top:52%;width:9%;aspect-ratio:1;border-radius:50%;background:#2a1a12;box-shadow:19px 0 0 #2a1a12}
+.sub .bd{position:absolute;left:14%;right:14%;top:var(--bt);bottom:-30%;border-radius:46% 46% 0 0/30% 30% 0 0;background:var(--cl)}
+.a{animation-duration:var(--d,.6s);animation-delay:var(--s,0s);animation-fill-mode:both;animation-timing-function:var(--e,cubic-bezier(.2,.9,.3,1.25))}
+.pop{animation-name:kPop}.up{animation-name:kUp}.dn{animation-name:kDn}.lf{animation-name:kLf}.rt{animation-name:kRt}.fd{animation-name:kFd}
+.tag{position:absolute;font:700 10px Inter,sans-serif;padding:3px 8px;border-radius:99px;background:#fff;color:#111;box-shadow:0 4px 8px rgba(0,0,0,.25)}
+@property --p{syntax:'<number>';inherits:false;initial-value:0}
+.don{width:112px;height:112px;border-radius:50%;background:conic-gradient(#ff7a1a calc(var(--p)*1%),#e6e6ee 0);-webkit-mask:radial-gradient(circle,transparent 55%,#000 56%);mask:radial-gradient(circle,transparent 55%,#000 56%)}
+@keyframes kPop{from{opacity:0;transform:scale(.35)}60%{opacity:1;transform:scale(1.12)}to{opacity:1;transform:scale(1)}}
+@keyframes kUp{from{opacity:0;transform:translateY(46px)}to{opacity:1;transform:none}}
+@keyframes kDn{from{opacity:0;transform:translateY(-46px)}to{opacity:1;transform:none}}
+@keyframes kLf{from{opacity:0;transform:translateX(-70px)}to{opacity:1;transform:none}}
+@keyframes kRt{from{opacity:0;transform:translateX(70px)}to{opacity:1;transform:none}}
+@keyframes kFd{from{opacity:0}to{opacity:1}}
+@keyframes kWin{0%{opacity:0}6%{opacity:1}94%{opacity:1}100%{opacity:0}}
+@keyframes kWinP{0%{opacity:0;transform:scale(.6)}8%{opacity:1;transform:scale(1.08)}14%{transform:scale(1)}90%{opacity:1}100%{opacity:0}}
+@keyframes kAp{from{opacity:0}to{opacity:1}}
+@keyframes kFlash{0%{opacity:0}40%{opacity:1}100%{opacity:0}}
+@keyframes kZin{from{transform:scale(1.4)}to{transform:scale(1)}}
+@keyframes kZout{from{transform:scale(1.22)}to{transform:scale(1)}}
+@keyframes kBreath{from{transform:scale(1)}to{transform:scale(1.07)}}
+@keyframes kPunch{from{transform:scale(1)}to{transform:scale(1.17)}}
+@keyframes kWO{to{transform:translateX(-110%);filter:blur(10px)}}
+@keyframes kWI{from{transform:translateX(110%);filter:blur(10px)}to{transform:none;filter:none}}
+@keyframes kThru{0%{transform:scale(1);opacity:1}65%{opacity:1}100%{transform:scale(16);opacity:0}}
+@keyframes kGrow{from{transform:scaleX(0)}to{transform:scaleX(1)}}
+@keyframes kGrowY{from{transform:scaleY(0)}to{transform:scaleY(1)}}
+@keyframes kF1{0%,28%{filter:none}34%,100%{filter:grayscale(1) brightness(.72)}}
+@keyframes kF2{0%,28%{filter:grayscale(1) brightness(.72)}34%,62%{filter:none}68%,100%{filter:grayscale(1) brightness(.72)}}
+@keyframes kF3{0%,62%{filter:grayscale(1) brightness(.72)}68%,100%{filter:none}}
+@keyframes kRing{from{transform:scale(.8);opacity:.7}to{transform:scale(1.7);opacity:0}}
+@keyframes kGrad{from{background-position:0 0}to{background-position:0 120px}}
+@keyframes kFloat{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
+@keyframes kCar{0%{transform:translateX(125%)}14%,86%{transform:none}100%{transform:translateX(-125%)}}
+@keyframes kStripe{from{background-position:0 0}to{background-position:72px 0}}
+@keyframes kHue{from{filter:hue-rotate(0)}to{filter:hue-rotate(210deg)}}
+@keyframes kTilt{0%{transform:rotateY(-26deg) rotateX(10deg)}50%{transform:rotateY(20deg) rotateX(-7deg)}100%{transform:rotateY(-6deg) rotateX(3deg)}}
+@keyframes kSheen{from{transform:translateX(-120%)}to{transform:translateX(160%)}}
+@keyframes kFan{from{opacity:0;transform:translateY(70px) rotate(0)}to{opacity:1;transform:translateX(var(--x)) rotate(var(--r))}}
+@keyframes kDot{0%{transform:translateY(-110px);opacity:0}45%{transform:translateY(0);opacity:1}60%{transform:translateY(-22px)}78%{transform:translateY(0)}90%{transform:translateY(-6px)}100%{transform:translateY(0)}}
+@keyframes kMarq{from{transform:translateX(0)}to{transform:translateX(-45%)}}
+@keyframes kMarqR{from{transform:translateX(-45%)}to{transform:translateX(0)}}
+@keyframes kType{from{width:0}to{width:150px}}
+@keyframes kBlink{50%{opacity:0}}
+@keyframes kTog{from{background:#c8c8cf}to{background:#34c759}}
+@keyframes kKnob{from{transform:none}to{transform:translateX(26px)}}
+@keyframes kCurs{0%{transform:translate(70px,150px)}60%{transform:translate(0,0)}72%{transform:translate(0,0) scale(.82)}84%{transform:translate(0,0) scale(1)}100%{transform:translate(0,0)}}
+@keyframes kEq{from{transform:scaleY(.2)}to{transform:scaleY(1)}}
+@keyframes kFillW{from{width:82%}to{width:30%}}
+@keyframes kHandL{from{left:82%}to{left:30%}}
+@keyframes kFillC{from{background:#ffd27a}to{background:#e0245e}}
+@keyframes kRise{0%{opacity:0;transform:translate(0,0) scale(.5)}12%{opacity:1}50%{transform:translate(-14px,-150px) scale(1)}100%{opacity:0;transform:translate(10px,-310px) scale(1.1)}}
+@keyframes kCoin{0%{transform:rotateY(0) scale(0)}20%{transform:rotateY(180deg) scale(1.1)}100%{transform:rotateY(900deg) scale(1)}}
+@keyframes kDraw{from{stroke-dashoffset:1}to{stroke-dashoffset:0}}
+@keyframes kDon{to{--p:75}}
+@keyframes kNoti{0%{transform:translateY(-120px);opacity:0}55%{transform:translateY(6px);opacity:1}75%{transform:translateY(-2px)}100%{transform:none;opacity:1}}
+@keyframes kPhone{from{opacity:0;transform:translateY(340px) rotate(9deg)}to{opacity:1;transform:translateY(0) rotate(-3deg)}}
+@keyframes kDim{0%{opacity:0}10%,82%{opacity:.62}100%{opacity:0}}
+@keyframes kSweep{from{transform:translateX(-130%) skewX(-18deg)}to{transform:translateX(160%) skewX(-18deg)}}
+@keyframes kBok{0%{opacity:0;transform:translateY(40px)}25%{opacity:.8}100%{opacity:0;transform:translateY(-300px)}}
+@keyframes kScan{from{left:6%}to{left:92%}}
+@media (prefers-reduced-motion:reduce){.stage *{animation-duration:.01s!important;animation-delay:0s!important;animation-iteration-count:1!important}}
+@media (max-width:520px){.grid{grid-template-columns:1fr}.count{margin-left:0;width:100%}}
+</style>
+
+<div class="wrap">
+  <h1>Banco de animaciones para reels</h1>
+  <p class="lead">Cada pantalla se mueve sola en bucle (toca una para verla otra vez). Pulsa 👍 si la quieres en tus reels o 👎 si no. Al final, copia tu selección y pégamela en el chat. Ya se guarda sola en este navegador.</p>
+  <div class="bar">
+    <div class="chips" id="cats" role="group" aria-label="Tipo de animación"></div>
+    <div class="chips" id="sts" role="group" aria-label="Estado del voto"></div>
+    <span class="count" id="cnt"></span>
+    <button class="copy" id="copy" type="button">Copiar mi selección</button>
+  </div>
+  <div class="grid" id="grid"></div>
+  <div class="empty" id="empty" hidden>No hay animaciones con ese filtro.</div>
+  <section class="out" aria-labelledby="oh">
+    <h2 id="oh">Mi selección</h2>
+    <p>Esto es lo que me pegarás. Si el botón de copiar no funciona, selecciona el texto y cópialo a mano.</p>
+    <textarea id="out" readonly aria-label="Texto de mi selección"></textarea>
+  </section>
+</div>
+
+<script>
+const ROOM='linear-gradient(165deg,#527549,#1c2a21)',PLUM='linear-gradient(170deg,#6b2142,#2a0e1a)',DARK='#14151a',CREAM='#f6efe6';
+const W=(s,l)=>`animation:kWin ${l}s ${s}s both`,WP=(s,l)=>`animation:kWinP ${l}s ${s}s both`;
+const sub=(c='',st='')=>`<div class="sub ${c}" style="${st}"><i class="hd"></i><i class="bd"></i></div>`;
+const sc=(t,s,l,x='')=>`<div class="sc" style="${WP(s,l)};${x}">${t}</div>`;
+const ic=(e,g,x='')=>`<div class="ic" style="background:${g};${x}">${e}</div>`;
+const G={blue:'linear-gradient(145deg,#6ab7ff,#2f5bff)',pink:'linear-gradient(145deg,#ff9ac0,#e0245e)',yel:'linear-gradient(145deg,#ffe27a,#ffb300)',grn:'linear-gradient(145deg,#8be8a8,#18a957)',vio:'linear-gradient(145deg,#c7a6ff,#6a3df0)',org:'linear-gradient(145deg,#ffc58a,#ff6a1a)',wht:'linear-gradient(145deg,#fff,#e9e9ef)'};
+const cur=`<svg width="22" height="26" viewBox="0 0 22 26" style="filter:drop-shadow(0 3px 3px rgba(0,0,0,.4))"><path d="M2 1l17 12-7.5 1.6L15 23l-3.6 1.6-3.4-8.3L2 21z" fill="#fff" stroke="#111" stroke-width="1.6" stroke-linejoin="round"/></svg>`;
+const D=[];const add=(id,cat,name,from,desc,bg,html,t=4600)=>D.push({id,cat,name,from,desc,bg,html,t});
+const CATS={camara:'Cámara y cortes',dividida:'Pantalla dividida',completa:'Pantalla completa',texto:'Texto y subtítulos',elementos:'Elementos y emojis',fondos:'Fondos'};
+
+/* ---------- CÁMARA Y CORTES ---------- */
+add('zoom-entrada','camara','Zoom de entrada','Marketing + Ramiro','Los primeros segundos arrancan cerca y el plano se abre rápido hasta el encuadre normal.',ROOM,
+`<div class="cam a" style="animation-name:kZin;--d:1.1s;--e:cubic-bezier(.12,.8,.2,1)">${sub('full')}</div>${sc('ESTO TE INTERESA',.5,3.4)}`,4200);
+add('plano-abre','camara','Plano que se abre al final','Marketing','En el cierre la cámara se aleja despacio, como respirando, mientras se despide.',ROOM,
+`<div class="cam a" style="animation-name:kZout;--d:3.6s;--e:ease-out">${sub('full')}</div>${sc('NOS VEMOS',1.6,2)}`,4200);
+add('respiracion','camara','Respiración de cámara','Idea nueva','Un acercamiento lentísimo y constante para que nunca haya una toma totalmente quieta.',ROOM,
+`<div class="cam a" style="animation-name:kBreath;--d:4s;--e:linear">${sub('full')}</div>${sc('SIEMPRE HAY MOVIMIENTO',.3,3.6)}`,4400);
+add('flashazo','camara','Flashazo de corte','Marketing','Un fogonazo blanco muy corto tapa el cambio entre dos planos. Rápido, casi sin que se note el corte.',ROOM,
+`<div class="ly" style="background:${ROOM}">${sub('full')}${sc('ANTES',.2,1.1)}</div><div class="ly" style="background:${PLUM};animation:kAp .01s 1.35s both">${sub('full','--cl:#e8e2d6;--sh:#6b4a2a')}${sc('DESPUÉS',1.5,1.6)}</div><div class="ly" style="background:#fff;animation:kFlash .55s 1.1s both"></div>`,3400);
+add('zoom-golpe','camara','Golpe de zoom en palabra clave','Idea nueva','Un acercamiento seco al 117 % justo cuando se dice la palabra importante, con la palabra grande.',ROOM,
+`<div class="cam a" style="animation-name:kPunch;--d:.14s;--s:1.2s;--e:ease-out">${sub('full')}</div><div class="hv a pop abs" style="left:0;right:0;top:20%;text-align:center;font-size:36px;color:#ffe14a;text-shadow:0 4px 0 #0006;--s:1.2s">¡AHORA!</div>`,3400);
+add('barrido','camara','Barrido lateral (whip)','Idea nueva','La escena sale disparada hacia un lado con desenfoque y entra la siguiente por el otro.',ROOM,
+`<div class="ly" style="background:#fff"><div class="c3 a fd abs" style="left:34px;right:34px;top:130px;height:120px;display:grid;place-items:center;font-size:46px;animation:kWI .5s 1.2s cubic-bezier(.7,0,.2,1) both">🎬</div></div><div class="ly" style="background:${ROOM};animation:kWO .5s 1.2s cubic-bezier(.7,0,.2,1) both">${sub('full')}${sc('SE ACABÓ',.2,1)}</div>`,3200);
+add('zoom-atravesar','camara','Atravesar la tarjeta','Idea nueva','Te metes dentro de la tarjeta con un zoom enorme y aparece el sujeto al otro lado.',ROOM,
+`<div class="ly" style="background:${ROOM}">${sub('full')}</div><div class="ly" style="background:#fff;animation:kThru .8s 1.3s cubic-bezier(.6,0,.9,.4) both"><div class="c3 abs" style="left:56px;right:56px;top:150px;height:84px;display:grid;place-items:center;font-size:40px">💡</div></div>`,3400);
+
+/* ---------- PANTALLA DIVIDIDA ---------- */
+add('dividida-arriba','dividida','Dividida: animación arriba, tú abajo','Ramiro','Arriba la animación sobre blanco, abajo tú con esquinas redondeadas. La cabeza sobresale por encima de la división sin tapar nada.','#fff',
+`<div class="abs a dn" style="left:0;right:0;top:0;height:47%;--d:.55s;display:flex;align-items:center;justify-content:center;gap:12px"><div class="c3 a pop" style="--s:.5s;padding:10px 14px;text-align:center"><div class="hv" style="font-size:21px;color:#17171c">9.2M</div><div style="font-size:11px">👁 views</div></div><div class="c3 a pop" style="--s:.8s;padding:10px 14px;text-align:center"><div class="hv" style="font-size:21px;color:#e0245e">120K</div><div style="font-size:11px">❤️ likes</div></div></div><div class="abs a up" style="left:0;right:0;top:44%;bottom:0;border-radius:26px 26px 0 0;background:${ROOM};box-shadow:0 -8px 20px rgba(0,0,0,.3);--d:.55s">${sub('','height:100%;--ht:-16%;--bt:28%')}</div>`);
+add('dividida-curva','dividida','Dividida con pantalla curva (tutorial)','Ramiro','Arriba un marco de bordes muy curvos enseña el tutorial en vídeo, con cursor y líneas que se escriben.','#fff',
+`<div class="abs a dn" style="left:10px;right:10px;top:12px;height:44%;border-radius:22px 22px 54px 54px/22px 22px 30px 30px;background:linear-gradient(135deg,#171a2b,#2d3160);box-shadow:0 18px 26px -8px rgba(0,0,0,.5);--d:.6s;padding:14px"><div style="display:flex;gap:4px"><i style="width:7px;height:7px;border-radius:50%;background:#ff5f57"></i><i style="width:7px;height:7px;border-radius:50%;background:#febc2e"></i><i style="width:7px;height:7px;border-radius:50%;background:#28c840"></i></div>${[80,60,92,45].map((w,i)=>`<div style="height:9px;border-radius:5px;margin-top:14px;width:${w}%;background:${i==2?'#8f9bff':'rgba(255,255,255,.35)'};transform-origin:left;animation:kGrow .6s ${.8+i*.45}s both"></div>`).join('')}<div class="abs" style="right:50px;top:100px;animation:kPop .4s 1.4s both">${cur}</div></div><div class="abs a up" style="left:0;right:0;top:50%;bottom:0;border-radius:26px 26px 0 0;background:${ROOM};box-shadow:0 -8px 20px rgba(0,0,0,.3);--d:.55s">${sub('','height:100%;--ht:-14%;--bt:28%')}</div>`);
+add('cambio-formatos','dividida','Cambio de formato en la misma toma','Ramiro','En 6 segundos pasa de zoom a dividida, a animación completa y a plano normal. Mucho dinamismo sin cortar el discurso.','#fff',
+`<div class="ly" style="background:${ROOM}"><div class="cam a" style="animation-name:kZin;--d:1.3s">${sub('full')}</div><div class="chip2" style="${W(0,1.6)}">1 · ZOOM</div></div>
+<div class="ly" style="background:#fff;animation:kAp .01s 1.6s both"><div class="abs" style="left:0;right:0;top:0;height:46%;display:grid;place-items:center"><div class="c3 a pop" style="--s:1.7s;padding:12px 18px;font-size:34px">🚀</div></div><div class="abs" style="left:0;right:0;top:44%;bottom:0;border-radius:26px 26px 0 0;background:${ROOM}">${sub('','height:100%;--ht:-16%;--bt:28%')}</div><div class="chip2" style="${W(1.6,1.6)}">2 · DIVIDIDA</div></div>
+<div class="ly" style="background:linear-gradient(180deg,#cfe8ff,#fff 55%,#fff6b0);animation:kAp .01s 3.2s both"><div class="c3 a pop abs" style="--s:3.3s;left:38px;right:38px;top:130px;height:110px;display:grid;place-items:center;font-size:46px">📈</div><div class="cp abs" style="left:0;right:0;top:262px;${W(3.5,1.2)}">el punto clave</div><div class="chip2" style="${W(3.2,1.6)}">3 · ANIMACIÓN</div></div>
+<div class="ly" style="background:${ROOM};animation:kAp .01s 4.8s both">${sub('full')}${sc('Y SEGUIMOS',4.9,1.8)}<div class="chip2" style="${W(4.8,1.8)}">4 · PLANO NORMAL</div></div>`,6900);
+add('tres-videos','dividida','Tres vídeos a la vez','Ramiro','Tres vídeos en vertical funcionando juntos, cada uno con su sombra, y los subtítulos debajo.',DARK,
+`${[0,1,2].map(i=>`<div class="c3 abs a up" style="left:${9+i*68}px;width:62px;top:48px;height:190px;overflow:hidden;--s:${.2+i*.25}s;background:${['linear-gradient(#ffb3c7,#6a3df0)','linear-gradient(#ffe27a,#ff6a1a)','linear-gradient(#8be8a8,#2f5bff)'][i]};background-size:100% 200%;animation-name:kUp,kGrad;animation-duration:.6s,3s;animation-delay:${.2+i*.25}s,0s;animation-iteration-count:1,infinite;animation-direction:normal,alternate">${sub('','height:55%;--hd:44%;--ht:14%;--bt:52%;--cl:#fff')}</div>`).join('')}${sc('TRES COSAS A LA VEZ',.9,3.4,'bottom:26%')}`);
+add('bad-good-perfect','dividida','Comparativa en B/N que se enciende','Marketing','Tres vídeos con borde de color. Todos en blanco y negro y se va encendiendo en color el que se está nombrando.',DARK,
+`${[['MAL','#ff3d81','kF1','linear-gradient(#ffb3c7,#6a3df0)','382'],['BIEN','#ffc53d','kF2','linear-gradient(#ffe27a,#ff6a1a)','3.8M'],['PERFECTO','#3ddc84','kF3','linear-gradient(#8be8a8,#2f5bff)','9.2M']].map((c,i)=>`<div class="abs a up" style="left:${8+i*69}px;width:64px;top:22px;--s:${i*.12}s;text-align:center"><div class="hv" style="font-size:10px;color:${c[1]};margin-bottom:5px">${c[0]}</div><div style="height:140px;border-radius:12px;border:2px solid ${c[1]};box-shadow:0 10px 16px rgba(0,0,0,.5);overflow:hidden;background:${c[3]};animation:${c[2]} 5s linear both">${sub('','height:60%;--hd:46%;--ht:14%;--bt:50%;--cl:#fff')}</div><div style="margin:8px auto 0;display:inline-flex;gap:4px;padding:3px 8px;border-radius:99px;border:1.5px solid ${c[1]};color:#fff;font:700 10px Inter">👁 ${c[4]}</div></div>`).join('')}<div class="abs" style="left:0;right:0;bottom:0;height:50%;">${sub('','height:100%;--ht:20%;--bt:50%;--cl:#2b2d36')}</div>`,5400);
+add('contador-views','dividida','Contador de visitas con ojo','Marketing','Bajo cada vídeo, una pastilla con el ojo y el número subiendo hasta la cifra final.',DARK,
+`${[['382','#ff3d81',0,1],['3.8','#ffc53d',1,0],['9.2','#3ddc84',2,0]].map((c,i)=>`<div class="abs a pop" style="left:${10+i*68}px;width:62px;top:${110+(2-i)*-8}px;--s:${.2+i*.3}s;text-align:center"><div style="height:${70+i*26}px;border-radius:12px;background:linear-gradient(#444,#222);box-shadow:0 10px 16px rgba(0,0,0,.5);border:2px solid ${c[1]};display:grid;place-items:center;font-size:20px">▶️</div><div style="margin:8px auto 0;display:inline-flex;gap:4px;padding:3px 9px;border-radius:99px;border:1.5px solid ${c[1]};color:#fff;font:800 11px Inter">👁 <span data-count="${c[0]}" data-dec="${i?1:0}" data-suf="${i?'M':''}" data-delay="${.5+i*.3}" data-dur="1100">0</span></div></div>`).join('')}${sc('DE 382 A 9.2 MILLONES',1.2,3.2,'bottom:14%')}`,5000);
+add('halo-color','dividida','Halo de color alrededor','Marketing','Un borde de color con ondas que salen hacia fuera para marcar el vídeo que importa.',DARK,
+`<div class="abs" style="left:48px;right:48px;top:112px;height:150px">${[0,.5,1].map(d=>`<i class="abs" style="inset:0;border-radius:20px;border:3px solid #3ddc84;animation:kRing 1.8s ${.4+d}s infinite ease-out"></i>`).join('')}<div class="a pop" style="position:absolute;inset:0;border-radius:18px;border:3px solid #3ddc84;background:linear-gradient(#8be8a8,#2f5bff);box-shadow:0 0 30px rgba(61,220,132,.55),0 16px 24px rgba(0,0,0,.5);overflow:hidden;--s:.1s">${sub('','height:60%;--hd:36%;--ht:16%;--bt:52%;--cl:#fff')}</div></div>${sc('ESTE ES EL BUENO',1,3,'bottom:22%')}`,4200);
+add('izq-der-vs','dividida','Izquierda contra derecha (VS)','Idea nueva','Dos mitades entran desde los lados y una pastilla VS rebota en el centro para comparar.','#fff',
+`<div class="abs a lf" style="left:0;top:0;bottom:0;width:50%;background:linear-gradient(#ffd9e2,#ff8fae);display:grid;place-items:center;font-size:44px;--d:.5s">😵</div><div class="abs a rt" style="right:0;top:0;bottom:0;width:50%;background:linear-gradient(#d7ffe6,#58d68d);display:grid;place-items:center;font-size:44px;--d:.5s">😎</div><div class="abs hv a pop" style="left:50%;top:50%;width:54px;height:54px;margin:-27px;border-radius:50%;background:#17171c;color:#fff;display:grid;place-items:center;font-size:18px;box-shadow:0 8px 16px rgba(0,0,0,.4);--s:.6s">VS</div><div class="abs cp" style="left:6px;width:96px;bottom:60px;${W(.8,3.4)}">antes</div><div class="abs cp" style="right:6px;width:96px;bottom:60px;${W(.8,3.4)}">después</div>`,4200);
+
+/* ---------- PANTALLA COMPLETA ---------- */
+add('tarjeta-palabra','completa','Tarjeta 3D + palabra debajo','Ramiro','Sobre fondo blanco, una tarjeta con sombra real (nada plano) y debajo, en cursiva, la palabra que se está diciendo.','#fff',
+`<div class="c3 abs a up" style="left:30px;right:30px;top:120px;height:130px;overflow:hidden;--d:.6s"><div style="height:24px;background:linear-gradient(90deg,#ffb3c7,#ffe27a)"></div><div style="padding:12px"><div style="height:9px;width:70%;background:#e7e7ee;border-radius:5px;transform-origin:left;animation:kGrow .6s .8s both"></div><div style="height:9px;width:90%;background:#e7e7ee;border-radius:5px;margin-top:9px;transform-origin:left;animation:kGrow .6s 1.1s both"></div><div style="height:36px;width:50%;background:linear-gradient(135deg,#6ab7ff,#2f5bff);border-radius:9px;margin-top:12px;animation:kPop .4s 1.5s both"></div></div></div>${['TU','IDEA','FUNCIONANDO'].map((w,i)=>`<div class="cp abs" style="left:0;right:0;top:272px;font-size:15px;${W(.9+i*1,1.1)}">${w}</div>`).join('')}`,4400);
+add('monitor-sube','completa','Pantalla con marco que sube','Ramiro','Un monitor con marco negro y sombra sube desde abajo con un rebote suave y se queda flotando.','#fff',
+`<div class="abs" style="left:26px;right:26px;top:130px;height:100px;animation:kFloat 2.6s 1s infinite ease-in-out"><div class="abs a up" style="inset:0;border-radius:12px;background:#0d0d10;padding:5px;box-shadow:0 20px 28px -8px rgba(0,0,0,.5);--d:.7s"><div style="height:100%;border-radius:8px;background:linear-gradient(135deg,#e9f1ff,#fff);padding:10px"><div style="height:7px;width:50%;background:#cfd6e6;border-radius:4px"></div><div style="display:flex;gap:6px;margin-top:10px"><i style="flex:1;height:44px;border-radius:7px;background:#ffb3c7"></i><i style="flex:1;height:44px;border-radius:7px;background:#ffe27a"></i><i style="flex:1;height:44px;border-radius:7px;background:#8be8a8"></i></div></div></div></div><div class="cp abs" style="left:0;right:0;top:268px;${W(.9,3)}">una calculadora</div>`,4400);
+add('rank-numero','completa','Número de punto + icono 3D','Ramiro','Cada punto de la lista tiene su pantalla: número degradado arriba, icono con relieve y sombra, y el color del fondo cambia.','#fff',
+`${[['#1',G.blue,'⚡','linear-gradient(180deg,#8fd3ff,#fff 60%,#fff6a3)',0],['#2',G.vio,'🎨','linear-gradient(180deg,#a99bff,#fff 70%)',1.5],['#3',G.yel,'🍋','linear-gradient(180deg,#ffe98a,#fff 70%)',3]].map(r=>`<div class="ly" style="background:${r[3]};animation:kWin 1.6s ${r[4]}s both"><div class="hv abs a pop" style="left:0;right:0;top:112px;text-align:center;font-size:48px;background:linear-gradient(#5b6bff,#a98bff);-webkit-background-clip:text;color:transparent;--s:${r[4]+.1}s">${r[0]}</div>${ic(r[2],r[1],`position:absolute;left:81px;top:184px;width:54px;--s:${r[4]+.25}s;animation:kPop .5s ${r[4]+.25}s cubic-bezier(.2,.9,.3,1.3) both`)}</div>`).join('')}`,4800);
+add('fondo-franjas','completa','Fondo de franjas de color en movimiento','Ramiro','El fondo es un degradado con franjas que se deslizan y cambian de tono mientras la tarjeta flota.','#fff',
+`<div class="ly" style="background:linear-gradient(180deg,#8fd3ff,#fff 55%,#fff6a3);animation:kHue 4s linear both"><div class="abs" style="inset:0;background:repeating-linear-gradient(90deg,rgba(255,255,255,0) 0 18px,rgba(255,255,255,.4) 18px 36px);animation:kStripe 2.4s linear infinite"></div></div><div class="abs" style="left:78px;top:150px;animation:kFloat 2.4s infinite ease-in-out">${ic('🚀',G.wht,'width:60px;height:60px;font-size:30px')}</div><div class="cp abs" style="left:0;right:0;top:236px">nueva herramienta</div>`,4400);
+add('fondo-borroso-luz','completa','Fondo borroso + tarjeta con luz','Ramiro','Detrás tu propia imagen desenfocada y oscura; delante, la pantalla con borde dorado, luz alrededor y sombra bajo ella.',ROOM,
+`<div class="abs" style="inset:-24px;filter:blur(14px) brightness(.5)">${sub('full')}</div><div class="abs a up" style="left:22px;right:22px;top:136px;height:112px;--d:.7s;animation-name:kUp,kFloat;animation-duration:.7s,2.6s;animation-delay:0s,.8s;animation-iteration-count:1,infinite"><div style="position:absolute;inset:0;border-radius:14px;border:2px solid #c8a24a;background:linear-gradient(135deg,#2a3a2c,#101713);box-shadow:0 0 0 6px rgba(200,162,74,.16),0 0 36px rgba(255,214,120,.5),0 24px 30px rgba(0,0,0,.55);display:grid;place-items:center"><div class="ser" style="color:#f3e2b3;font-size:20px">tu enlace aquí</div></div></div><div class="ser abs" style="left:0;right:0;top:92px;text-align:center;color:#fff;font-size:15px;${W(.7,3.6)}">link</div>`,4600);
+add('tarjeta-giro','completa','Tarjeta que gira con brillo','Idea nueva','La tarjeta se inclina en 3D hacia un lado y otro y un destello blanco la cruza.','#fff',
+`<div class="abs" style="left:34px;right:34px;top:130px;height:124px;perspective:500px"><div style="position:absolute;inset:0;border-radius:16px;background:linear-gradient(135deg,#6a3df0,#e0245e);box-shadow:0 26px 30px -10px rgba(40,0,80,.55);overflow:hidden;animation:kTilt 3.6s ease-in-out both;display:grid;place-items:center"><div class="hv" style="color:#fff;font-size:26px">TARJETA</div><i class="abs" style="inset:0;width:40%;background:linear-gradient(100deg,transparent,rgba(255,255,255,.55),transparent);animation:kSweep 1.4s .6s ease-in-out both"></i></div></div>`,4200);
+add('abanico','completa','Tarjetas en abanico','Idea nueva','Tres tarjetas se abren en abanico, cada una con su sombra, para enseñar varias opciones a la vez.','#fff',
+`${[['-14deg','-46px','linear-gradient(#ffb3c7,#e0245e)'],['0deg','0px','linear-gradient(#ffe27a,#ffb300)'],['14deg','46px','linear-gradient(#8be8a8,#18a957)']].map((c,i)=>`<div class="c3 abs" style="left:68px;top:128px;width:80px;height:122px;background:${c[2]};--r:${c[0]};--x:${c[1]};animation:kFan .7s ${.3+i*.25}s cubic-bezier(.2,.9,.3,1.2) both"></div>`).join('')}<div class="cp abs" style="left:0;right:0;top:282px;${W(1.2,3)}">tres opciones</div>`,4200);
+add('cuadricula-iconos','completa','Cuadrícula de iconos que cae en cascada','Ramiro','Muchos iconos con relieve aparecen uno tras otro y al final un número grande resume cuántos son.','#fff',
+`<div class="abs" style="left:14px;right:14px;top:70px;display:grid;grid-template-columns:repeat(5,1fr);gap:9px">${['💬','🎧','📊','🎨','🧠','📷','🔍','🎬','📝','🌍','⚙️','🔔','📦','💡','🚀'].map((e,i)=>ic(e,Object.values(G)[i%6],`width:100%;aspect-ratio:1;font-size:20px;border-radius:11px;animation:kPop .45s ${.15+i*.09}s cubic-bezier(.2,.9,.3,1.3) both`)).join('')}</div><div class="hv abs a pop" style="left:0;right:0;top:268px;text-align:center;font-size:44px;color:#17171c;--s:1.9s">15</div><div class="cp abs a fd" style="left:0;right:0;top:322px;--s:2.1s">herramientas</div>`,4600);
+add('logo-puntos','completa','Puntos que botan y forman el logo','Ramiro','Cuatro puntos de colores botan uno a uno y se transforman en el icono final con un rebote.','#fff',
+`${['#ff3d81','#ffc53d','#3ddc84','#2f8bff'].map((c,i)=>`<i class="abs" style="left:${70+i*20}px;top:180px;width:14px;height:14px;border-radius:50%;background:${c};animation:kDot .8s ${.1+i*.2}s both,kWin 0s 0s;animation:kDot .8s ${.1+i*.2}s both;opacity:1"></i>`).join('')}<div class="abs" style="left:0;right:0;top:0;bottom:0;animation:kAp .01s 1.9s both"><div class="abs" style="left:0;right:0;top:0;bottom:0;background:#fff"></div>${ic('⚡',G.blue,'position:absolute;left:78px;top:158px;width:60px;height:60px;font-size:30px;animation:kPop .6s 1.9s cubic-bezier(.2,.9,.3,1.4) both')}<div class="cp abs" style="left:0;right:0;top:240px;${W(2.2,2)}">tu marca</div></div>`,4600);
+add('puntos-completa','completa','Un punto, una pantalla simple','Ramiro','Cuando nombra puntos, cada uno tiene su pantalla completa muy sencilla: número, nombre y fuera.','#fff',
+`${[['1','HERRAMIENTAS','#eaf3ff',0],['2','VELOCIDAD','#fff0f4',1.4],['3','RESULTADO','#fff9db',2.8]].map(s=>`<div class="ly" style="background:${s[2]};animation:kWin 1.5s ${s[3]}s both"><div class="hv abs a pop" style="left:0;right:0;top:130px;text-align:center;font-size:90px;color:#17171c;--s:${s[3]+.05}s">${s[0]}</div><div class="cp abs a up" style="left:0;right:0;top:250px;font-size:17px;--s:${s[3]+.25}s">${s[1]}</div></div>`).join('')}`,4500);
+add('carrusel','completa','Tarjetas que se empujan','Idea nueva','Cada tarjeta entra por la derecha y empuja a la anterior hacia la izquierda, como pasar páginas.','#fff',
+`${[['#ffd0dc','🍕'],['#d6ecff','🏠'],['#d9f7e3','🌱']].map((c,i)=>`<div class="c3 abs" style="left:34px;right:34px;top:130px;height:124px;background:${c[0]};display:grid;place-items:center;font-size:48px;animation:kCar 2.2s ${i*1.3}s cubic-bezier(.3,.8,.3,1) both">${c[1]}</div>`).join('')}`,4600);
+add('texto-repetido','completa','Palabra gigante repetida de fondo','Ramiro','El nombre se repite enorme en filas que se mueven en sentidos opuestos, con la tarjeta delante.','linear-gradient(170deg,#c6e7b0,#e8e6a0 50%,#a9d4f5)',
+`${[0,1,2,3,4].map(i=>`<div class="ser abs" style="left:0;top:${i*78}px;font-size:76px;white-space:nowrap;color:rgba(255,255,255,.55);animation:${i%2?'kMarqR':'kMarq'} 4.5s linear both">NOMBRE NOMBRE NOMBRE NOMBRE</div>`).join('')}<div class="c3 abs a pop" style="left:50px;right:50px;top:160px;padding:12px;text-align:center;font:700 13px Inter;--s:.5s">Nombre <span style="background:#e8e8f0;border-radius:99px;padding:2px 8px;font-size:10px">beta</span></div>`,4800);
+
+/* ---------- TEXTO ---------- */
+add('palabra-color','texto','Palabra clave en color','Ramiro','Los subtítulos salen en bloques cortos y la palabra importante cambia de color (amarillo, verde).',ROOM,
+`${sub('full')}${[['<b style="color:#ffe14a">PEDÍS</b> LAS COSAS',.3],['Y <b style="color:#6cf06c">PROBÁ</b>',1.5],['<b style="color:#6cf06c">CÓDIGOS</b>',2.7]].map(w=>`<div class="sc" style="${WP(w[1],1.2)};font-size:19px;bottom:26%">${w[0]}</div>`).join('')}`,4200);
+add('serif-pop','texto','Subtítulo en cursiva elegante','Ramiro','Palabras sueltas en cursiva con sombra suave que saltan con un pequeño rebote, una a una.',ROOM,
+`${sub('full')}${['locura','idea','automático'].map((w,i)=>`<div class="ser abs" style="left:0;right:0;bottom:30%;text-align:center;font-size:30px;color:#fff;text-shadow:0 3px 8px rgba(0,0,0,.55);${WP(.3+i*1.3,1.2)}">${w}</div>`).join('')}`,4400);
+add('emoji-palabra','texto','Emoji de iPhone sobre la palabra','Ramiro','Sobre el subtítulo aparece un emoji grande que cambia con lo que se dice y rebota.',ROOM,
+`${sub('full')}${[['🤡','UN PELOTUDO',.3],['🔥','ESTÁ ARDIENDO',1.5],['🤯','NO LO CREO',2.7]].map(e=>`<div class="abs" style="left:0;right:0;bottom:26%;text-align:center;${WP(e[2],1.2)}"><div style="font-size:54px;filter:drop-shadow(0 6px 6px rgba(0,0,0,.4))">${e[0]}</div><div style="font:800 15px Inter;color:#fff;text-shadow:0 2px 6px #000a">${e[1]}</div></div>`).join('')}`,4400);
+add('titulo-mixto','texto','Título mixto cursiva + mayúsculas','Sonidos (ref. 6)','Una palabra pequeña en cursiva y otra enorme en mayúsculas gordas, con la frase pequeña debajo.',PLUM,
+`${sub('full','--cl:#efe4cf;--sh:#1a0f10')}<div class="abs" style="left:0;bottom:18%;padding-left:16px"><div class="ser a up" style="font-size:22px;color:#f1d89a;--s:.4s">un</div><div style="overflow:hidden"><div class="hv a up" style="font-size:46px;color:#f2c260;text-shadow:0 4px 0 rgba(0,0,0,.35);--s:.6s">SONIDO</div></div><div class="a fd" style="font:600 10px Inter;color:#fff;--s:1.2s">en cada cosa que se mueve</div></div>`,4200);
+add('letras-glitch','texto','Letras que se revuelven y se aclaran','Sonidos (ref. 6)','Las letras se mezclan al azar y se colocan de izquierda a derecha en la frase final.',PLUM,
+`${sub('full','--cl:#efe4cf;--sh:#1a0f10')}<div class="hv abs" data-scr="LA PARTE EMOCIONAL" data-delay=".5" data-dur="1300" style="left:0;right:0;bottom:24%;text-align:center;font-size:20px;color:#f2c260;text-shadow:0 3px 0 rgba(0,0,0,.4)">&nbsp;</div>`,4000);
+add('lista-cristal','texto','Lista de reglas en cristal','Sonidos (ref. 6)','Tres casillas translúcidas arriba a un lado que se van rellenando con cada regla, sin tapar al sujeto.',PLUM,
+`${sub('full','--cl:#efe4cf;--sh:#1a0f10')}${['un sonido en cada cosa','nada en la parte emocional','que se oiga la voz'].map((t,i)=>`<div class="abs a lf" style="left:8px;top:${14+i*36}px;width:106px;height:30px;border-radius:10px;background:rgba(255,255,255,.16);border:1px solid rgba(255,255,255,.4);backdrop-filter:blur(8px);color:#fff;font:600 9px Inter;padding:5px 8px;--s:${.2+i*.2}s"><span class="a fd" style="--s:${.9+i*.9}s;display:block">${'0'+(i+1)} · ${t}</span></div>`).join('')}`,4400);
+add('numero-detras','texto','Número gigante detrás de ti','Idea nueva','Un número enorme sube por detrás del sujeto, así parece que hay profundidad.',PLUM,
+`<div class="hv abs a up" style="left:0;right:0;top:6%;text-align:center;font-size:170px;color:#f2c260;opacity:.9;--d:.8s">3</div>${sub('full','--cl:#efe4cf;--sh:#1a0f10;top:auto')}${sc('REGLAS',1,2.8)}`,4200);
+add('maquina','texto','Texto que se escribe solo','Ramiro','Una caja con cursor parpadeante va escribiendo la frase letra a letra, como un mensaje.','linear-gradient(170deg,#1c1c22,#0e0e12)',
+`<div class="abs a up" style="left:20px;right:20px;top:150px;border-radius:16px;background:#2a2a32;padding:14px;box-shadow:0 16px 24px rgba(0,0,0,.5);--d:.5s;display:flex;align-items:center"><div style="overflow:hidden;white-space:nowrap;width:0;color:#fff;font:600 13px Inter;animation:kType 2.2s .8s steps(20) both">Quiero ahorrar más</div><i style="width:2px;height:16px;background:#7c89ff;animation:kBlink .8s infinite;margin-left:2px"></i></div>${sc('ESCRÍBELO ASÍ',.6,3.4,'bottom:30%')}`,4200);
+add('error-correccion','texto','Error en rojo y corrección en verde','Sonidos (ref. 6)','Una frase se marca en rojo con una cruz y al instante aparece la versión correcta con un tick.',CREAM,
+`<div class="abs a up" style="left:14px;right:14px;top:130px;border-radius:14px;background:#4a1428;color:#fff;padding:14px;box-shadow:0 18px 26px rgba(0,0,0,.35);--d:.5s"><div class="ser" style="font-size:11px;opacity:.7">dijiste</div><div style="font:600 12px Inter;margin:3px 0 10px">pero <span style="background:#e0245e;border-radius:4px;padding:0 3px;animation:kAp .3s 1s both">se interrumpe</span> la voz <b class="a pop" style="--s:1.2s;color:#ff6a8a;float:right">✕</b></div><div class="a up" style="--s:1.9s"><div class="ser" style="font-size:11px;opacity:.7">se oye</div><div style="font:600 12px Inter;margin-top:3px"><span style="background:#2e9e5b;border-radius:4px;padding:0 3px">se sigue entendiendo</span> <b class="a pop" style="--s:2.2s;color:#6cf09a;float:right">✓</b></div></div></div>`,4400);
+add('atenuar','texto','Oscurecer todo para destacar una palabra','Ramiro','La imagen se oscurece un momento y una palabra con emoji queda iluminada en medio.',ROOM,
+`${sub('full')}<div class="ly" style="background:#000;animation:kDim 3.2s .8s both"></div><div class="abs" style="left:0;right:0;top:46%;text-align:center;${WP(1,2.6)}"><div style="font-size:46px">🤡</div><div class="hv" style="font-size:24px;color:#fff;text-shadow:0 3px 10px #000">PELOTUDO</div></div>`,4400);
+
+/* ---------- ELEMENTOS Y EMOJIS ---------- */
+add('cursor-interruptor','elementos','Cursor que pulsa un interruptor','Sonidos (ref. 6)','Un cursor llega, pulsa y el interruptor pasa de gris a verde con un deslizamiento suave.',ROOM,
+`${sub('full')}<div class="ser abs a fd" style="left:34px;top:178px;color:#fff;font-size:18px;--s:.2s">luz</div><div class="abs a pop" style="left:70px;top:170px;width:60px;height:32px;border-radius:99px;background:#c8c8cf;box-shadow:inset 0 2px 5px rgba(0,0,0,.25),0 8px 14px rgba(0,0,0,.35);animation:kPop .4s .2s both,kTog .3s 1.6s both"><i style="position:absolute;left:3px;top:3px;width:26px;height:26px;border-radius:50%;background:#fff;box-shadow:0 2px 5px rgba(0,0,0,.35);animation:kKnob .3s 1.6s cubic-bezier(.3,1.3,.5,1) both"></i></div><div class="abs" style="left:96px;top:184px;animation:kCurs 1.8s .4s cubic-bezier(.4,0,.2,1) both">${cur}</div>`,3600);
+add('ecualizador','elementos','Barras de sonido detrás de ti','Sonidos (ref. 6)','Barras de audio que suben y bajan al ritmo de la voz, por detrás del sujeto.',PLUM,
+`<div class="abs" style="left:6px;right:6px;bottom:0;height:70%;display:flex;gap:5px;align-items:flex-end">${Array.from({length:14},(_,i)=>`<i style="flex:1;height:${40+((i*37)%55)}%;border-radius:6px 6px 0 0;background:linear-gradient(#ffb3c7,#e0245e);transform-origin:bottom;animation:kEq ${.5+(i%5)*.15}s ${i*.06}s infinite alternate ease-in-out"></i>`).join('')}</div>${sub('full','--cl:#efe4cf;--sh:#1a0f10')}`,4200);
+add('deslizador','elementos','Deslizador que baja un valor','Sonidos (ref. 6)','Dos barras con etiquetas: una se arrastra a la izquierda y cambia de color para explicar un ajuste.',PLUM,
+`${sub('full','--cl:#efe4cf;--sh:#1a0f10')}<div class="abs a up" style="left:12px;right:12px;bottom:60px;border-radius:14px;background:rgba(20,5,12,.6);backdrop-filter:blur(8px);padding:12px;--d:.5s"><div style="font:700 10px Inter;color:#fff;margin-bottom:5px">mi voz</div><div style="height:9px;border-radius:5px;background:rgba(255,255,255,.2);margin-bottom:12px"><div style="height:100%;width:85%;border-radius:5px;background:#ffd27a"></div></div><div style="font:700 10px Inter;color:#fff;margin-bottom:5px">sonidos</div><div style="height:9px;border-radius:5px;background:rgba(255,255,255,.2);position:relative"><div style="height:100%;border-radius:5px;animation:kFillW 1.4s 1s ease-in-out both,kFillC 1.4s 1s both"></div><i style="position:absolute;top:-4px;width:17px;height:17px;margin-left:-8px;border-radius:50%;background:#fff;box-shadow:0 2px 6px rgba(0,0,0,.4);animation:kHandL 1.4s 1s ease-in-out both"></i></div></div>`,4200);
+add('emoji-bota','elementos','Emojis grandes que botan junto a ti','Ramiro','Un emoji de iPhone aparece cerca del hombro con rebote y flota; luego da paso a otro.',ROOM,
+`${sub('full')}${[['🔥',.4,'right:26px;top:150px'],['🤯',1.6,'left:24px;top:170px'],['💸',2.8,'right:30px;top:190px']].map(e=>`<div class="abs" style="${e[2]};font-size:46px;filter:drop-shadow(0 8px 6px rgba(0,0,0,.4));${WP(e[1],1.3)}"><div style="animation:kFloat 1s infinite ease-in-out">${e[0]}</div></div>`).join('')}`,4400);
+add('reacciones','elementos','Reacciones que suben flotando','Idea nueva','Corazones, fuegos y aplausos suben desde abajo como en un directo.',ROOM,
+`${sub('full')}${['❤️','🔥','👏','😮','💯','❤️','🔥','👏'].map((e,i)=>`<div class="abs" style="right:${14+(i*23)%60}px;bottom:30px;font-size:${24+(i%3)*6}px;animation:kRise ${2.4+(i%3)*.4}s ${.3+i*.35}s ease-out both">${e}</div>`).join('')}`,4600);
+add('medalla-gira','elementos','Medalla dorada que gira','Sonidos (ref. 6)','Una moneda dorada con relieve sale girando delante del pecho y se queda quieta.',PLUM,
+`${sub('full','--cl:#efe4cf;--sh:#1a0f10')}<div class="abs" style="left:50%;top:56%;width:74px;height:74px;margin:-37px;perspective:320px"><div style="width:100%;height:100%;border-radius:50%;background:radial-gradient(circle at 35% 30%,#fff3b8,#e8b43a 60%,#a8760f);border:5px solid #f7d36b;box-shadow:0 14px 20px rgba(0,0,0,.5),inset 0 -5px 8px rgba(0,0,0,.25);display:grid;place-items:center;font-size:30px;animation:kCoin 2.2s .4s ease-in-out both">⭐</div></div>`,3600);
+add('barras-crecen','elementos','Gráfico de barras que crece','Ramiro','Una tarjeta con barras naranjas que suben una a una y una cifra grande que cuenta hasta el resultado.','#fff',
+`<div class="c3 abs a up" style="left:18px;right:18px;top:120px;height:150px;padding:12px;background:#201f1d;--d:.5s"><div class="hv" style="color:#fff;font-size:20px"><span data-count="1.2" data-dec="1" data-pre="$ " data-suf=" M" data-delay=".6" data-dur="1200">0</span></div><div style="display:flex;gap:6px;align-items:flex-end;height:80px;margin-top:10px">${[30,38,36,50,58,66,80,96].map((h,i)=>`<i style="flex:1;height:${h}%;border-radius:4px 4px 0 0;background:linear-gradient(#ff9a4d,#d4601a);transform-origin:bottom;animation:kGrowY .5s ${.7+i*.14}s both"></i>`).join('')}</div></div><div class="cp abs" style="left:0;right:0;top:290px;${W(1.4,3)}">que funciona</div>`,4600);
+add('dona-porcentaje','elementos','Anillo de porcentaje','Ramiro','Un anillo de color se rellena hasta el porcentaje mientras el número cuenta en el centro.','#fff',
+`<div class="abs a pop" style="left:52px;top:130px;--s:.2s"><div class="don" style="animation:kDon 1.8s .5s ease-out both"></div><div class="hv abs" style="inset:0;display:grid;place-items:center;font-size:26px;color:#17171c"><span data-count="75" data-suf="%" data-delay=".5" data-dur="1800">0</span></div></div><div class="cp abs" style="left:0;right:0;top:270px;${W(.8,3)}">de ahorro</div>`,4400);
+add('notificacion','elementos','Notificación de iPhone que baja','Idea nueva','Un aviso translúcido baja desde arriba con un rebote y se queda sobre la imagen.',ROOM,
+`${sub('full')}<div class="abs" style="left:10px;right:10px;top:12px;border-radius:20px;background:rgba(255,255,255,.82);backdrop-filter:blur(14px);padding:9px 11px;display:flex;gap:9px;align-items:center;box-shadow:0 12px 22px rgba(0,0,0,.35);animation:kNoti .8s .5s both"><div class="ic" style="width:32px;height:32px;font-size:17px;border-radius:9px;background:${G.grn}">💬</div><div style="line-height:1.25"><div style="font:800 11px Inter;color:#111">Mensaje nuevo</div><div style="font:400 11px Inter;color:#333">Tu reel ya está listo 🎬</div></div></div>`,3800);
+add('movil-sube','elementos','Móvil con tu vídeo que sube','Sonidos (ref. 6)','Un móvil con marco y sombra sube ligeramente girado enseñando el resultado dentro de su pantalla.',CREAM,
+`<div class="abs" style="left:60px;top:70px;width:96px;height:200px;border-radius:22px;border:4px solid #1b1b1f;background:${ROOM};overflow:hidden;box-shadow:0 26px 30px -8px rgba(0,0,0,.5);animation:kPhone .9s .2s cubic-bezier(.2,.9,.3,1.15) both">${sub('full','--hd:34%')}<i class="abs" style="left:50%;top:5px;width:30px;height:7px;margin-left:-15px;border-radius:5px;background:#000"></i></div><div class="cp abs" style="left:0;right:0;top:300px;${W(1.1,3)}">así queda</div>`,4400);
+add('circulo-marcador','elementos','Círculo y flecha dibujados a mano','Idea nueva','Un trazo rojo de rotulador se dibuja alrededor de la cifra y una flecha la señala.','#fff',
+`<div class="c3 abs a up" style="left:22px;right:22px;top:130px;padding:18px;text-align:center;--d:.5s"><div class="hv" style="font-size:30px;color:#17171c">$ 3.580</div><div style="font-size:11px;color:#777">este mes</div></div><svg class="abs" style="left:0;top:0" width="216" height="384" viewBox="0 0 216 384"><path pathLength="1" d="M30 162C60 112 170 112 196 168C200 218 60 226 26 190C14 170 40 150 80 140" fill="none" stroke="#e0245e" stroke-width="4" stroke-linecap="round" stroke-dasharray="1" style="animation:kDraw .9s .9s ease-in-out both"/><path pathLength="1" d="M170 300C160 270 150 250 140 238M140 238l14 4M140 238l2 15" fill="none" stroke="#e0245e" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" stroke-dasharray="1" style="animation:kDraw .6s 1.9s ease-out both"/></svg>`,4000);
+add('ventana-onda','elementos','Ventana de app con onda de audio','Sonidos (ref. 6)','Una ventana con tres puntos y una onda donde una línea va barriendo mientras se explica.',CREAM,
+`<div class="abs a up" style="left:16px;right:16px;top:130px;border-radius:14px;background:#4a1428;padding:10px 12px 14px;box-shadow:0 22px 28px -8px rgba(60,0,20,.55);--d:.5s"><div style="display:flex;gap:4px;align-items:center;margin-bottom:12px"><i style="width:6px;height:6px;border-radius:50%;background:#ff8aa6"></i><i style="width:6px;height:6px;border-radius:50%;background:#ffd27a"></i><i style="width:6px;height:6px;border-radius:50%;background:#8be8a8"></i><span style="font:600 8px Inter;color:#e9c9d3;margin-left:6px">revisando tu voz</span></div><div style="position:relative;height:60px;display:flex;gap:2px;align-items:center">${Array.from({length:30},(_,i)=>`<i style="flex:1;height:${20+((i*53)%80)}%;background:#f2c9a0;border-radius:2px;transform-origin:center;animation:kEq ${.4+(i%4)*.1}s ${i*.03}s infinite alternate"></i>`).join('')}<b class="abs" style="top:-4px;bottom:-4px;width:2px;background:#fff;animation:kScan 2.6s .6s linear both"></b></div></div>`,4000);
+
+/* ---------- FONDOS ---------- */
+add('fondo-transforma','fondos','Fondo que se transforma sin tocarte','Fondo animado (ref. 6)','El fondo cambia de color poco a poco con una luz que lo barre, y tú sigues igual, sin cambios.',ROOM,
+`<div class="ly" style="animation:kHue 4s ease-in-out both;background:linear-gradient(165deg,#2f8f80,#162a3a)"><i class="abs" style="inset:0;width:45%;background:linear-gradient(100deg,transparent,rgba(255,255,255,.22),transparent);animation:kSweep 3.4s .4s ease-in-out both"></i></div>${sub('full')}${sc('EL FONDO CAMBIA',.4,3.8)}`,4400);
+add('luces-bokeh','fondos','Luces desenfocadas que suben','Idea nueva','Círculos de luz desenfocados ascienden despacio detrás del sujeto para darle ambiente.',PLUM,
+`${Array.from({length:9},(_,i)=>`<i class="abs" style="left:${(i*47)%200}px;bottom:${20+(i*31)%80}px;width:${24+(i%4)*14}px;height:${24+(i%4)*14}px;border-radius:50%;background:${['#ffb3c7','#ffe27a','#c7a6ff'][i%3]};filter:blur(6px);animation:kBok ${3+(i%3)}s ${i*.35}s ease-in-out both"></i>`).join('')}${sub('full','--cl:#efe4cf;--sh:#1a0f10')}`,4800);
+add('vineta-foco','fondos','Viñeta que oscurece los bordes','Idea nueva','Los bordes de la imagen se oscurecen y el centro brilla para dirigir la mirada a lo importante.',ROOM,
+`${sub('full')}<div class="ly" style="background:radial-gradient(circle at 50% 42%,transparent 25%,rgba(0,0,0,.78) 80%);animation:kAp 1s .8s both"></div>${sc('MIRA AQUÍ',1.2,2.8,'bottom:30%')}`,4200);
+
+/* ================= PÁGINA ================= */
+let V={},N={},cat='todas',st='todas';
+try{V=JSON.parse(localStorage.getItem('anim-v1')||'{}');N=JSON.parse(localStorage.getItem('anim-n1')||'{}')}catch(e){}
+const save=()=>{try{localStorage.setItem('anim-v1',JSON.stringify(V));localStorage.setItem('anim-n1',JSON.stringify(N))}catch(e){}};
+const $=s=>document.querySelector(s),grid=$('#grid');
+const reduce=matchMedia('(prefers-reduced-motion:reduce)').matches;
+
+function mount(s,d){
+  s._tok=(s._tok||0)+1;const tok=s._tok;s.style.background=d.bg;s.innerHTML=d.html;
+  s.querySelectorAll('[data-count]').forEach(el=>{
+    const to=parseFloat(el.dataset.count),dec=+el.dataset.dec||0,pre=el.dataset.pre||'',suf=el.dataset.suf||'',dl=(+el.dataset.delay||0)*1000,du=+el.dataset.dur||1200;
+    const t0=performance.now()+dl;
+    const f=now=>{if(s._tok!==tok)return;const p=Math.max(0,Math.min(1,(now-t0)/du)),e=1-Math.pow(1-p,3);el.textContent=pre+(to*e).toFixed(dec)+suf;if(p<1)requestAnimationFrame(f)};requestAnimationFrame(f);
+  });
+  s.querySelectorAll('[data-scr]').forEach(el=>{
+    const fin=el.dataset.scr,dl=(+el.dataset.delay||0)*1000,du=+el.dataset.dur||1000,t0=performance.now()+dl,ch='ABCDEFGHIJKLMNÑOPQRSTUVWXYZ#%&@';
+    const f=now=>{if(s._tok!==tok)return;const p=Math.max(0,Math.min(1,(now-t0)/du));
+      el.textContent=p<=0?' ':fin.split('').map((c,i)=>c===' '?' ':(i/fin.length<p-.1?c:ch[Math.floor(Math.random()*ch.length)])).join('');
+      if(p<1)requestAnimationFrame(f)};requestAnimationFrame(f);
+  });
+}
+
+function build(){
+  grid.innerHTML='';
+  D.forEach((d,i)=>{
+    const c=document.createElement('article');c.className='card';c.id='c-'+d.id;c.dataset.cat=d.cat;
+    c.innerHTML=`<div class="stage" role="button" tabindex="0" aria-label="Ver otra vez: ${d.name}"></div>
+    <div class="meta"><span class="fr">${i+1} · ${CATS[d.cat]} · ${d.from}</span><span class="nm">${d.name}</span><span class="ds">${d.desc}</span></div>
+    <div class="votes"><button class="vb y" type="button" aria-pressed="false">👍 Me gusta</button><button class="vb n" type="button" aria-pressed="false">👎 No</button></div>
+    <input class="note" type="text" id="n-${d.id}" placeholder="Nota opcional (ej. más lenta, otro color)" aria-label="Nota sobre ${d.name}">`;
+    grid.appendChild(c);
+    const s=c.querySelector('.stage');
+    const play=()=>mount(s,d);
+    s.addEventListener('click',play);s.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();play()}});
+    let tm=null;
+    new IntersectionObserver(es=>{es[0].isIntersecting?(play(),!reduce&&(tm=setInterval(play,d.t))):(clearInterval(tm),tm=null)},{threshold:.35}).observe(s);
+    const [by,bn]=c.querySelectorAll('.vb'),ni=c.querySelector('.note');ni.value=N[d.id]||'';
+    const paint=()=>{c.dataset.v=V[d.id]||0;by.setAttribute('aria-pressed',V[d.id]===1);bn.setAttribute('aria-pressed',V[d.id]===-1)};
+    by.onclick=()=>{V[d.id]=V[d.id]===1?0:1;paint();after()};
+    bn.onclick=()=>{V[d.id]=V[d.id]===-1?0:-1;paint();after()};
+    ni.oninput=()=>{N[d.id]=ni.value;save();text()};
+    paint();
+  });
+}
+function after(){save();text();filter()}
+function filter(){
+  let n=0;
+  D.forEach(d=>{const c=$('#c-'+d.id),v=V[d.id]||0;
+    const ok=(cat==='todas'||d.cat===cat)&&(st==='todas'||(st==='si'&&v===1)||(st==='no'&&v===-1)||(st==='sin'&&v===0));
+    c.hidden=!ok;if(ok)n++});
+  $('#empty').hidden=n>0;
+  const y=D.filter(d=>V[d.id]===1).length,no=D.filter(d=>V[d.id]===-1).length;
+  $('#cnt').textContent=`${y} me gustan · ${no} no · ${D.length-y-no} sin votar`;
+}
+function text(){
+  const L=D.filter(d=>V[d.id]===1),R=D.filter(d=>V[d.id]===-1);
+  const line=(d,i)=>`${i+1}. [${d.id}] ${d.name} (${CATS[d.cat]}): ${d.desc}${N[d.id]?` NOTA: ${N[d.id]}`:''}`;
+  $('#out').value=`ANIMACIONES PARA REELS - MI SELECCIÓN (${new Date().toLocaleDateString('es-ES')})\n\nME GUSTAN (${L.length}):\n${L.map(line).join('\n')||'(ninguna todavía)'}\n\nNO ME GUSTAN (${R.length}):\n${R.map(line).join('\n')||'(ninguna)'}\n\nSIN VOTAR: ${D.length-L.length-R.length}`;
+}
+function chips(el,items,get,set){
+  el.innerHTML='';items.forEach(([k,l])=>{const b=document.createElement('button');b.type='button';b.className='chip';b.textContent=l;b.setAttribute('aria-pressed',get()===k);b.onclick=()=>{set(k);el.querySelectorAll('.chip').forEach(x=>x.setAttribute('aria-pressed','false'));b.setAttribute('aria-pressed','true');filter()};el.appendChild(b)});
+}
+chips($('#cats'),[['todas','Todas'],...Object.entries(CATS)],()=>cat,k=>cat=k);
+chips($('#sts'),[['todas','Todas'],['si','👍'],['no','👎'],['sin','Sin votar']],()=>st,k=>st=k);
+$('#copy').onclick=async()=>{
+  const o=$('#out'),b=$('#copy');text();
+  try{await navigator.clipboard.writeText(o.value);b.textContent='¡Copiado!'}catch(e){o.select();b.textContent='Selecciona y copia abajo'}
+  setTimeout(()=>b.textContent='Copiar mi selección',2200);
+};
+build();text();filter();
+</script>

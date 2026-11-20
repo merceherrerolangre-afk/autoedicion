@@ -1,0 +1,1859 @@
+{
+"sounds": [
+{
+"file": "sonido/whoosh.mp3",
+"at": 3.367,
+"start": 0.025,
+"gain_db": -33.2,
+"what": "whoosh"
+},
+{
+"file": "sonido/count.wav",
+"at": 3.417,
+"start": 0.041,
+"gain_db": -26.7,
+"what": "count"
+},
+{
+"file": "sonido/notaE2.mp3",
+"at": 3.467,
+"start": 0.0,
+"gain_db": -33.7,
+"what": "nota"
+},
+{
+"file": "sonido/count.wav",
+"at": 7.127,
+"start": 0.041,
+"gain_db": -26.7,
+"what": "count"
+},
+{
+"file": "sonido/notaE2.mp3",
+"at": 7.177,
+"start": 0.0,
+"gain_db": -33.7,
+"what": "nota"
+},
+{
+"file": "sonido/whoosh.mp3",
+"at": 8.742,
+"start": 0.025,
+"gain_db": -33.2,
+"what": "whoosh"
+},
+{
+"file": "sonido/pop.mp3",
+"at": 11.293,
+"start": 0.089,
+"gain_db": -30.9,
+"what": "pop"
+},
+{
+"file": "sonido/pop2.mp3",
+"at": 13.093,
+"start": 0.088,
+"gain_db": -33.0,
+"what": "pop"
+},
+{
+"file": "sonido/count.wav",
+"at": 14.629,
+"start": 0.041,
+"gain_db": -26.7,
+"what": "count"
+},
+{
+"file": "sonido/swishA.mp3",
+"at": 17.609,
+"start": 0.51,
+"gain_db": -16.4,
+"what": "title"
+},
+{
+"file": "sonido/whoosh.mp3",
+"at": 19.399,
+"start": 0.025,
+"gain_db": -33.2,
+"what": "whoosh"
+},
+{
+"file": "sonido/pop.mp3",
+"at": 21.749,
+"start": 0.089,
+"gain_db": -30.9,
+"what": "pop"
+},
+{
+"file": "sonido/pop2.mp3",
+"at": 22.849,
+"start": 0.088,
+"gain_db": -33.0,
+"what": "pop"
+},
+{
+"file": "sonido/pop.mp3",
+"at": 25.109,
+"start": 0.089,
+"gain_db": -30.9,
+"what": "pop"
+},
+{
+"file": "sonido/pop2.mp3",
+"at": 26.109,
+"start": 0.088,
+"gain_db": -33.0,
+"what": "pop"
+},
+{
+"file": "sonido/whoosh.mp3",
+"at": 28.431,
+"start": 0.025,
+"gain_db": -33.2,
+"what": "whoosh"
+},
+{
+"file": "sonido/pop.mp3",
+"at": 30.262,
+"start": 0.089,
+"gain_db": -30.9,
+"what": "pop"
+},
+{
+"file": "sonido/pop2.mp3",
+"at": 32.705,
+"start": 0.088,
+"gain_db": -33.0,
+"what": "pop"
+},
+{
+"file": "sonido/swishB.mp3",
+"at": 35.855,
+"start": 0.46,
+"gain_db": -19.9,
+"what": "title"
+},
+{
+"file": "sonido/whoosh.mp3",
+"at": 42.164,
+"start": 0.025,
+"gain_db": -33.2,
+"what": "whoosh"
+},
+{
+"file": "sonido/tick.mp3",
+"at": 42.914,
+"start": 0.041,
+"gain_db": -24.4,
+"what": "tick"
+},
+{
+"file": "sonido/tick.mp3",
+"at": 43.764,
+"start": 0.041,
+"gain_db": -24.4,
+"what": "tick"
+},
+{
+"file": "sonido/tick.mp3",
+"at": 44.614,
+"start": 0.041,
+"gain_db": -24.4,
+"what": "tick"
+},
+{
+"file": "sonido/tick.mp3",
+"at": 45.464,
+"start": 0.041,
+"gain_db": -24.4,
+"what": "tick"
+},
+{
+"file": "sonido/tick.mp3",
+"at": 46.314,
+"start": 0.041,
+"gain_db": -24.4,
+"what": "tick"
+},
+{
+"file": "sonido/tick.mp3",
+"at": 47.164,
+"start": 0.041,
+"gain_db": -24.4,
+"what": "tick"
+},
+{
+"file": "sonido/count.wav",
+"at": 52.864,
+"start": 0.041,
+"gain_db": -26.7,
+"what": "count"
+},
+{
+"file": "sonido/whoosh.mp3",
+"at": 53.874,
+"start": 0.025,
+"gain_db": -33.2,
+"what": "whoosh"
+},
+{
+"file": "sonido/whoosh.mp3",
+"at": 55.796,
+"start": 0.025,
+"gain_db": -33.2,
+"what": "whoosh"
+},
+{
+"file": "sonido/notaE2.mp3",
+"at": 56.565,
+"start": 0.0,
+"gain_db": -33.7,
+"what": "nota"
+},
+{
+"file": "sonido/notaG2.mp3",
+"at": 57.905,
+"start": 0.0,
+"gain_db": -30.0,
+"what": "nota"
+},
+{
+"file": "sonido/notaC3.mp3",
+"at": 59.345,
+"start": 0.0,
+"gain_db": -34.6,
+"what": "nota"
+},
+{
+"file": "sonido/notaC4.mp3",
+"at": 60.965,
+"start": 0.0,
+"gain_db": -32.5,
+"what": "nota"
+},
+{
+"file": "sonido/trazo.mp3",
+"at": 62.525,
+"start": 0.26,
+"gain_db": -14.4,
+"what": "trazo"
+},
+{
+"file": "sonido/pop.mp3",
+"at": 68.014,
+"start": 0.089,
+"gain_db": -30.9,
+"what": "pop"
+},
+{
+"file": "sonido/whoosh.mp3",
+"at": 77.71,
+"start": 0.025,
+"gain_db": -33.2,
+"what": "whoosh"
+},
+{
+"file": "sonido/pop2.mp3",
+"at": 79.98,
+"start": 0.088,
+"gain_db": -33.0,
+"what": "pop"
+},
+{
+"file": "sonido/pop.mp3",
+"at": 82,
+"start": 0.089,
+"gain_db": -30.9,
+"what": "pop"
+},
+{
+"file": "sonido/tick.mp3",
+"at": 84.53,
+"start": 0.041,
+"gain_db": -24.4,
+"what": "tick"
+},
+{
+"file": "sonido/trazo.mp3",
+"at": 86.843,
+"start": 0.26,
+"gain_db": -14.4,
+"what": "trazo"
+},
+{
+"file": "sonido/pop2.mp3",
+"at": 88.962,
+"start": 0.088,
+"gain_db": -33.0,
+"what": "pop"
+},
+{
+"file": "sonido/pop.mp3",
+"at": 93.505,
+"start": 0.089,
+"gain_db": -30.9,
+"what": "pop"
+},
+{
+"file": "sonido/whoosh.mp3",
+"at": 95.174,
+"start": 0.025,
+"gain_db": -33.2,
+"what": "whoosh"
+},
+{
+"file": "sonido/pop2.mp3",
+"at": 96.625,
+"start": 0.088,
+"gain_db": -33.0,
+"what": "pop"
+},
+{
+"file": "sonido/pop.mp3",
+"at": 98.165,
+"start": 0.089,
+"gain_db": -30.9,
+"what": "pop"
+},
+{
+"file": "sonido/pop2.mp3",
+"at": 99.365,
+"start": 0.088,
+"gain_db": -33.0,
+"what": "pop"
+},
+{
+"file": "sonido/pop.mp3",
+"at": 100.765,
+"start": 0.089,
+"gain_db": -30.9,
+"what": "pop"
+},
+{
+"file": "sonido/pop2.mp3",
+"at": 103.785,
+"start": 0.088,
+"gain_db": -33.0,
+"what": "pop"
+},
+{
+"file": "sonido/pop.mp3",
+"at": 104.764,
+"start": 0.089,
+"gain_db": -30.9,
+"what": "pop"
+},
+{
+"file": "sonido/pop2.mp3",
+"at": 107.505,
+"start": 0.088,
+"gain_db": -33.0,
+"what": "pop"
+},
+{
+"file": "sonido/pop.mp3",
+"at": 111.204,
+"start": 0.089,
+"gain_db": -30.9,
+"what": "pop"
+},
+{
+"file": "sonido/pop2.mp3",
+"at": 120.767,
+"start": 0.088,
+"gain_db": -33.0,
+"what": "pop"
+},
+{
+"file": "sonido/pop.mp3",
+"at": 122.64,
+"start": 0.089,
+"gain_db": -30.9,
+"what": "pop"
+},
+{
+"file": "sonido/pop2.mp3",
+"at": 131.266,
+"start": 0.088,
+"gain_db": -33.0,
+"what": "pop"
+},
+{
+"file": "sonido/pop.mp3",
+"at": 134.568,
+"start": 0.089,
+"gain_db": -30.9,
+"what": "pop"
+},
+{
+"file": "sonido/whoosh.mp3",
+"at": 135.548,
+"start": 0.025,
+"gain_db": -33.2,
+"what": "whoosh"
+},
+{
+"file": "sonido/count.wav",
+"at": 135.598,
+"start": 0.041,
+"gain_db": -26.7,
+"what": "count"
+},
+{
+"file": "sonido/pop2.mp3",
+"at": 137.638,
+"start": 0.088,
+"gain_db": -33.0,
+"what": "pop"
+},
+{
+"file": "sonido/swishC.mp3",
+"at": 143.563,
+"start": 0.0,
+"gain_db": -37.7,
+"what": "title"
+},
+{
+"file": "sonido/whoosh.mp3",
+"at": 150.969,
+"start": 0.025,
+"gain_db": -33.2,
+"what": "whoosh"
+},
+{
+"file": "sonido/stamp.mp3",
+"at": 152.879,
+"start": 0.021,
+"gain_db": -32.2,
+"what": "stamp"
+},
+{
+"file": "sonido/pop.mp3",
+"at": 155.489,
+"start": 0.089,
+"gain_db": -30.9,
+"what": "pop"
+},
+{
+"file": "sonido/pop2.mp3",
+"at": 158.549,
+"start": 0.088,
+"gain_db": -33.0,
+"what": "pop"
+},
+{
+"file": "sonido/pop.mp3",
+"at": 159.675,
+"start": 0.089,
+"gain_db": -30.9,
+"what": "pop"
+},
+{
+"file": "sonido/pop2.mp3",
+"at": 161.435,
+"start": 0.088,
+"gain_db": -33.0,
+"what": "pop"
+},
+{
+"file": "sonido/pop.mp3",
+"at": 172.198,
+"start": 0.089,
+"gain_db": -30.9,
+"what": "pop"
+},
+{
+"file": "sonido/whoosh.mp3",
+"at": 181.68,
+"start": 0.025,
+"gain_db": -33.2,
+"what": "whoosh"
+},
+{
+"file": "sonido/whoosh.mp3",
+"at": 183.7,
+"start": 0.025,
+"gain_db": -33.2,
+"what": "whoosh"
+},
+{
+"file": "sonido/count.wav",
+"at": 184.39,
+"start": 0.041,
+"gain_db": -26.7,
+"what": "count"
+},
+{
+"file": "sonido/notaE2.mp3",
+"at": 184.39,
+"start": 0.0,
+"gain_db": -33.7,
+"what": "nota"
+},
+{
+"file": "sonido/pop2.mp3",
+"at": 187.626,
+"start": 0.088,
+"gain_db": -33.0,
+"what": "pop"
+},
+{
+"file": "sonido/trazo.mp3",
+"at": 189.403,
+"start": 0.26,
+"gain_db": -14.4,
+"what": "trazo"
+},
+{
+"file": "sonido/count.wav",
+"at": 193.103,
+"start": 0.041,
+"gain_db": -26.7,
+"what": "count"
+},
+{
+"file": "sonido/pop.mp3",
+"at": 196.525,
+"start": 0.089,
+"gain_db": -30.9,
+"what": "pop"
+},
+{
+"file": "sonido/tick.mp3",
+"at": 201.014,
+"start": 0.041,
+"gain_db": -24.4,
+"what": "tick"
+},
+{
+"file": "sonido/tick.mp3",
+"at": 201.814,
+"start": 0.041,
+"gain_db": -24.4,
+"what": "tick"
+},
+{
+"file": "sonido/tick.mp3",
+"at": 202.794,
+"start": 0.041,
+"gain_db": -24.4,
+"what": "tick"
+},
+{
+"file": "sonido/tick.mp3",
+"at": 205.754,
+"start": 0.041,
+"gain_db": -24.4,
+"what": "tick"
+},
+{
+"file": "sonido/whoosh.mp3",
+"at": 209.895,
+"start": 0.025,
+"gain_db": -33.2,
+"what": "whoosh"
+},
+{
+"file": "sonido/whoosh.mp3",
+"at": 212.045,
+"start": 0.025,
+"gain_db": -33.2,
+"what": "whoosh"
+},
+{
+"file": "sonido/pop2.mp3",
+"at": 213.195,
+"start": 0.088,
+"gain_db": -33.0,
+"what": "pop"
+},
+{
+"file": "sonido/stamp.mp3",
+"at": 216.105,
+"start": 0.021,
+"gain_db": -32.2,
+"what": "stamp"
+},
+{
+"file": "sonido/trazo.mp3",
+"at": 217.642,
+"start": 0.26,
+"gain_db": -14.4,
+"what": "trazo"
+},
+{
+"file": "sonido/pop.mp3",
+"at": 219.194,
+"start": 0.089,
+"gain_db": -30.9,
+"what": "pop"
+},
+{
+"file": "sonido/pop2.mp3",
+"at": 220.44,
+"start": 0.088,
+"gain_db": -33.0,
+"what": "pop"
+},
+{
+"file": "sonido/pop.mp3",
+"at": 222.98,
+"start": 0.089,
+"gain_db": -30.9,
+"what": "pop"
+},
+{
+"file": "sonido/pop2.mp3",
+"at": 223.88,
+"start": 0.088,
+"gain_db": -33.0,
+"what": "pop"
+},
+{
+"file": "sonido/whoosh.mp3",
+"at": 229.124,
+"start": 0.025,
+"gain_db": -33.2,
+"what": "whoosh"
+},
+{
+"file": "sonido/count.wav",
+"at": 230.375,
+"start": 0.041,
+"gain_db": -26.7,
+"what": "count"
+},
+{
+"file": "sonido/pop.mp3",
+"at": 231.355,
+"start": 0.089,
+"gain_db": -30.9,
+"what": "pop"
+},
+{
+"file": "sonido/trazo.mp3",
+"at": 232.835,
+"start": 0.26,
+"gain_db": -14.4,
+"what": "trazo"
+},
+{
+"file": "sonido/whoosh.mp3",
+"at": 234.274,
+"start": 0.025,
+"gain_db": -33.2,
+"what": "whoosh"
+},
+{
+"file": "sonido/pop2.mp3",
+"at": 235.084,
+"start": 0.088,
+"gain_db": -33.0,
+"what": "pop"
+},
+{
+"file": "sonido/tick.mp3",
+"at": 237.464,
+"start": 0.041,
+"gain_db": -24.4,
+"what": "tick"
+},
+{
+"file": "sonido/tick.mp3",
+"at": 237.714,
+"start": 0.041,
+"gain_db": -24.4,
+"what": "tick"
+},
+{
+"file": "sonido/tick.mp3",
+"at": 237.964,
+"start": 0.041,
+"gain_db": -24.4,
+"what": "tick"
+},
+{
+"file": "sonido/pop.mp3",
+"at": 241.13,
+"start": 0.089,
+"gain_db": -30.9,
+"what": "pop"
+},
+{
+"file": "sonido/tick.mp3",
+"at": 243.71,
+"start": 0.041,
+"gain_db": -24.4,
+"what": "tick"
+},
+{
+"file": "sonido/pop2.mp3",
+"at": 244.74,
+"start": 0.088,
+"gain_db": -33.0,
+"what": "pop"
+},
+{
+"file": "sonido/stamp.mp3",
+"at": 247.603,
+"start": 0.021,
+"gain_db": -32.2,
+"what": "stamp"
+},
+{
+"file": "sonido/pop.mp3",
+"at": 248.603,
+"start": 0.089,
+"gain_db": -30.9,
+"what": "pop"
+},
+{
+"file": "sonido/trazo.mp3",
+"at": 251.963,
+"start": 0.26,
+"gain_db": -14.4,
+"what": "trazo"
+},
+{
+"file": "sonido/trazo.mp3",
+"at": 253.329,
+"start": 0.26,
+"gain_db": -14.4,
+"what": "trazo"
+},
+{
+"file": "sonido/swishA.mp3",
+"at": 255.888,
+"start": 0.51,
+"gain_db": -16.4,
+"what": "title"
+},
+{
+"file": "sonido/whoosh.mp3",
+"at": 274.935,
+"start": 0.025,
+"gain_db": -33.2,
+"what": "whoosh"
+},
+{
+"file": "sonido/tick.mp3",
+"at": 289.948,
+"start": 0.041,
+"gain_db": -24.4,
+"what": "tick"
+},
+{
+"file": "sonido/tick.mp3",
+"at": 291.328,
+"start": 0.041,
+"gain_db": -24.4,
+"what": "tick"
+},
+{
+"file": "sonido/tick.mp3",
+"at": 293.308,
+"start": 0.041,
+"gain_db": -24.4,
+"what": "tick"
+},
+{
+"file": "sonido/whoosh.mp3",
+"at": 296.584,
+"start": 0.025,
+"gain_db": -33.2,
+"what": "whoosh"
+},
+{
+"file": "sonido/pop2.mp3",
+"at": 297.734,
+"start": 0.088,
+"gain_db": -33.0,
+"what": "pop"
+},
+{
+"file": "sonido/pop.mp3",
+"at": 300.934,
+"start": 0.089,
+"gain_db": -30.9,
+"what": "pop"
+},
+{
+"file": "sonido/pop2.mp3",
+"at": 303.574,
+"start": 0.088,
+"gain_db": -33.0,
+"what": "pop"
+},
+{
+"file": "sonido/count.wav",
+"at": 304.434,
+"start": 0.041,
+"gain_db": -26.7,
+"what": "count"
+},
+{
+"file": "sonido/pop.mp3",
+"at": 306.37,
+"start": 0.089,
+"gain_db": -30.9,
+"what": "pop"
+},
+{
+"file": "sonido/pop2.mp3",
+"at": 309.03,
+"start": 0.088,
+"gain_db": -33.0,
+"what": "pop"
+},
+{
+"file": "sonido/pop.mp3",
+"at": 311.51,
+"start": 0.089,
+"gain_db": -30.9,
+"what": "pop"
+},
+{
+"file": "sonido/stamp.mp3",
+"at": 316.89,
+"start": 0.021,
+"gain_db": -32.2,
+"what": "stamp"
+},
+{
+"file": "sonido/pop2.mp3",
+"at": 318.51,
+"start": 0.088,
+"gain_db": -33.0,
+"what": "pop"
+},
+{
+"file": "sonido/pop.mp3",
+"at": 319.17,
+"start": 0.089,
+"gain_db": -30.9,
+"what": "pop"
+},
+{
+"file": "sonido/notaE2.mp3",
+"at": 323.79,
+"start": 0.0,
+"gain_db": -33.7,
+"what": "nota"
+},
+{
+"file": "sonido/pop2.mp3",
+"at": 327.006,
+"start": 0.088,
+"gain_db": -33.0,
+"what": "pop"
+},
+{
+"file": "sonido/whoosh.mp3",
+"at": 329.317,
+"start": 0.025,
+"gain_db": -33.2,
+"what": "whoosh"
+},
+{
+"file": "sonido/pop.mp3",
+"at": 329.367,
+"start": 0.089,
+"gain_db": -30.9,
+"what": "pop"
+},
+{
+"file": "sonido/pop2.mp3",
+"at": 329.867,
+"start": 0.088,
+"gain_db": -33.0,
+"what": "pop"
+},
+{
+"file": "sonido/count.wav",
+"at": 331.653,
+"start": 0.041,
+"gain_db": -26.7,
+"what": "count"
+},
+{
+"file": "sonido/trazo.mp3",
+"at": 333.773,
+"start": 0.26,
+"gain_db": -14.4,
+"what": "trazo"
+},
+{
+"file": "sonido/swishB.mp3",
+"at": 339.615,
+"start": 0.46,
+"gain_db": -19.9,
+"what": "title"
+},
+{
+"file": "sonido/whoosh.mp3",
+"at": 345.382,
+"start": 0.025,
+"gain_db": -33.2,
+"what": "whoosh"
+},
+{
+"file": "sonido/whoosh.mp3",
+"at": 347.498,
+"start": 0.025,
+"gain_db": -33.2,
+"what": "whoosh"
+},
+{
+"file": "sonido/pop.mp3",
+"at": 349.528,
+"start": 0.089,
+"gain_db": -30.9,
+"what": "pop"
+},
+{
+"file": "sonido/notaE2.mp3",
+"at": 351.444,
+"start": 0.0,
+"gain_db": -33.7,
+"what": "nota"
+},
+{
+"file": "sonido/whoosh.mp3",
+"at": 354.653,
+"start": 0.025,
+"gain_db": -33.2,
+"what": "whoosh"
+},
+{
+"file": "sonido/pop2.mp3",
+"at": 356.993,
+"start": 0.088,
+"gain_db": -33.0,
+"what": "pop"
+},
+{
+"file": "sonido/pop.mp3",
+"at": 358.393,
+"start": 0.089,
+"gain_db": -30.9,
+"what": "pop"
+},
+{
+"file": "sonido/pop2.mp3",
+"at": 363.356,
+"start": 0.088,
+"gain_db": -33.0,
+"what": "pop"
+},
+{
+"file": "sonido/stamp.mp3",
+"at": 363.556,
+"start": 0.021,
+"gain_db": -32.2,
+"what": "stamp"
+},
+{
+"file": "sonido/trazo.mp3",
+"at": 365.325,
+"start": 0.26,
+"gain_db": -14.4,
+"what": "trazo"
+},
+{
+"file": "sonido/tick.mp3",
+"at": 366.755,
+"start": 0.041,
+"gain_db": -24.4,
+"what": "tick"
+},
+{
+"file": "sonido/tick.mp3",
+"at": 368.595,
+"start": 0.041,
+"gain_db": -24.4,
+"what": "tick"
+},
+{
+"file": "sonido/tick.mp3",
+"at": 370.355,
+"start": 0.041,
+"gain_db": -24.4,
+"what": "tick"
+},
+{
+"file": "sonido/pop.mp3",
+"at": 370.505,
+"start": 0.089,
+"gain_db": -30.9,
+"what": "pop"
+},
+{
+"file": "sonido/pop2.mp3",
+"at": 375.248,
+"start": 0.088,
+"gain_db": -33.0,
+"what": "pop"
+},
+{
+"file": "sonido/pop.mp3",
+"at": 378.748,
+"start": 0.089,
+"gain_db": -30.9,
+"what": "pop"
+},
+{
+"file": "sonido/pop2.mp3",
+"at": 386.328,
+"start": 0.088,
+"gain_db": -33.0,
+"what": "pop"
+},
+{
+"file": "sonido/pop.mp3",
+"at": 389.211,
+"start": 0.089,
+"gain_db": -30.9,
+"what": "pop"
+},
+{
+"file": "sonido/pop2.mp3",
+"at": 390.111,
+"start": 0.088,
+"gain_db": -33.0,
+"what": "pop"
+},
+{
+"file": "sonido/stamp.mp3",
+"at": 392.151,
+"start": 0.021,
+"gain_db": -32.2,
+"what": "stamp"
+},
+{
+"file": "sonido/pop.mp3",
+"at": 393.951,
+"start": 0.089,
+"gain_db": -30.9,
+"what": "pop"
+},
+{
+"file": "sonido/tick.mp3",
+"at": 397.25,
+"start": 0.041,
+"gain_db": -24.4,
+"what": "tick"
+},
+{
+"file": "sonido/tick.mp3",
+"at": 400.906,
+"start": 0.041,
+"gain_db": -24.4,
+"what": "tick"
+},
+{
+"file": "sonido/tick.mp3",
+"at": 401.126,
+"start": 0.041,
+"gain_db": -24.4,
+"what": "tick"
+},
+{
+"file": "sonido/tick.mp3",
+"at": 401.346,
+"start": 0.041,
+"gain_db": -24.4,
+"what": "tick"
+},
+{
+"file": "sonido/tick.mp3",
+"at": 401.566,
+"start": 0.041,
+"gain_db": -24.4,
+"what": "tick"
+},
+{
+"file": "sonido/tick.mp3",
+"at": 401.786,
+"start": 0.041,
+"gain_db": -24.4,
+"what": "tick"
+},
+{
+"file": "sonido/tick.mp3",
+"at": 402.006,
+"start": 0.041,
+"gain_db": -24.4,
+"what": "tick"
+},
+{
+"file": "sonido/pop2.mp3",
+"at": 402.246,
+"start": 0.088,
+"gain_db": -33.0,
+"what": "pop"
+},
+{
+"file": "sonido/whoosh.mp3",
+"at": 402.886,
+"start": 0.025,
+"gain_db": -33.2,
+"what": "whoosh"
+},
+{
+"file": "sonido/notaE2.mp3",
+"at": 405.226,
+"start": 0.0,
+"gain_db": -33.7,
+"what": "nota"
+},
+{
+"file": "sonido/notaG2.mp3",
+"at": 408.012,
+"start": 0.0,
+"gain_db": -30.0,
+"what": "nota"
+},
+{
+"file": "sonido/notaC3.mp3",
+"at": 410.652,
+"start": 0.0,
+"gain_db": -34.6,
+"what": "nota"
+},
+{
+"file": "sonido/notaE2.mp3",
+"at": 414.895,
+"start": 0.0,
+"gain_db": -33.7,
+"what": "nota"
+},
+{
+"file": "sonido/count.wav",
+"at": 421.981,
+"start": 0.041,
+"gain_db": -26.7,
+"what": "count"
+},
+{
+"file": "sonido/pop.mp3",
+"at": 426.797,
+"start": 0.089,
+"gain_db": -30.9,
+"what": "pop"
+},
+{
+"file": "sonido/whoosh.mp3",
+"at": 431.623,
+"start": 0.025,
+"gain_db": -33.2,
+"what": "whoosh"
+},
+{
+"file": "sonido/whoosh.mp3",
+"at": 433.275,
+"start": 0.025,
+"gain_db": -33.2,
+"what": "whoosh"
+},
+{
+"file": "sonido/pop2.mp3",
+"at": 434.615,
+"start": 0.088,
+"gain_db": -33.0,
+"what": "pop"
+},
+{
+"file": "sonido/pop.mp3",
+"at": 434.765,
+"start": 0.089,
+"gain_db": -30.9,
+"what": "pop"
+},
+{
+"file": "sonido/pop2.mp3",
+"at": 434.915,
+"start": 0.088,
+"gain_db": -33.0,
+"what": "pop"
+},
+{
+"file": "sonido/stamp.mp3",
+"at": 436.335,
+"start": 0.021,
+"gain_db": -32.2,
+"what": "stamp"
+},
+{
+"file": "sonido/phone.mp3",
+"at": 439.734,
+"start": 0.031,
+"gain_db": -24.0,
+"what": "phone"
+},
+{
+"file": "sonido/phone.mp3",
+"at": 441.751,
+"start": 0.031,
+"gain_db": -24.0,
+"what": "phone"
+},
+{
+"file": "sonido/phone.mp3",
+"at": 444.07,
+"start": 0.031,
+"gain_db": -24.0,
+"what": "phone"
+},
+{
+"file": "sonido/phone.mp3",
+"at": 446.03,
+"start": 0.031,
+"gain_db": -24.0,
+"what": "phone"
+},
+{
+"file": "sonido/tick.mp3",
+"at": 458.309,
+"start": 0.041,
+"gain_db": -24.4,
+"what": "tick"
+},
+{
+"file": "sonido/tick.mp3",
+"at": 462.049,
+"start": 0.041,
+"gain_db": -24.4,
+"what": "tick"
+},
+{
+"file": "sonido/whoosh.mp3",
+"at": 471.352,
+"start": 0.025,
+"gain_db": -33.2,
+"what": "whoosh"
+},
+{
+"file": "sonido/count.wav",
+"at": 472.801,
+"start": 0.041,
+"gain_db": -26.7,
+"what": "count"
+},
+{
+"file": "sonido/notaE2.mp3",
+"at": 472.901,
+"start": 0.0,
+"gain_db": -33.7,
+"what": "nota"
+},
+{
+"file": "sonido/pop.mp3",
+"at": 477.394,
+"start": 0.089,
+"gain_db": -30.9,
+"what": "pop"
+},
+{
+"file": "sonido/pop2.mp3",
+"at": 478.83,
+"start": 0.088,
+"gain_db": -33.0,
+"what": "pop"
+},
+{
+"file": "sonido/pop.mp3",
+"at": 480.77,
+"start": 0.089,
+"gain_db": -30.9,
+"what": "pop"
+},
+{
+"file": "sonido/pop2.mp3",
+"at": 483.01,
+"start": 0.088,
+"gain_db": -33.0,
+"what": "pop"
+},
+{
+"file": "sonido/tick.mp3",
+"at": 498.858,
+"start": 0.041,
+"gain_db": -24.4,
+"what": "tick"
+},
+{
+"file": "sonido/tick.mp3",
+"at": 501.444,
+"start": 0.041,
+"gain_db": -24.4,
+"what": "tick"
+},
+{
+"file": "sonido/tick.mp3",
+"at": 503.684,
+"start": 0.041,
+"gain_db": -24.4,
+"what": "tick"
+},
+{
+"file": "sonido/tick.mp3",
+"at": 507.564,
+"start": 0.041,
+"gain_db": -24.4,
+"what": "tick"
+},
+{
+"file": "sonido/whoosh.mp3",
+"at": 514.346,
+"start": 0.025,
+"gain_db": -33.2,
+"what": "whoosh"
+},
+{
+"file": "sonido/whoosh.mp3",
+"at": 531.395,
+"start": 0.025,
+"gain_db": -33.2,
+"what": "whoosh"
+},
+{
+"file": "sonido/pop.mp3",
+"at": 531.545,
+"start": 0.089,
+"gain_db": -30.9,
+"what": "pop"
+},
+{
+"file": "sonido/pop2.mp3",
+"at": 532.905,
+"start": 0.088,
+"gain_db": -33.0,
+"what": "pop"
+},
+{
+"file": "sonido/trazo.mp3",
+"at": 534.185,
+"start": 0.26,
+"gain_db": -14.4,
+"what": "trazo"
+},
+{
+"file": "sonido/tick.mp3",
+"at": 535.305,
+"start": 0.041,
+"gain_db": -24.4,
+"what": "tick"
+},
+{
+"file": "sonido/tick.mp3",
+"at": 535.395,
+"start": 0.041,
+"gain_db": -24.4,
+"what": "tick"
+},
+{
+"file": "sonido/tick.mp3",
+"at": 535.485,
+"start": 0.041,
+"gain_db": -24.4,
+"what": "tick"
+},
+{
+"file": "sonido/tick.mp3",
+"at": 535.575,
+"start": 0.041,
+"gain_db": -24.4,
+"what": "tick"
+},
+{
+"file": "sonido/tick.mp3",
+"at": 535.665,
+"start": 0.041,
+"gain_db": -24.4,
+"what": "tick"
+},
+{
+"file": "sonido/tick.mp3",
+"at": 535.755,
+"start": 0.041,
+"gain_db": -24.4,
+"what": "tick"
+},
+{
+"file": "sonido/tick.mp3",
+"at": 535.845,
+"start": 0.041,
+"gain_db": -24.4,
+"what": "tick"
+},
+{
+"file": "sonido/tick.mp3",
+"at": 535.935,
+"start": 0.041,
+"gain_db": -24.4,
+"what": "tick"
+},
+{
+"file": "sonido/pop.mp3",
+"at": 536.205,
+"start": 0.089,
+"gain_db": -30.9,
+"what": "pop"
+},
+{
+"file": "sonido/pop2.mp3",
+"at": 538.291,
+"start": 0.088,
+"gain_db": -33.0,
+"what": "pop"
+},
+{
+"file": "sonido/pop.mp3",
+"at": 539.091,
+"start": 0.089,
+"gain_db": -30.9,
+"what": "pop"
+},
+{
+"file": "sonido/pop2.mp3",
+"at": 539.931,
+"start": 0.088,
+"gain_db": -33.0,
+"what": "pop"
+},
+{
+"file": "sonido/pop.mp3",
+"at": 541.311,
+"start": 0.089,
+"gain_db": -30.9,
+"what": "pop"
+},
+{
+"file": "sonido/pop2.mp3",
+"at": 542.671,
+"start": 0.088,
+"gain_db": -33.0,
+"what": "pop"
+},
+{
+"file": "sonido/whoosh.mp3",
+"at": 550.277,
+"start": 0.025,
+"gain_db": -33.2,
+"what": "whoosh"
+},
+{
+"file": "sonido/pop.mp3",
+"at": 550.327,
+"start": 0.089,
+"gain_db": -30.9,
+"what": "pop"
+},
+{
+"file": "sonido/stamp.mp3",
+"at": 553.147,
+"start": 0.021,
+"gain_db": -32.2,
+"what": "stamp"
+},
+{
+"file": "sonido/pop2.mp3",
+"at": 555.827,
+"start": 0.088,
+"gain_db": -33.0,
+"what": "pop"
+},
+{
+"file": "sonido/notaE2.mp3",
+"at": 557.533,
+"start": 0.0,
+"gain_db": -33.7,
+"what": "nota"
+},
+{
+"file": "sonido/notaG2.mp3",
+"at": 559.513,
+"start": 0.0,
+"gain_db": -30.0,
+"what": "nota"
+},
+{
+"file": "sonido/pop.mp3",
+"at": 563.252,
+"start": 0.089,
+"gain_db": -30.9,
+"what": "pop"
+},
+{
+"file": "sonido/pop2.mp3",
+"at": 563.812,
+"start": 0.088,
+"gain_db": -33.0,
+"what": "pop"
+},
+{
+"file": "sonido/swishC.mp3",
+"at": 584.709,
+"start": 0.0,
+"gain_db": -37.7,
+"what": "title"
+},
+{
+"file": "sonido/whoosh.mp3",
+"at": 603.654,
+"start": 0.025,
+"gain_db": -33.2,
+"what": "whoosh"
+},
+{
+"file": "sonido/pop.mp3",
+"at": 606.652,
+"start": 0.089,
+"gain_db": -30.9,
+"what": "pop"
+},
+{
+"file": "sonido/pop2.mp3",
+"at": 608.812,
+"start": 0.088,
+"gain_db": -33.0,
+"what": "pop"
+},
+{
+"file": "sonido/pop.mp3",
+"at": 611.072,
+"start": 0.089,
+"gain_db": -30.9,
+"what": "pop"
+},
+{
+"file": "sonido/pop2.mp3",
+"at": 612.652,
+"start": 0.088,
+"gain_db": -33.0,
+"what": "pop"
+},
+{
+"file": "sonido/trazo.mp3",
+"at": 614.928,
+"start": 0.26,
+"gain_db": -14.4,
+"what": "trazo"
+},
+{
+"file": "sonido/pop.mp3",
+"at": 616.008,
+"start": 0.089,
+"gain_db": -30.9,
+"what": "pop"
+},
+{
+"file": "sonido/count.wav",
+"at": 618.568,
+"start": 0.041,
+"gain_db": -26.7,
+"what": "count"
+},
+{
+"file": "sonido/pop2.mp3",
+"at": 625.084,
+"start": 0.088,
+"gain_db": -33.0,
+"what": "pop"
+},
+{
+"file": "sonido/stamp.mp3",
+"at": 625.784,
+"start": 0.021,
+"gain_db": -32.2,
+"what": "stamp"
+},
+{
+"file": "sonido/stamp.mp3",
+"at": 627.464,
+"start": 0.021,
+"gain_db": -32.2,
+"what": "stamp"
+},
+{
+"file": "sonido/stamp.mp3",
+"at": 629.604,
+"start": 0.021,
+"gain_db": -32.2,
+"what": "stamp"
+},
+{
+"file": "sonido/whoosh.mp3",
+"at": 632.419,
+"start": 0.025,
+"gain_db": -33.2,
+"what": "whoosh"
+},
+{
+"file": "sonido/pop.mp3",
+"at": 636.19,
+"start": 0.089,
+"gain_db": -30.9,
+"what": "pop"
+},
+{
+"file": "sonido/tick.mp3",
+"at": 638.709,
+"start": 0.041,
+"gain_db": -24.4,
+"what": "tick"
+},
+{
+"file": "sonido/tick.mp3",
+"at": 639.692,
+"start": 0.041,
+"gain_db": -24.4,
+"what": "tick"
+},
+{
+"file": "sonido/tick.mp3",
+"at": 640.572,
+"start": 0.041,
+"gain_db": -24.4,
+"what": "tick"
+},
+{
+"file": "sonido/tick.mp3",
+"at": 641.372,
+"start": 0.041,
+"gain_db": -24.4,
+"what": "tick"
+},
+{
+"file": "sonido/pop2.mp3",
+"at": 642.845,
+"start": 0.088,
+"gain_db": -33.0,
+"what": "pop"
+},
+{
+"file": "sonido/tick.mp3",
+"at": 644.765,
+"start": 0.041,
+"gain_db": -24.4,
+"what": "tick"
+},
+{
+"file": "sonido/pop.mp3",
+"at": 648.785,
+"start": 0.089,
+"gain_db": -30.9,
+"what": "pop"
+},
+{
+"file": "sonido/tick.mp3",
+"at": 649.525,
+"start": 0.041,
+"gain_db": -24.4,
+"what": "tick"
+},
+{
+"file": "sonido/stamp.mp3",
+"at": 650.585,
+"start": 0.021,
+"gain_db": -32.2,
+"what": "stamp"
+},
+{
+"file": "sonido/tick.mp3",
+"at": 659.115,
+"start": 0.041,
+"gain_db": -24.4,
+"what": "tick"
+},
+{
+"file": "sonido/tick.mp3",
+"at": 661.255,
+"start": 0.041,
+"gain_db": -24.4,
+"what": "tick"
+},
+{
+"file": "sonido/tick.mp3",
+"at": 663.235,
+"start": 0.041,
+"gain_db": -24.4,
+"what": "tick"
+},
+{
+"file": "sonido/swishA.mp3",
+"at": 665.865,
+"start": 0.51,
+"gain_db": -16.4,
+"what": "title"
+},
+{
+"file": "sonido/whoosh.mp3",
+"at": 685.567,
+"start": 0.025,
+"gain_db": -33.2,
+"what": "whoosh"
+},
+{
+"file": "sonido/pop2.mp3",
+"at": 685.617,
+"start": 0.088,
+"gain_db": -33.0,
+"what": "pop"
+},
+{
+"file": "sonido/pop.mp3",
+"at": 687.076,
+"start": 0.089,
+"gain_db": -30.9,
+"what": "pop"
+},
+{
+"file": "sonido/tick.mp3",
+"at": 690.276,
+"start": 0.041,
+"gain_db": -24.4,
+"what": "tick"
+},
+{
+"file": "sonido/tick.mp3",
+"at": 690.396,
+"start": 0.041,
+"gain_db": -24.4,
+"what": "tick"
+},
+{
+"file": "sonido/tick.mp3",
+"at": 690.516,
+"start": 0.041,
+"gain_db": -24.4,
+"what": "tick"
+},
+{
+"file": "sonido/tick.mp3",
+"at": 690.636,
+"start": 0.041,
+"gain_db": -24.4,
+"what": "tick"
+},
+{
+"file": "sonido/pop2.mp3",
+"at": 693.949,
+"start": 0.088,
+"gain_db": -33.0,
+"what": "pop"
+},
+{
+"file": "sonido/pop.mp3",
+"at": 695.789,
+"start": 0.089,
+"gain_db": -30.9,
+"what": "pop"
+},
+{
+"file": "sonido/pop2.mp3",
+"at": 697.389,
+"start": 0.088,
+"gain_db": -33.0,
+"what": "pop"
+},
+{
+"file": "sonido/pop.mp3",
+"at": 698.329,
+"start": 0.089,
+"gain_db": -30.9,
+"what": "pop"
+},
+{
+"file": "sonido/tick.mp3",
+"at": 717.445,
+"start": 0.041,
+"gain_db": -24.4,
+"what": "tick"
+},
+{
+"file": "sonido/tick.mp3",
+"at": 718.484,
+"start": 0.041,
+"gain_db": -24.4,
+"what": "tick"
+},
+{
+"file": "sonido/tick.mp3",
+"at": 720.741,
+"start": 0.041,
+"gain_db": -24.4,
+"what": "tick"
+},
+{
+"file": "sonido/tick.mp3",
+"at": 723.281,
+"start": 0.041,
+"gain_db": -24.4,
+"what": "tick"
+},
+{
+"file": "sonido/whoosh.mp3",
+"at": 728.731,
+"start": 0.025,
+"gain_db": -33.2,
+"what": "whoosh"
+},
+{
+"file": "sonido/pop2.mp3",
+"at": 729.48,
+"start": 0.088,
+"gain_db": -33.0,
+"what": "pop"
+},
+{
+"file": "sonido/pop.mp3",
+"at": 731.18,
+"start": 0.089,
+"gain_db": -30.9,
+"what": "pop"
+},
+{
+"file": "sonido/trazo.mp3",
+"at": 733.1,
+"start": 0.26,
+"gain_db": -14.4,
+"what": "trazo"
+},
+{
+"file": "sonido/pop2.mp3",
+"at": 749.916,
+"start": 0.088,
+"gain_db": -33.0,
+"what": "pop"
+},
+{
+"file": "sonido/pop.mp3",
+"at": 751.356,
+"start": 0.089,
+"gain_db": -30.9,
+"what": "pop"
+},
+{
+"file": "sonido/pop2.mp3",
+"at": 752.136,
+"start": 0.088,
+"gain_db": -33.0,
+"what": "pop"
+},
+{
+"file": "sonido/pop.mp3",
+"at": 753.296,
+"start": 0.089,
+"gain_db": -30.9,
+"what": "pop"
+},
+{
+"file": "sonido/pop2.mp3",
+"at": 766.698,
+"start": 0.088,
+"gain_db": -33.0,
+"what": "pop"
+}
+]
+}
