@@ -47,6 +47,14 @@ Decirle en una frase qué formato se va a usar y por qué (por ejemplo: «Es un 
 | `reels/` | `REELS.md`, la plantilla de partida (`plantillas/`) y lo antiguo solo de consulta (`antiguo/`) |
 | `youtube/` | `YOUTUBE.md` y sus plantillas y programas (`scripts/`) |
 
+## Cómo leer esta skill (para el modelo)
+
+- Todas las rutas a archivos de la skill son **relativas a la carpeta de este `SKILL.md`** (por ejemplo, `comun/COMUN.md`). Las que empiezan por `<proyecto>` son carpetas de ella, fuera de la skill.
+- Leer `comun/COMUN.md` y el archivo del formato **enteros** antes de editar; no basta con buscar trozos.
+- Si dos reglas chocan, seguir «Orden si algo choca» de `comun/COMUN.md`. Dentro de las reglas aprendidas, manda la más reciente; las marcadas *(historia)* no se aplican.
+- No leer `reels/antiguo/` salvo que ella pida algo de un estilo anterior.
+- **Nombres antiguos:** hasta el 20 nov 2026 esto eran dos skills, `edicion-reels` y `edicion-youtube`. Si una nota, una memoria o un mensaje las nombra, se refiere a `reels/REELS.md` o a `youtube/YOUTUBE.md` de esta skill. Lo que antes era «común, idéntico en las dos skills» ahora está una sola vez en `comun/COMUN.md`.
+
 ## Correcciones nuevas
 
 Cuando ella corrija algo, escribirlo como regla con su fecha:

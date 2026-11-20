@@ -14,6 +14,7 @@ Al empezar decide el formato con lo que se le pida, con la carpeta donde está e
 ```
 autoedicion/
 ├── SKILL.md            ← puerta de entrada: decide el formato y dice qué leer
+├── AGENTS.md           ← aviso para otras IA (Codex, Cursor…): empezar por SKILL.md
 ├── comun/
 │   ├── COMUN.md        ← pasos de trabajo, calidad, lo que nunca se hace, herramientas y reglas comunes
 │   ├── catalogo-animaciones.md + catalogo/   ← animaciones aprobadas (estilo nuevo); abrir los .html en el navegador para verlas
@@ -44,6 +45,10 @@ Todas las rutas parten de la carpeta del proyecto, que se escribe en **una sola 
 - Vídeos, brutos y versiones terminadas.
 - Las fichas de estilo, las referencias, los sonidos y los recursos de Pexels: la skill los lee cada vez de la carpeta ` MI ESTILO`, para que el estilo se pueda cambiar sin tocar la skill.
 - Los subtítulos de los reels de ejemplo (`src/data/<id>-captions.json`). Por eso los dos ejemplos de `reels/plantillas/n2/` sirven para copiar escenas, pero no se pueden renderizar tal cual.
+
+## Con otras IA
+
+Está pensada para Claude Code, pero cualquier asistente que lea archivos puede seguirla: `AGENTS.md` le dice que empiece por `SKILL.md`, decida el formato y lea solo `comun/COMUN.md` y el archivo de ese formato.
 
 ## Cómo instalarla en Claude Code
 
