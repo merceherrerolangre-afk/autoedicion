@@ -1,0 +1,338 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Detrás de ti</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&family=Archivo:wght@700;800;900&family=Archivo+Black&display=swap">
+<style>
+/* Página: cabecera + barra fija de filtros + rejilla de fichas (pantalla 9:16 que se mueve, voto debajo) */
+:root{--bg:#f3f1ee;--panel:#fff;--ink:#17171c;--mute:#6c6a73;--line:#e1ddd8;--accent:#E98A55;--accent-ink:#fff;--yes:#16a34a;--yes-bg:#dcf5e5;--no:#d62f4b;--no-bg:#fde3e8}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#121216;--panel:#1c1c22;--ink:#f2f0ed;--mute:#9b98a3;--line:#2e2e36;--accent:#F4A57A;--accent-ink:#1d0f06;--yes:#4ade80;--yes-bg:#12301e;--no:#ff6b84;--no-bg:#3a141d;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#121216;--panel:#1c1c22;--ink:#f2f0ed;--mute:#9b98a3;--line:#2e2e36;--accent:#F4A57A;--accent-ink:#1d0f06;--yes:#4ade80;--yes-bg:#12301e;--no:#ff6b84;--no-bg:#3a141d;color-scheme:dark}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:400 14px/1.45 Inter,system-ui,sans-serif;padding:28px 16px 40px}
+.wrap{max-width:1180px;margin:0 auto}
+h1{font:800 30px/1.1 Archivo,Inter,sans-serif;margin:0 0 8px;letter-spacing:-.02em;text-wrap:balance}
+.lead{max-width:66ch;color:var(--mute);margin:0 0 20px}
+.bar{position:sticky;top:0;z-index:20;background:var(--bg);padding:10px 0;border-bottom:1px solid var(--line);display:flex;flex-wrap:wrap;gap:10px 16px;align-items:center;margin-bottom:22px}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chip{border:1px solid var(--line);background:var(--panel);color:var(--ink);border-radius:999px;padding:6px 12px;font:600 12px Inter,sans-serif;cursor:pointer}
+.chip[aria-pressed="true"]{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+.chip:focus-visible,.vb:focus-visible,.copy:focus-visible,.stage:focus-visible,textarea:focus-visible,input:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.count{margin-left:auto;font-size:12px;color:var(--mute);font-variant-numeric:tabular-nums}
+.copy{background:var(--accent);color:var(--accent-ink);border:0;border-radius:10px;padding:9px 16px;font:800 13px Inter,sans-serif;cursor:pointer}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(248px,1fr));gap:18px}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:18px;padding:14px;display:flex;flex-direction:column;gap:10px;min-width:0}
+.card[data-v="1"]{border-color:var(--yes);box-shadow:0 0 0 2px var(--yes-bg)}
+.card[data-v="-1"]{opacity:.62}
+.card[data-v="-1"] .stage{filter:grayscale(.6)}
+.meta{display:flex;flex-direction:column;gap:3px}
+.nm{font:800 15px/1.2 Archivo,Inter,sans-serif}
+.fr{font:600 10px Inter,sans-serif;letter-spacing:.06em;text-transform:uppercase;color:var(--mute)}
+.ds{font-size:12.5px;color:var(--mute)}
+.votes{display:flex;gap:8px}
+.vb{flex:1;border:1px solid var(--line);background:var(--bg);color:var(--ink);border-radius:10px;padding:9px 6px;font:700 13px Inter,sans-serif;cursor:pointer}
+.vb.y[aria-pressed="true"]{background:var(--yes);border-color:var(--yes);color:#fff}
+.vb.n[aria-pressed="true"]{background:var(--no);border-color:var(--no);color:#fff}
+.note{width:100%;border:1px solid var(--line);background:var(--bg);color:var(--ink);border-radius:8px;padding:7px 9px;font:400 12px Inter,sans-serif}
+.out{margin-top:30px;background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:16px}
+.out h2{margin:0 0 6px;font:800 18px Archivo,Inter,sans-serif}
+.out p{margin:0 0 10px;color:var(--mute);font-size:13px}
+textarea{width:100%;min-height:200px;border:1px solid var(--line);border-radius:10px;background:var(--bg);color:var(--ink);padding:10px;font:12px/1.5 ui-monospace,Menlo,monospace}
+.empty{padding:40px 0;color:var(--mute);text-align:center}
+
+/* ===== piezas (sobre su propio fondo; no cambian con el tema) =====
+   Capas: .fondo (el salón = su vídeo) → los elementos → .persona (ella recortada, SIEMPRE delante). */
+.stage{position:relative;width:216px;height:384px;border-radius:22px;overflow:hidden;margin:0 auto;box-shadow:0 6px 18px rgba(0,0,0,.18);cursor:pointer;max-width:100%;isolation:isolate;color:#17171c;font-family:Inter,sans-serif}
+.fondo{position:absolute;inset:0;background:linear-gradient(180deg,#f1e8de 0,#e9dccd 58%,#cdb59c 100%)}
+.fondo::before{content:"";position:absolute;left:14px;top:46px;width:54px;height:150px;border-radius:6px;background:linear-gradient(180deg,#dfe3e2,#c9cfcd);box-shadow:150px 0 0 #d9dedd}
+.fondo::after{content:"";position:absolute;left:-10px;right:-10px;top:250px;height:40px;background:radial-gradient(60% 100% at 50% 0,rgba(255,170,110,.35),transparent 70%)}
+.persona{position:absolute;inset:0;z-index:10;pointer-events:none}
+.persona .pl{position:absolute;left:74px;top:100px;width:68px;height:104px;border-radius:34px 34px 20px 20px;background:linear-gradient(180deg,#c4602f,#9c4220)}
+.persona .pb{position:absolute;left:36px;right:36px;top:176px;bottom:-30px;border-radius:64px 64px 0 0;background:linear-gradient(180deg,#26232a,#151417);box-shadow:0 -2px 14px rgba(0,0,0,.25)}
+.persona .pn{position:absolute;left:98px;top:156px;width:20px;height:30px;background:#e2ad8b;border-radius:0 0 8px 8px}
+.persona .ph{position:absolute;left:84px;top:110px;width:48px;height:58px;border-radius:46% 46% 48% 48%;background:#ebbb99}
+.persona .ph::before{content:"";position:absolute;left:-4px;right:-4px;top:-6px;height:24px;border-radius:50% 50% 30% 30%;background:#bd5a2a}
+.persona .ph::after{content:"";position:absolute;left:14px;top:30px;width:4px;height:4px;border-radius:50%;background:#3a2418;box-shadow:16px 0 0 #3a2418}
+.abs{position:absolute}
+.cd{position:absolute;background:#fff;border-radius:12px;box-shadow:0 10px 22px rgba(0,0,0,.16),0 1px 3px rgba(0,0,0,.08);padding:8px 9px}
+.cdk{position:absolute;background:#242424;color:#fff;border-radius:12px;box-shadow:0 12px 24px rgba(0,0,0,.3);padding:8px 9px}
+.t{font:800 11px/1.15 Inter,sans-serif;color:#17171c;white-space:nowrap}
+.t2{font:600 8px/1.2 Inter,sans-serif;color:#777}
+.ln{display:block;height:5px;border-radius:3px;background:#e7e2dc;margin-top:6px}
+.pill{position:absolute;display:inline-block;background:#E98A55;color:#fff;font:800 10px/1 Inter,sans-serif;border-radius:99px;padding:6px 10px;white-space:nowrap;box-shadow:0 6px 14px rgba(233,138,85,.35)}
+.pillw{position:absolute;display:inline-block;background:#fff;color:#17171c;font:800 10px/1 Inter,sans-serif;border-radius:99px;padding:6px 10px;white-space:nowrap;box-shadow:0 6px 14px rgba(0,0,0,.15)}
+.big{font-family:'Archivo Black',Archivo,sans-serif;letter-spacing:-.02em;line-height:.9;color:#17171c}
+.vd{position:absolute;border-radius:12px;overflow:hidden;background:linear-gradient(160deg,var(--v1,#e7c7a6),var(--v2,#8a5233));box-shadow:0 12px 24px rgba(0,0,0,.22)}
+.vd::before{content:"";position:absolute;left:50%;bottom:-6%;width:56%;height:62%;transform:translateX(-50%);border-radius:50% 50% 0 0/40% 40% 0 0;background:radial-gradient(circle at 50% 22%,var(--v3,#f0c7a4) 0 18%,transparent 19%),linear-gradient(180deg,transparent 30%,rgba(40,25,18,.55) 31%)}
+.vd::after{content:"";position:absolute;inset:0;background:linear-gradient(110deg,transparent 30%,rgba(255,255,255,.32) 50%,transparent 70%);background-size:220% 100%;animation:kFoot 2.4s linear infinite}
+.vd .vb2{position:absolute;left:8px;right:8px;bottom:7px;height:3px;border-radius:2px;background:rgba(255,255,255,.35)}
+.vd .vb2::after{content:"";position:absolute;left:0;top:0;bottom:0;width:100%;border-radius:2px;background:#fff;transform-origin:left;animation:kGrowX 4.2s linear both}
+.ck{display:inline-grid;place-items:center;width:13px;height:13px;border-radius:50%;background:#18a957;color:#fff;font:900 8px/1 Inter,sans-serif;flex:none}
+.row{display:flex;align-items:center;gap:6px;margin-top:6px}
+.bot{position:absolute;bottom:0;border-radius:7px 7px 4px 4px;background:linear-gradient(90deg,#fff,#efe9e3);box-shadow:0 8px 16px rgba(0,0,0,.18)}
+.bot::before{content:"";position:absolute;left:28%;right:28%;top:-9px;height:10px;border-radius:3px 3px 0 0;background:#242424}
+.bot::after{content:"";position:absolute;left:12%;right:12%;top:38%;height:22%;border-radius:3px;background:#E98A55;opacity:.85}
+
+@keyframes kFoot{from{background-position:120% 0}to{background-position:-120% 0}}
+@keyframes kGrowX{from{transform:scaleX(0)}to{transform:scaleX(1)}}
+@keyframes kGrowY{from{transform:scaleY(0)}to{transform:scaleY(1)}}
+@keyframes kFd{from{opacity:0}to{opacity:1}}
+@keyframes kUp{from{opacity:0;transform:translateY(24px)}to{opacity:1;transform:none}}
+@keyframes kRise{from{transform:translateY(150px)}to{transform:none}}
+@keyframes kOutR{from{transform:translateX(-80px)}to{transform:none}}
+@keyframes kOutL{from{transform:translateX(80px)}to{transform:none}}
+@keyframes kScale{from{transform:scale(0)}to{transform:scale(1)}}
+@keyframes kPop{from{opacity:0;transform:scale(.7)}to{opacity:1;transform:scale(1)}}
+@keyframes kDrop{from{transform:translateY(-190px)}to{transform:none}}
+@keyframes kGlide{from{transform:translateX(-200px)}to{transform:translateX(260px)}}
+@keyframes kClipC{from{clip-path:inset(50% 50% 50% 50% round 12px)}to{clip-path:inset(0 0 0 0 round 12px)}}
+@keyframes kClipUp{from{clip-path:inset(100% 0 0 0)}to{clip-path:inset(0 0 0 0)}}
+@keyframes kClipR{from{clip-path:inset(0 100% 0 0)}to{clip-path:inset(0 0 0 0)}}
+@keyframes kBlurIn{from{filter:blur(8px);transform:scale(1.12);opacity:.4}to{filter:blur(0);transform:none;opacity:1}}
+@keyframes kFar{from{transform:scale(.45);opacity:0;filter:blur(3px)}to{transform:none;opacity:1;filter:blur(0)}}
+@keyframes kSweep{from{transform:translateX(-140px) skewX(-18deg)}to{transform:translateX(260px) skewX(-18deg)}}
+@keyframes kFull{from{clip-path:inset(26% 32% 44% 32% round 14px)}to{clip-path:inset(0 0 0 0 round 0)}}
+@keyframes kStrip{from{transform:translateX(0)}to{transform:translateX(-156px)}}
+@keyframes kSwap1{0%,32%{opacity:1}36%,100%{opacity:0}}
+@keyframes kSwap2{0%,32%{opacity:0}36%,66%{opacity:1}70%,100%{opacity:0}}
+@keyframes kSwap3{0%,66%{opacity:0}70%,100%{opacity:1}}
+@keyframes kDraw{from{stroke-dashoffset:1}to{stroke-dashoffset:0}}
+@keyframes kType{from{width:0}to{width:var(--w,120px)}}
+@keyframes kFan1{from{transform:none}to{transform:translate(-62px,8px)}}
+@keyframes kFan3{from{transform:none}to{transform:translate(62px,8px)}}
+@keyframes kCar{from{transform:translateX(0)}to{transform:translateX(-210px)}}
+@keyframes kPx1{from{transform:translateX(-6px)}to{transform:translateX(6px)}}
+@keyframes kPx2{from{transform:translateX(-14px)}to{transform:translateX(14px)}}
+@keyframes kPx3{from{transform:translateX(-26px)}to{transform:translateX(26px)}}
+@keyframes kWipe{from{clip-path:inset(0 100% 0 0)}to{clip-path:inset(0 0 0 0)}}
+@keyframes kGlow{from{transform:scale(.3);opacity:0}to{transform:scale(1);opacity:1}}
+@keyframes kPush{from{transform:scale(1)}to{transform:scale(1.12)}}
+@keyframes kPushBack{from{transform:scale(1)}to{transform:scale(1.32)}}
+@keyframes kGray{from{filter:none}to{filter:grayscale(1) brightness(.95)}}
+@keyframes kDim{to{opacity:.35}}
+@keyframes kBg{from{opacity:0}to{opacity:1}}
+@keyframes kStack{from{opacity:0;transform:translateY(90px)}to{opacity:1;transform:none}}
+@keyframes kRank{from{opacity:0;transform:translateX(-30px)}to{opacity:1;transform:none}}
+@keyframes kSwing{from{transform:translateX(-90px)}to{transform:none}}
+@keyframes kPrint{from{clip-path:inset(100% 0 0 0)}to{clip-path:inset(0 0 0 0)}}
+@keyframes kBlink{0%,49%{opacity:1}50%,100%{opacity:0}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>Cosas que salen por detrás de ti</h1>
+  <p class="lead">Las <b>38 animaciones aprobadas</b> (21 nov 2026) de cosas que salen <b>detrás de ti</b>, nunca encima. En el vídeo, la persona dibujada es tu recorte (delante) y el fondo es tu propio vídeo. Se ponen en el montaje con <code>&lt;Animacion formato="detras"&gt;</code>.</p>
+  <div class="bar">
+    <div class="chips" id="cats" role="group" aria-label="Tipo de animación"></div>
+    <div class="chips" id="sts" role="group" aria-label="Estado del voto"></div>
+    <span class="count" id="cnt"></span>
+    <button class="copy" id="copy" type="button">Copiar mi selección</button>
+  </div>
+  <div class="grid" id="grid"></div>
+  <div class="empty" id="empty" hidden>No hay animaciones con ese filtro.</div>
+  <section class="out" aria-labelledby="oh">
+    <h2 id="oh">Mi selección</h2>
+    <p>Esto es lo que me pegarás. Si el botón de copiar no funciona, selecciona el texto y cópialo a mano.</p>
+    <textarea id="out" readonly aria-label="Texto de mi selección"></textarea>
+  </section>
+</div>
+
+<script>
+/* Ayudas: capas y piezas */
+const FONDO='<div class="fondo"></div>';
+const YO='<div class="persona"><i class="pl"></i><i class="pb"></i><i class="pn"></i><i class="ph"></i></div>';
+const A=(k,d,s,e='cubic-bezier(.2,.8,.2,1)')=>`animation:${k} ${d}s ${e} ${s}s both`;
+const box=(cls,x,y,w,h,inner,st='')=>`<div class="${cls}" style="left:${x}px;top:${y}px;width:${w}px;${h?`height:${h}px;`:''}${st}">${inner}</div>`;
+const card=(x,y,w,h,inner,st='')=>box('cd',x,y,w,h,inner,st);
+const dark=(x,y,w,h,inner,st='')=>box('cdk',x,y,w,h,inner,st);
+const vid=(x,y,w,h,st='',v='')=>`<div class="vd" style="left:${x}px;top:${y}px;width:${w}px;height:${h}px;${v};${st}"><i class="vb2"></i></div>`;
+const T=(t,sub='')=>`<div class="t">${t}</div>${sub?`<div class="t2">${sub}</div>`:''}`;
+const L=(w)=>`<i class="ln" style="width:${w}%"></i>`;
+const pill=(x,y,t,st='',w=false)=>`<span class="${w?'pillw':'pill'}" style="left:${x}px;top:${y}px;${st}">${t}</span>`;
+const V2='--v1:#cfd8d6;--v2:#5c6b6a;--v3:#e9c3a1',V3='--v1:#f3d9b9;--v2:#b3704a;--v3:#f6d0b0',V4='--v1:#d9c2e0;--v2:#6d4c78;--v3:#eccab0';
+const D=[];const add=(id,cat,name,desc,html,t=4400)=>D.push({id,cat,name,desc,html,t});
+const CATS={entradas:'Cómo aparece',videos:'Vídeos detrás',datos:'Datos y tarjetas',escena:'Fondo y cámara'};
+const S=(h)=>FONDO+h+YO; // escena: fondo + lo de detrás + ella delante
+
+/* ---------- CÓMO APARECE ---------- */
+add('sube-hombro','entradas','Sube desde detrás del hombro','Una tarjeta sale de detrás de tu hombro y sube hasta quedarse junto a tu cara.',
+S(card(132,96,76,62,T('Reserva','mañana · 10:00')+L(80),A('kRise',.8,.3))));
+add('sube-dos-hombros','entradas','Sube por los dos hombros','Dos tarjetas salen a la vez de detrás de tus hombros, una a cada lado, para comparar.',
+S(card(8,98,76,58,T('Antes')+L(70),A('kRise',.8,.3))+card(132,98,76,58,T('Después')+L(90),A('kRise',.8,.7))));
+add('asoma-lado','entradas','Asoma por un lado de la cabeza','La tarjeta estaba escondida detrás de tu cabeza y se desliza hacia un lado hasta verse entera.',
+S(card(128,104,82,60,T('Consejo','para tu salón')+L(70),A('kOutR',.7,.4))));
+add('asoma-alterna','entradas','Asoma a un lado y luego al otro','Primero sale una por la derecha y, con la siguiente idea, otra por la izquierda.',
+S(card(128,104,82,58,T('Paso 1')+L(80),A('kOutR',.6,.3))+card(6,104,82,58,T('Paso 2')+L(60),A('kOutL',.6,1.6))));
+add('circulo-tras-cabeza','entradas','Círculo que crece detrás de la cabeza','Un círculo naranja suave crece justo detrás de tu cabeza, como un halo, con la palabra arriba.',
+S(`<div class="abs" style="left:28px;top:56px;width:160px;height:160px;border-radius:50%;background:radial-gradient(circle,#ffd9bd,#F4A57A);transform-origin:50% 50%;${A('kScale',.7,.3)}"></div><div class="abs t" style="left:0;right:0;top:72px;text-align:center;font-size:13px;${A('kFd',.4,.8)}">CLAVE</div>`));
+add('cae-y-se-posa','entradas','Cae y se posa sobre tu cabeza','Una tarjeta baja desde arriba y se queda flotando por encima de ti, con su cabecita detrás de tu pelo.',
+S(card(50,40,116,64,T('Paso 1','asesora')+L(80),A('kDrop',.8,.3,'cubic-bezier(.2,.9,.25,1)'))));
+add('cruza-por-detras','entradas','Cruza de lado a lado por detrás','Una píldora atraviesa la pantalla y pasa por detrás de tu cabeza, como si estuviera en la pared.',
+S(`<div class="abs" style="left:0;top:122px;${A('kGlide',3.2,.2,'linear')}"><span class="pill" style="position:relative;font-size:12px;padding:8px 14px">Te conocen</span></div>`));
+add('ventana-se-abre','entradas','Ventana que se abre detrás','Una ventana tipo web se abre desde el centro detrás de ti; tu cabeza tapa la parte de abajo.',
+S(card(14,24,188,118,`<div style="display:flex;gap:3px;margin-bottom:7px"><i style="width:6px;height:6px;border-radius:50%;background:#ff5f57"></i><i style="width:6px;height:6px;border-radius:50%;background:#febc2e"></i><i style="width:6px;height:6px;border-radius:50%;background:#28c840"></i></div>`+T('Tu web')+L(90)+L(70)+L(50),A('kClipC',.7,.3))));
+add('desenfoque-a-foco','entradas','De desenfocada a nítida','La tarjeta empieza borrosa y grande, como lejos, y se enfoca detrás de ti.',
+S(card(48,34,120,66,T('Clientas fijas')+L(85)+L(60),A('kBlurIn',.9,.3))));
+add('desde-el-fondo','entradas','Llega desde el fondo','La tarjeta aparece pequeña al fondo de la sala y se acerca hasta su sitio detrás de ti.',
+S(card(124,70,84,64,T('Producto','el que usas')+L(70),A('kFar',.9,.3))));
+add('barrido-de-luz','entradas','Aparece con un barrido de luz','Una franja de luz cruza la pared y deja la tarjeta al pasar.',
+S(card(48,38,120,62,T('Mismo servicio')+L(80),A('kClipR',.6,.6))+`<div class="abs" style="left:0;top:0;width:60px;height:384px;background:linear-gradient(90deg,transparent,rgba(255,255,255,.75),transparent);${A('kSweep',1,.4,'ease-in-out')}"></div>`));
+
+/* ---------- VÍDEOS DETRÁS ---------- */
+add('video-hombro','videos','Vídeo vertical detrás del hombro','Un vídeo vertical sube desde detrás de tu hombro y se queda reproduciéndose a tu lado.',
+S(vid(128,58,80,140,A('kRise',.8,.3))));
+add('videos-dos-lados','videos','Dos vídeos, uno a cada lado','Dos vídeos salen de detrás de ti hacia los lados y quedan enmarcándote.',
+S(vid(4,72,78,132,A('kOutL',.7,.3),V2)+vid(134,72,78,132,A('kOutR',.7,.6),V3)));
+add('fondo-se-vuelve-video','videos','Tu fondo pasa a ser el vídeo','La pared del salón se funde con un vídeo a pantalla completa y tú sigues delante.',
+S(vid(0,0,216,384,`border-radius:0;${A('kBg',.8,.8)}`,V3)));
+add('video-crece-a-fondo','videos','Vídeo pequeño que crece hasta el fondo','Aparece un vídeo pequeño detrás de tu cabeza y se abre hasta ocupar todo el fondo.',
+S(vid(0,0,216,384,`border-radius:0;${A('kFull',1.1,.5,'cubic-bezier(.6,0,.2,1)')}`,V2)));
+add('tira-de-videos','videos','Tira de vídeos que pasa por detrás','Una fila de vídeos se desliza despacio por encima de tu cabeza, pasando por detrás de tu pelo.',
+S(`<div class="abs" style="left:10px;top:30px;display:flex;gap:8px;${A('kStrip',4.2,.2,'linear')}">${[V3,V2,V4,V3,V2].map(v=>vid(0,0,70,100,'position:relative',v)).join('')}</div>`));
+add('movil-con-video','videos','Móvil con vídeo detrás del hombro','Un móvil con un vídeo dentro sube desde detrás de tu hombro.',
+S(`<div class="abs" style="left:132px;top:60px;width:72px;height:136px;border-radius:14px;background:#111;padding:4px;box-shadow:0 12px 24px rgba(0,0,0,.3);${A('kRise',.8,.3)}">${vid(4,4,64,128,'border-radius:10px;box-shadow:none',V3)}</div>`));
+add('monitor-detras','videos','Pantalla grande detrás de ti','Una pantalla con su vídeo aparece en la pared, por encima y detrás de ti.',
+S(`<div class="abs" style="left:16px;top:20px;width:184px;height:112px;border-radius:10px;background:#1a1a1d;padding:5px;box-shadow:0 14px 26px rgba(0,0,0,.28);${A('kUp',.6,.3)}">${vid(5,5,174,102,'border-radius:6px;box-shadow:none',V2)}</div>`));
+add('video-cambia','videos','Ventana de vídeo que va cambiando','La misma ventana detrás de ti cambia de vídeo con cada frase.',
+S(`<div class="abs" style="left:126px;top:62px;width:84px;height:130px;${A('kOutR',.6,.2)}">${vid(0,0,84,130,A('kSwap1',4.4,0,'linear'),V3)}${vid(0,0,84,130,A('kSwap2',4.4,0,'linear'),V2)}${vid(0,0,84,130,A('kSwap3',4.4,0,'linear'),V4)}</div>`));
+add('fondo-video-y-tarjeta','videos','Vídeo de fondo suave y tarjeta','El fondo se vuelve un vídeo desenfocado y una tarjeta blanca entra encima de ese fondo, detrás de ti.',
+S(vid(0,0,216,384,`border-radius:0;filter:blur(3px) brightness(.85);${A('kBg',.6,.2)}`,V3)+card(48,36,120,62,T('Tu día a día')+L(80),A('kUp',.5,.9))));
+add('videos-antes-despues','videos','Antes y después en vídeo','Dos vídeos a tus lados: el de «antes» se queda en gris y el de «después» en color.',
+S(vid(4,80,78,128,A('kOutL',.6,.2)+',kGray .5s 1.2s both',V2)+vid(134,80,78,128,A('kOutR',.6,.5),V3)+pill(12,66,'Antes','background:#777;'+A('kPop',.3,.9))+pill(146,66,'Después',A('kPop',.3,1.4))));
+add('cuadricula-videos','videos','Cuatro vídeos que se encienden','Cuatro vídeos en la pared se van encendiendo uno a uno detrás de ti.',
+S(vid(8,24,92,78,A('kPop',.4,.2),V3)+vid(116,24,92,78,A('kPop',.4,.5),V2)+vid(8,112,70,72,A('kPop',.4,.8),V4)+vid(138,112,70,72,A('kPop',.4,1.1),V3)));
+
+/* ---------- DATOS Y TARJETAS ---------- */
+add('cifra-gigante','datos','Cifra gigante detrás de ti','Un número enorme sube por detrás de tu cabeza y se queda en la pared.',
+S(`<div class="abs big" style="left:0;right:0;top:26px;text-align:center;font-size:96px;color:#E98A55;${A('kRise',.8,.3)}">×2</div>`));
+add('palabra-gigante','datos','Palabra gigante detrás de ti','Una palabra grande aparece letra a letra detrás de ti; tu cabeza tapa un poco el centro.',
+S(`<div class="abs big" style="left:0;right:0;top:58px;text-align:center;font-size:46px">${'PRECIO'.split('').map((c,i)=>`<span style="display:inline-block;${A('kUp',.4,.3+i*.12)}">${c}</span>`).join('')}</div>`));
+add('barras-desde-hombros','datos','Barras que crecen desde detrás','Unas barras naranjas salen de detrás de tus hombros y crecen hacia arriba.',
+S(`<div class="abs" style="left:8px;right:8px;top:40px;height:150px;display:flex;align-items:flex-end;gap:7px">${[45,60,52,74,88,100].map((h,i)=>`<i style="flex:1;height:${h}%;border-radius:6px 6px 0 0;background:linear-gradient(#ffb98c,#E98A55);transform-origin:bottom;${A('kGrowY',.5,.3+i*.14)}"></i>`).join('')}</div>`+`<div class="abs t" style="left:12px;top:22px;${A('kFd',.4,.2)}">Ventas</div>`));
+add('linea-sube','datos','Línea que sube por detrás','Una línea se dibuja de lado a lado por encima de tu cabeza y termina en un punto con etiqueta.',
+S(`<svg class="abs" style="left:0;top:20px" width="216" height="140" viewBox="0 0 216 140"><path pathLength="1" d="M10 120C50 110 70 96 96 92S150 50 196 26" stroke="#E98A55" stroke-width="4" fill="none" stroke-linecap="round" stroke-dasharray="1" style="${A('kDraw',1.4,.3,'ease-in-out')}"/><circle cx="196" cy="26" r="6" fill="#E98A55" stroke="#fff" stroke-width="3" style="transform-origin:196px 26px;${A('kPop',.3,1.6)}"/></svg>`+pill(140,20,'Sube',A('kPop',.3,1.8),true)));
+add('anillo-cabeza','datos','Anillo que se cierra detrás de tu cabeza','Un anillo se dibuja alrededor de tu cabeza, por detrás, y una etiqueta dice qué mide.',
+S(`<svg class="abs" style="left:28px;top:58px" width="160" height="160" viewBox="0 0 160 160"><circle cx="80" cy="80" r="68" fill="none" stroke="rgba(255,255,255,.7)" stroke-width="8"/><circle cx="80" cy="80" r="68" fill="none" stroke="#E98A55" stroke-width="8" stroke-linecap="round" pathLength="1" stroke-dasharray="1" transform="rotate(-90 80 80)" style="${A('kDraw',1.4,.3,'ease-in-out')}"/></svg>`+pill(82,30,'Meta',A('kPop',.3,1.6))));
+add('lista-con-ticks','datos','Lista que se va marcando','Una tarjeta con tres pasos aparece detrás de ti y cada paso se marca con un tick.',
+S(card(14,22,124,88,T('Tu sistema')+['Reserva','Servicio','Pago'].map((w,i)=>`<div class="row"><span class="ck" style="${A('kPop',.25,.9+i*.5)}">✓</span><span class="t" style="font-size:10px">${w}</span></div>`).join(''),A('kUp',.5,.2))));
+add('calendario','datos','Calendario que se rellena','Un calendario aparece junto a tu cabeza y se van marcando días en naranja.',
+S(card(128,40,82,96,T('Agenda')+`<div style="display:grid;grid-template-columns:repeat(5,1fr);gap:3px;margin-top:6px">${Array.from({length:20},(_,i)=>`<i style="aspect-ratio:1;border-radius:3px;background:${[2,6,7,11,13,17].includes(i)?'#E98A55':'#efe9e3'};${[2,6,7,11,13,17].includes(i)?A('kPop',.25,.6+[2,6,7,11,13,17].indexOf(i)*.22):''}"></i>`).join('')}</div>`,A('kOutR',.6,.2))));
+add('etiqueta-precio','datos','Etiqueta de precio que sale de detrás','Una etiqueta con el precio sale de detrás de tu cabeza y se queda colgando a un lado.',
+S(`<div class="abs" style="left:136px;top:84px;${A('kSwing',.7,.3)}"><i class="abs" style="left:-30px;top:16px;width:34px;height:2px;background:#9a8f86"></i><div style="background:#fff;border-radius:6px 14px 14px 6px;padding:9px 12px 9px 16px;box-shadow:0 10px 20px rgba(0,0,0,.18);position:relative"><i class="abs" style="left:5px;top:50%;width:6px;height:6px;margin-top:-3px;border-radius:50%;background:#e7e2dc"></i><span class="big" style="font-size:22px">120 €</span></div></div>`));
+add('ticket-sale','datos','Ticket que se imprime detrás','Un ticket sale hacia arriba desde detrás de tu hombro, línea a línea.',
+S(`<div class="abs" style="left:134px;top:34px;width:72px;padding:9px;background:#fff;border-radius:6px 6px 0 0;box-shadow:0 10px 20px rgba(0,0,0,.16);${A('kPrint',1.2,.3,'steps(6)')}">${T('Ticket')}<div class="row" style="justify-content:space-between"><span class="t2">Keratina</span><span class="t2">✓</span></div><div class="row" style="justify-content:space-between"><span class="t2">Producto</span><span class="t2">✓</span></div>${L(100)}${L(70)}<div class="t" style="margin-top:8px">Total</div></div>`));
+add('mensaje-que-se-escribe','datos','Mensaje que se escribe detrás','Una tarjeta oscura de mensaje aparece por encima de ti y el texto se escribe solo.',
+S(dark(18,30,180,52,`<div style="display:flex;gap:8px;align-items:center"><i style="width:26px;height:26px;border-radius:50%;background:linear-gradient(#ffb98c,#c4602f);flex:none"></i><div><div class="t2" style="color:#aaa">Clienta</div><div style="overflow:hidden;white-space:nowrap;font:700 11px Inter;--w:120px;${A('kType',1.4,.7,'steps(22)')}">¿Tienes hueco mañana?</div></div></div>`,A('kUp',.5,.2))));
+add('burbujas-a-los-lados','datos','Burbujas de chat a tus lados','Dos burbujas de conversación salen de detrás de tu cabeza, una a cada lado.',
+S(`<div class="abs" style="left:8px;top:96px;${A('kOutL',.5,.3)}"><div style="background:#fff;border-radius:14px 14px 14px 4px;padding:8px 10px;box-shadow:0 8px 16px rgba(0,0,0,.14)" class="t">¿Cuánto es?</div></div><div class="abs" style="left:132px;top:130px;${A('kOutR',.5,1.3)}"><div style="background:#E98A55;color:#fff;border-radius:14px 14px 4px 14px;padding:8px 10px;box-shadow:0 8px 16px rgba(233,138,85,.3)" class="t"><span style="color:#fff">Te explico</span></div></div>`));
+add('antes-despues-tarjetas','datos','Antes y después a tus lados','A un lado una tarjeta gris «antes», al otro una naranja «después», saliendo de detrás de ti.',
+S(card(6,98,80,62,T('Antes')+L(60),A('kOutL',.6,.3)+';filter:grayscale(1);opacity:.85')+card(130,98,80,62,`<div class="t" style="color:#E98A55">Después</div>`+L(90),A('kOutR',.6,1))));
+add('pasos-en-abanico','datos','Pasos que se abren en abanico','Tres tarjetas salen juntas de detrás de tu cabeza y se reparten en fila por encima de ti.',
+S(`<div class="abs" style="left:76px;top:30px;width:64px;height:58px">${card(0,0,64,58,`<div class="t" style="color:#E98A55">1</div><div class="t">Asesora</div>`,A('kFan1',.6,.6))}${card(0,0,64,58,`<div class="t" style="color:#E98A55">2</div><div class="t">Usa</div>`,A('kUp',.5,.2))}${card(0,0,64,58,`<div class="t" style="color:#E98A55">3</div><div class="t">Ofrece</div>`,A('kFan3',.6,.6))}</div>`));
+add('carrusel-arriba','datos','Carrusel que pasa por encima','Una fila de tarjetas va pasando por detrás de tu cabeza, de derecha a izquierda.',
+S(`<div class="abs" style="left:20px;top:44px;display:flex;gap:10px;${A('kCar',4,.2,'cubic-bezier(.6,0,.4,1)')}">${['Reserva','Servicio','Producto','Pago','Reseña'].map(w=>`<div class="cd" style="position:relative;width:74px;height:54px">${T(w)}${L(70)}</div>`).join('')}</div>`));
+add('arco-de-pildoras','datos','Arco de etiquetas detrás de ti','Varias etiquetas aparecen una a una formando un arco por encima y detrás de tu cabeza.',
+S([[18,118,'Trato'],[30,72,'Tiempo'],[78,44,'Detalle'],[134,72,'Producto'],[150,118,'Precio']].map(([x,y,w],i)=>pill(x,y,w,A('kPop',.35,.3+i*.35),i!==2)).join('')));
+add('pila-que-crece','datos','Pila de tarjetas que crece','Las tarjetas se van apilando detrás de tu hombro, una sobre otra.',
+S([0,1,2].map(i=>card(132-i*0,140-i*40,76,46,T(['Lunes','Martes','Miércoles'][i])+L(70),A('kStack',.5,.3+i*.6))).join('')));
+add('conexiones','datos','Conexiones que se dibujan','Tres etiquetas por encima de ti se unen con líneas que pasan por detrás de tu cabeza.',
+S(`<svg class="abs" style="left:0;top:0" width="216" height="200" viewBox="0 0 216 200"><path pathLength="1" d="M48 52Q108 150 168 52" stroke="#9a8f86" stroke-width="2" fill="none" stroke-dasharray="1" style="${A('kDraw',.8,1)}"/><path pathLength="1" d="M48 52H168" stroke="#9a8f86" stroke-width="2" fill="none" stroke-dasharray="1" style="${A('kDraw',.8,1.6)}"/></svg>`+pill(14,40,'Tú',A('kPop',.3,.2),true)+pill(140,40,'Clienta',A('kPop',.3,.5),true)+pill(84,150,'Equipo',A('kPop',.3,.8))));
+add('ranking','datos','Ranking detrás de ti','Una lista con el primer puesto resaltado entra fila a fila junto a tu cabeza.',
+S(card(8,52,82,110,T('Lo que más vende')+[['1','Keratina'],['2','Color'],['3','Corte']].map(([n,w],i)=>`<div class="row" style="${A('kRank',.4,.6+i*.4)};${i===0?'background:#fff1e6;border-radius:6px;padding:2px 3px':''}"><b class="t" style="color:#E98A55">${n}</b><span class="t" style="font-size:10px">${w}</span></div>`).join(''),A('kOutL',.5,.2))));
+add('productos-suben','datos','Productos que suben a tus lados','Unos botes de producto suben desde detrás de tus hombros, a cada lado.',
+S(`<div class="abs" style="left:8px;top:96px;width:60px;height:84px;${A('kRise',.7,.3)}"><i class="bot" style="left:6px;width:24px;height:70px"></i><i class="bot" style="left:34px;width:22px;height:56px"></i></div><div class="abs" style="left:150px;top:96px;width:60px;height:84px;${A('kRise',.7,.7)}"><i class="bot" style="left:4px;width:22px;height:56px"></i><i class="bot" style="left:30px;width:24px;height:70px"></i></div>`+pill(70,62,'Producto',A('kPop',.3,1.3))));
+add('estanteria','datos','Estantería que se llena detrás','Aparece una balda en la pared y se van colocando productos encima, detrás de ti.',
+S(`<i class="abs" style="left:10px;right:10px;top:112px;height:6px;border-radius:3px;background:#b9a38e;box-shadow:0 6px 10px rgba(0,0,0,.15);transform-origin:left;${A('kGrowX',.5,.2)}"></i>`+[16,44,70,140,168,190].map((x,i)=>`<i class="bot" style="left:${x}px;top:auto;bottom:${384-112}px;width:20px;height:${[56,44,50,48,58,40][i]}px;${A('kUp',.35,.7+i*.18)}"></i>`).join('')));
+add('fotos-deslizan','datos','Fotos que se deslizan por detrás','Tres fotos de trabajos entran una tras otra por encima de tu cabeza.',
+S([0,1,2].map(i=>vid(10+i*68,30,60,78,A('kOutR',.5,.3+i*.35)+';border:3px solid #fff',[V3,V2,V4][i])).join('')));
+add('palabra-sobre-cabeza','datos','Etiqueta que sale de detrás de tu cabeza','Una etiqueta sube desde detrás de tu cabeza y se queda justo encima.',
+S(`<div class="abs" style="left:0;right:0;top:66px;text-align:center;${A('kRise',.7,.3)}"><span class="pill" style="position:relative;font-size:13px;padding:9px 16px">Consejo</span></div>`));
+
+/* ---------- FONDO Y CÁMARA ---------- */
+add('fondo-a-blanco','escena','Tu fondo pasa a blanco','El salón se funde con un fondo blanco de estudio y entran tarjetas detrás de ti.',
+S(`<div class="abs" style="inset:0;background:#f7f5f2;background-image:radial-gradient(#e2ddd7 1px,transparent 1.3px);background-size:12px 12px;${A('kBg',.6,.3)}"></div>`+card(14,40,84,60,T('Servicio')+L(70),A('kUp',.5,1))+card(118,40,84,60,T('Producto')+L(80),A('kUp',.5,1.3))));
+add('capas-en-profundidad','escena','Capas que se mueven a distinta velocidad','Tarjetas a distintas distancias se mueven poco a poco detrás de ti, dando profundidad.',
+S(`<div class="abs" style="left:150px;top:30px;${A('kPx1',4.4,0,'ease-in-out')};filter:blur(1.5px);opacity:.8">${card(0,0,56,40,T('Idea'),'position:relative')}</div><div class="abs" style="left:10px;top:60px;${A('kPx2',4.4,0,'ease-in-out')}">${card(0,0,74,50,T('Paso 1')+L(70),'position:relative')}</div><div class="abs" style="left:132px;top:110px;${A('kPx3',4.4,0,'ease-in-out')}">${card(0,0,78,52,T('Paso 2')+L(80),'position:relative')}</div>`));
+add('cortina-cambia-fondo','escena','Cortina que cambia la pared','Un barrido cambia la pared por un color suave con una palabra grande, y tú sigues delante.',
+S(`<div class="abs" style="inset:0;background:linear-gradient(180deg,#ffe9da,#F4A57A);${A('kWipe',.7,.4,'cubic-bezier(.6,0,.2,1)')}"><div class="abs big" style="left:0;right:0;top:40px;text-align:center;font-size:44px;color:#fff">VALOR</div></div>`));
+add('marco-retrato','escena','Marco que te rodea por detrás','Un marco redondeado se dibuja detrás de ti, como un retrato, con una etiqueta arriba.',
+S(`<svg class="abs" style="left:0;top:0" width="216" height="384" viewBox="0 0 216 384"><rect x="18" y="56" width="180" height="360" rx="40" fill="none" stroke="#fff" stroke-width="5" pathLength="1" stroke-dasharray="1" style="${A('kDraw',1.2,.3,'ease-in-out')}"/></svg>`+pill(78,42,'Antes',A('kPop',.3,1.3))));
+add('foco-de-luz','escena','Foco de luz detrás de ti','Una luz suave crece detrás de tu cabeza y aparece una palabra encima.',
+S(`<div class="abs" style="left:-42px;top:-10px;width:300px;height:300px;border-radius:50%;background:radial-gradient(circle,rgba(255,236,210,.95),rgba(255,210,170,.5) 40%,transparent 68%);${A('kGlow',.9,.2)}"></div><div class="abs big" style="left:0;right:0;top:42px;text-align:center;font-size:34px;${A('kUp',.5,.9)}">CONFIANZA</div>`));
+add('zoom-con-profundidad','escena','Zoom con profundidad','La cámara se acerca a ti y la tarjeta de detrás crece más deprisa, como si estuviera lejos.',
+`<div class="abs" style="inset:0;transform-origin:50% 40%;${A('kPush',3,.4,'ease-in-out')}">${FONDO}</div><div class="abs" style="inset:0;transform-origin:50% 30%;${A('kPushBack',3,.4,'ease-in-out')}">${card(56,40,104,58,T('Lo importante')+L(80),'')}</div><div class="abs" style="inset:0;transform-origin:50% 45%;${A('kPush',3,.4,'ease-in-out')}">${YO}</div>`);
+add('se-oscurece-y-sale','escena','La pared se oscurece y sale la tarjeta','El fondo se oscurece un poco para que destaque la tarjeta que aparece detrás de ti.',
+S(`<div class="abs" style="inset:0;background:rgba(20,16,14,.45);${A('kBg',.5,.2)}"></div>`+card(40,32,136,66,T('Lo que no se ve','no se paga')+L(80),A('kUp',.5,.6))));
+add('pared-con-cuadricula','escena','Pared de estudio con cuadrícula','Aparece una cuadrícula suave en la pared y una tarjeta se coloca encima, detrás de ti.',
+S(`<div class="abs" style="inset:0;background-image:linear-gradient(rgba(120,100,85,.14) 1px,transparent 1px),linear-gradient(90deg,rgba(120,100,85,.14) 1px,transparent 1px);background-size:18px 18px;${A('kBg',.6,.2)}"></div>`+card(124,60,84,62,T('Plan')+L(80)+L(50),A('kOutR',.5,.8))));
+add('dos-mitades-de-pared','escena','La pared se parte en dos colores','La pared se divide en dos mitades (gris y naranja suave) para comparar, contigo en medio.',
+S(`<div class="abs" style="left:0;top:0;bottom:0;width:50%;background:#e4e1de;${A('kClipR',.6,.2)}"></div><div class="abs" style="right:0;top:0;bottom:0;width:50%;background:#ffe1cd;${A('kClipR',.6,.5)}"></div>`+pill(14,60,'Salón 1','background:#777;'+A('kPop',.3,1))+pill(142,60,'Salón 2',A('kPop',.3,1.3))));
+add('ventana-y-zoom','escena','Ventana que se acerca detrás de ti','Una ventana aparece en la pared y se acerca poco a poco mientras hablas.',
+S(`<div class="abs" style="left:24px;top:30px;width:168px;height:104px;transform-origin:50% 60%;${A('kPush',4,.6,'linear')}">${card(0,0,168,104,`<div style="display:flex;gap:3px;margin-bottom:7px"><i style="width:6px;height:6px;border-radius:50%;background:#ff5f57"></i><i style="width:6px;height:6px;border-radius:50%;background:#febc2e"></i><i style="width:6px;height:6px;border-radius:50%;background:#28c840"></i></div>`+T('Reservas online')+L(90)+L(60),A('kUp',.5,.2))}</div>`));
+add('sello-detras','escena','Círculo con palabra a un lado','Un círculo naranja con una palabra sale de detrás de tu cabeza y se queda junto a ella.',
+S(`<div class="abs" style="left:136px;top:70px;width:70px;height:70px;border-radius:50%;background:radial-gradient(circle at 35% 30%,#ffc8a3,#E98A55);display:grid;place-items:center;box-shadow:0 10px 20px rgba(233,138,85,.35);${A('kOutR',.6,.3)}"><span class="t" style="color:#fff;font-size:12px">EXTRA</span></div>`));
+add('video-y-texto-detras','escena','Vídeo de fondo con palabra encima','El fondo pasa a un vídeo y encima aparece una palabra grande, siempre detrás de ti.',
+S(vid(0,0,216,384,`border-radius:0;${A('kBg',.6,.2)}`,V4)+`<div class="abs" style="inset:0;background:linear-gradient(180deg,rgba(0,0,0,.35),transparent 50%);${A('kBg',.4,.6)}"></div><div class="abs big" style="left:0;right:0;top:44px;text-align:center;font-size:40px;color:#fff;${A('kUp',.5,.8)}">RESULTADO</div>`));
+
+/* Rechazadas el 21 nov 2026 (no se usan): sube-hombro, asoma-lado, asoma-alterna, cruza-por-detras, barrido-de-luz, fondo-video-y-tarjeta, palabra-gigante, etiqueta-precio, burbujas-a-los-lados, antes-despues-tarjetas, pila-que-crece, conexiones, ranking, palabra-sobre-cabeza, foco-de-luz, se-oscurece-y-sale, sello-detras, video-y-texto-detras */
+const NO=["sube-hombro","asoma-lado","asoma-alterna","cruza-por-detras","barrido-de-luz","fondo-video-y-tarjeta","palabra-gigante","etiqueta-precio","burbujas-a-los-lados","antes-despues-tarjetas","pila-que-crece","conexiones","ranking","palabra-sobre-cabeza","foco-de-luz","se-oscurece-y-sale","sello-detras","video-y-texto-detras"];D.splice(0,D.length,...D.filter(d=>!NO.includes(d.id)));
+
+/* ---------- Página: votos, filtros y texto ---------- */
+let V={},N={},cat='todas',st='todas';
+try{V=JSON.parse(localStorage.getItem('detras-v')||'{}');N=JSON.parse(localStorage.getItem('detras-n')||'{}')}catch(e){}
+const save=()=>{try{localStorage.setItem('detras-v',JSON.stringify(V));localStorage.setItem('detras-n',JSON.stringify(N))}catch(e){}};
+const $=s=>document.querySelector(s),grid=$('#grid');
+const reduce=matchMedia('(prefers-reduced-motion:reduce)').matches;
+function mount(s,d){s.innerHTML=d.html}
+function build(){
+  grid.innerHTML='';
+  D.forEach((d,i)=>{
+    const c=document.createElement('article');c.className='card';c.id='c-'+d.id;c.dataset.cat=d.cat;
+    c.innerHTML=`<div class="stage" role="button" tabindex="0" aria-label="Ver otra vez: ${d.name}"></div>
+    <div class="meta"><span class="fr">${i+1} · ${CATS[d.cat]}</span><span class="nm">${d.name}</span><span class="ds">${d.desc}</span></div>
+    <div class="votes"><button class="vb y" type="button" aria-pressed="false">👍 Me gusta</button><button class="vb n" type="button" aria-pressed="false">👎 No</button></div>
+    <input class="note" type="text" placeholder="Nota opcional (ej. más lenta, más grande)" aria-label="Nota sobre ${d.name}">`;
+    grid.appendChild(c);
+    const s=c.querySelector('.stage');const play=()=>mount(s,d);
+    s.addEventListener('click',play);s.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();play()}});
+    let tm=null;
+    new IntersectionObserver(es=>{es[0].isIntersecting?(play(),!reduce&&(tm=setInterval(play,d.t))):(clearInterval(tm),tm=null)},{threshold:.35}).observe(s);
+    const [by,bn]=c.querySelectorAll('.vb'),ni=c.querySelector('.note');ni.value=N[d.id]||'';
+    const paint=()=>{c.dataset.v=V[d.id]||0;by.setAttribute('aria-pressed',V[d.id]===1);bn.setAttribute('aria-pressed',V[d.id]===-1)};
+    by.onclick=()=>{V[d.id]=V[d.id]===1?0:1;paint();after()};
+    bn.onclick=()=>{V[d.id]=V[d.id]===-1?0:-1;paint();after()};
+    ni.oninput=()=>{N[d.id]=ni.value;save();text()};
+    paint();
+  });
+}
+function after(){save();text();filter()}
+function filter(){
+  let n=0;
+  D.forEach(d=>{const c=$('#c-'+d.id),v=V[d.id]||0;
+    const ok=(cat==='todas'||d.cat===cat)&&(st==='todas'||(st==='si'&&v===1)||(st==='no'&&v===-1)||(st==='sin'&&v===0));
+    c.hidden=!ok;if(ok)n++});
+  $('#empty').hidden=n>0;
+  const y=D.filter(d=>V[d.id]===1).length,no=D.filter(d=>V[d.id]===-1).length;
+  $('#cnt').textContent=`${y} me gustan · ${no} no · ${D.length-y-no} sin votar`;
+}
+function text(){
+  const Lk=D.filter(d=>V[d.id]===1),R=D.filter(d=>V[d.id]===-1);
+  const line=(d,i)=>`${i+1}. [${d.id}] ${d.name} (${CATS[d.cat]}): ${d.desc}${N[d.id]?` NOTA: ${N[d.id]}`:''}`;
+  $('#out').value=`COSAS DETRÁS DE MÍ - MI SELECCIÓN (${new Date().toLocaleDateString('es-ES')})\n\nME GUSTAN (${Lk.length}):\n${Lk.map(line).join('\n')||'(ninguna todavía)'}\n\nNO ME GUSTAN (${R.length}):\n${R.map(line).join('\n')||'(ninguna)'}\n\nSIN VOTAR: ${D.length-Lk.length-R.length}`;
+}
+function chips(el,items,get,set){
+  el.innerHTML='';items.forEach(([k,l])=>{const b=document.createElement('button');b.type='button';b.className='chip';b.textContent=l;b.setAttribute('aria-pressed',get()===k);b.onclick=()=>{set(k);el.querySelectorAll('.chip').forEach(x=>x.setAttribute('aria-pressed','false'));b.setAttribute('aria-pressed','true');filter()};el.appendChild(b)});
+}
+chips($('#cats'),[['todas','Todas'],...Object.entries(CATS)],()=>cat,k=>cat=k);
+chips($('#sts'),[['todas','Todas'],['si','👍'],['no','👎'],['sin','Sin votar']],()=>st,k=>st=k);
+$('#copy').onclick=async()=>{
+  const o=$('#out'),b=$('#copy');text();
+  try{await navigator.clipboard.writeText(o.value);b.textContent='¡Copiado!'}catch(e){o.select();b.textContent='Selecciona y copia abajo'}
+  setTimeout(()=>b.textContent='Copiar mi selección',2200);
+};
+build();text();filter();
+</script>
+</body>
+</html>
