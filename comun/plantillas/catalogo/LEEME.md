@@ -11,6 +11,7 @@ Las animaciones **no se rehacen a mano**: se usa el mismo HTML y CSS de sus pág
 | `ReelBBBA8ECFv2.tsx` | **Reel real aprobado** (21 nov 2026, «me gusta»). El mejor punto de partida para un reel nuevo: copiarlo, cambiar vídeo, subtítulos y tramos. Usa `Tramos` de `Ejemplos.tsx`. |
 | `detras.json` | Las **38 animaciones aprobadas de «detrás de ti»** (21 nov 2026), de `reels/catalogo-detras/banco-detras.html`. Se usan con `formato="detras"` + `recorte` (ver abajo). |
 | `PruebaDetras.tsx` | Composición de prueba de las de «detrás de ti» (cambiar el vídeo y el recorte por los tuyos). |
+| `acento.json` | **Color de acento** de la persona: `{ "color": "#2F6FEB" }` cambia solo todos los naranjas de las animaciones por su color (con sus tonos). Vacío = naranja de la skill. |
 | `react-dom.d.ts` | Una línea para que compile. |
 
 ## Cómo se instala en Remotion

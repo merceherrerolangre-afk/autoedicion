@@ -14,7 +14,7 @@
 | Subtítulos | ⟨Blanco⟩ | ⟨#FFFFFF⟩ |
 | **Acento** (5–10 % de la pantalla, nunca de fondo) | ⟨su color⟩ | ⟨#…⟩ |
 
-Acento de la skill original: naranja `#E98A55` (claro `#F4A57A`). **Al montar, cambiarlo por el de arriba.**
+Acento de la skill original: naranja `#E98A55` (claro `#F4A57A`). **Se cambia solo** poniendo el acento de arriba en `_herramientas/remotion-reels/src/catalogo/acento.json`.
 
 ## 2. Letra
 ⟨Letra de su marca si es gratuita (Google Fonts); si no, Inter⟩.

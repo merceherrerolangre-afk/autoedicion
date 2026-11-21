@@ -29,6 +29,7 @@ import { loadFont as playfair } from "@remotion/google-fonts/PlayfairDisplay";
 import youtube from "./youtube.json";
 import reels from "./reels.json";
 import detras from "./detras.json";
+import acento from "./acento.json";
 
 archivo("normal", { weights: ["500", "700", "800", "900"], subsets: ["latin", "latin-ext"] });
 archivoBlack("normal", { weights: ["400"], subsets: ["latin", "latin-ext"] });
@@ -49,6 +50,32 @@ const MENTA_A_NARANJA: [string, string][] = [
   ["#e6faf6", "#FDF0E6"], ["#f7fcfb", "#FFFAF6"], ["#4fe3cc", "#F4A57A"], ["#0b1f1c", "#2A1405"],
   ["rgba(102,230,210", "rgba(244,165,122"],
 ];
+
+// Color de acento de la persona (acento.json → {"color":"#3B82F6"}). Vacío = el naranja de la skill.
+// Cambia todos los naranjas de las páginas por su color, conservando lo claro/oscuro de cada tono.
+const NARANJAS = ["#E98A55","#F4A57A","#FFC08A","#FFB27A","#FF9A4D","#FFB98C","#FF9F5A","#FF8A3A","#FF7A1A","#FF6A1A",
+  "#FFA86A","#FFC58A","#FF8A5A","#E8893F","#D9762C","#FFD9B8","#FFD3AE","#FFEBDD","#FDEBDD","#FDEFE4","#FDF0E6","#FFFAF6","#5A2A10","#2A1405"];
+const hexAHsl = (h: string) => {
+  const [r, g, b] = [1, 3, 5].map((i) => parseInt(h.slice(i, i + 2), 16) / 255);
+  const mx = Math.max(r, g, b), mn = Math.min(r, g, b), l = (mx + mn) / 2, d = mx - mn;
+  const s = d === 0 ? 0 : d / (1 - Math.abs(2 * l - 1));
+  const hh = d === 0 ? 0 : mx === r ? ((g - b) / d) % 6 : mx === g ? (b - r) / d + 2 : (r - g) / d + 4;
+  return [(hh * 60 + 360) % 360, s, l];
+};
+const hslAHex = (h: number, s: number, l: number) => {
+  const c = (1 - Math.abs(2 * l - 1)) * s, x = c * (1 - Math.abs(((h / 60) % 2) - 1)), m = l - c / 2;
+  const [r, g, b] = h < 60 ? [c, x, 0] : h < 120 ? [x, c, 0] : h < 180 ? [0, c, x] : h < 240 ? [0, x, c] : h < 300 ? [x, 0, c] : [c, 0, x];
+  return "#" + [r, g, b].map((v) => Math.round((v + m) * 255).toString(16).padStart(2, "0")).join("").toUpperCase();
+};
+const PARES_ACENTO: [string, string][] = (() => {
+  const c = (acento as { color?: string }).color;
+  if (!c || !/^#[0-9a-fA-F]{6}$/.test(c)) return [];
+  const [th, ts] = hexAHsl(c);
+  const pares: [string, string][] = NARANJAS.map((n) => { const [, s, l] = hexAHsl(n); return [n, hslAHex(th, ts < 0.25 ? ts : s, l)]; });
+  const rgb = (h: string) => [1, 3, 5].map((i) => parseInt(h.slice(i, i + 2), 16)).join(",");
+  return [...pares, ...pares.map(([a, b]) => [a.toLowerCase(), b] as [string, string]),
+    ["rgba(244,165,122", `rgba(${rgb(pares[1][1])}`], ["rgba(233,138,85", `rgba(${rgb(pares[0][1])}`]];
+})();
 
 const cambiarTodo = (s: string, pares: [string, string][]) =>
   pares.reduce((acc, [a, b]) => acc.split(a).join(b), s);
@@ -121,6 +148,7 @@ export const Animacion: React.FC<AnimacionProps> = ({
       html = cambiarTodo(html, MENTA_A_NARANJA);
       bg = cambiarTodo(bg, MENTA_A_NARANJA);
     }
+    css = cambiarTodo(css, PARES_ACENTO); html = cambiarTodo(html, PARES_ACENTO); bg = cambiarTodo(bg, PARES_ACENTO);
     // Avisar si algún cambio no encuentra su texto en la página (así no se queda sin aplicar sin darnos cuenta).
     cambios.forEach(([de]) => { if (!html.includes(de)) console.warn(`CAMBIO NO APLICADO en ${id}: ${de.slice(0, 80)}`); });
     html = cambiarTodo(html, cambios);
