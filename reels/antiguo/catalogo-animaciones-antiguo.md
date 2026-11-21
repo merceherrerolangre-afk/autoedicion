@@ -1,4 +1,4 @@
-> **NO USAR para montar.** Catálogo antiguo de reels (estilo 3D suave), sustituido el 17 nov 2026 por «Lo que manda hoy» de `reels/REELS.md`. Solo de consulta.
+> **Vuelve a valer desde el 20 nov 2026**, pero solo así: las aprobadas, sin las de emojis, y puestas con `<Animacion formato="reels">` (`comun/plantillas/catalogo/`), idénticas a la página. Ver «Lo que manda hoy» de `reels/REELS.md`. Lo que dice abajo del «3D suave» es historia.
 
 # Catálogo de animaciones aprobadas para Reels
 
