@@ -23,7 +23,7 @@ Ir en este orden y parar en cuanto quede claro:
    - «reel», «vídeo corto», «vertical», «para Instagram» → **Reels**.
    - «YouTube», «YT», «vídeo largo», «horizontal» → **YouTube**.
 2. **Dónde está el bruto.**
-   - En `<proyecto>/EDICIÓN DE REELS/1. BRUTOS/REELS` → **Reels**.
+   - En `<proyecto>/EDICIÓN DE REELS/1. BRUTOS` → **Reels**.
    - En `<proyecto>/EDICIÓN DE YT/BRUTOS` → **YouTube**.
 3. **La forma del vídeo** (con `ffprobe`, teniendo en cuenta la rotación): más alto que ancho → **Reels**; más ancho que alto → **YouTube**.
 4. Si sigue sin estar claro: **preguntarle** (una sola pregunta, con las dos opciones).
@@ -43,9 +43,10 @@ Decirle en una frase qué formato se va a usar y por qué (por ejemplo: «Es un 
 
 | Carpeta | Qué hay |
 |---|---|
-| `comun/` | `COMUN.md`, el catálogo de animaciones de estilo nuevo (`catalogo-animaciones.md` + páginas en `catalogo/`) y programas de ayuda (`scripts/`) |
-| `reels/` | `REELS.md`, la plantilla de partida (`plantillas/`) y lo antiguo solo de consulta (`antiguo/`) |
+| `comun/` | `COMUN.md`, el catálogo de animaciones de estilo nuevo (`catalogo-animaciones.md` + páginas en `catalogo/`), **la pieza que pone esas animaciones idénticas en el vídeo y los ejemplos aprobados** (`plantillas/catalogo/`) y programas de ayuda (`scripts/`) |
+| `reels/` | `REELS.md`, la plantilla de partida (`plantillas/`), las 38 animaciones aprobadas de «detrás de ti» (`catalogo-detras/`) y lo antiguo solo de consulta (`antiguo/`) |
 | `youtube/` | `YOUTUBE.md` y sus plantillas y programas (`scripts/`) |
+| `estilo/` e `INSTALAR.md` | Solo para instalar la skill en otro equipo (`estilo/` se copia a `<proyecto>/ MI ESTILO`). Al editar no se usan: el estilo se lee siempre de `<proyecto>/ MI ESTILO`. |
 
 ## Cómo leer esta skill (para el modelo)
 
