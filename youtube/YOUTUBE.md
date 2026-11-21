@@ -11,7 +11,7 @@ Se aplica a mano el método de reels-montage (la skill `it-reelsmaker` solo rend
 | Listos (salida) | `<proyecto>/EDICIÓN DE YT/LISTOS` |
 | Estilo de YouTube | `<proyecto>/ MI ESTILO/YOUTUBE` (con `REFERENCIAS/`) |
 
-- Las subcarpetas `YOUTUBE` que hay dentro de `EDICIÓN DE REELS` **no se usan**: son restos de antes. YouTube nunca coge ni deja nada en `EDICIÓN DE REELS`.
+- YouTube nunca coge ni deja nada en `EDICIÓN DE REELS`.
 
 ## Formato y exportación
 - Horizontal **1920×1080**, 30 fps. Composición de Remotion de 1920×1080 partiendo de `scripts/plantilla-youtube.tsx` (copiarla a `src/` como `Yt<ID>.tsx`, cambiar el JSON de subtítulos y la carpeta `public/<ID>`, y registrarla en `Root.tsx`). Las palabras se enganchan a sus tiempos con `w("palabra", segundo)`.
@@ -25,7 +25,7 @@ Se aplica a mano el método de reels-montage (la skill `it-reelsmaker` solo rend
 - **Ritmo natural** (`speech_mask.py --density natural`), sin acelerar la voz.
 - **Primer minuto (gancho) muy animado**; después, animaciones a pantalla completa en las ideas clave y un **título de capítulo** al empezar cada parte (lo detallan sus archivos de estilo).
 - Dentro de cada pantalla completa, **algo nuevo cada ≤ 2,5 s**, ligado a sus palabras.
-- Las animaciones salen del catálogo de estilo nuevo (`comun/catalogo-animaciones.md`; estilo Superwall: blanco, tarjetas redondeadas, poco texto, ritmo rápido). Leerlo antes de montar.
+- Las animaciones salen del catálogo de estilo nuevo (`comun/catalogo-animaciones.md`; estilo Superwall: blanco, tarjetas redondeadas, poco texto, ritmo rápido). Leerlo antes de montar y ponerlas **siempre con `<Animacion formato="youtube">`** (`comun/plantillas/catalogo/`), idénticas a la página. Plantilla aprobada: `EjemploYouTube` de `comun/plantillas/catalogo/Ejemplos.tsx`.
 
 ## Subtítulos y recursos
 - **Subtítulos solo en las pantallas completas**, nunca encima de ella. Colocarlos donde no estén sus manos ni lo que enseñe (en el primer vídeo, abajo a la derecha porque la tableta estaba abajo en el centro).
@@ -58,3 +58,4 @@ Correcciones que ella ha ido haciendo en YouTube, con su fecha. **Al recibir una
 13. **Poco texto** (15 nov 2026): en frases resaltadas, listas y titulares, pocas palabras (lo escribió en varias notas).
 14. **Nunca cortar ni tapar la cabeza/cara** (15 nov 2026): en los planos que se acercan (`escalada-tres-planos`, `corte-escala-alterna`) y en el recuadro de esquina (`pip-rectangulo-esquina`) la cabeza va siempre entera. Si va delante de una tarjeta, ella va superpuesta y la tarjeta detrás, en segundo plano.
 15. **Lo que no quiere** (15 nov 2026): franja de frase bajo el vídeo, barra de visitas que crece, cuenta atrás en el móvil, titular con flechas sobre móviles, móvil con titular y botón, pantalla dividida PAIN/PASSION, elementos que van y vienen, collages de objetos, fondos negros con luces o bandas de color, subtítulos de dos líneas con rebote o de una sola palabra, frase en dos tonos, toque con onda, móviles en abanico o inclinados, logo con anillo. Subtítulos como los de la regla 3–4 (blancos gruesos con sombra, 2–3 palabras).
+16. **Aprobado el vídeo hecho con sus páginas** (20 nov 2026): `EjemploYouTube` (BBBA8ECF) de `comun/plantillas/catalogo/Ejemplos.tsx` le gustó. Es la plantilla de partida para montar YouTube (ver regla común 15).
