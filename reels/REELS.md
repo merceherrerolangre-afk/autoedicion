@@ -7,16 +7,21 @@ El montaje se hace con la skill `it-reelsmaker` (método reels-montage) y Remoti
 ## Carpetas de Reels
 | Para qué | Ruta |
 |---|---|
-| Brutos (entrada) | `<proyecto>/EDICIÓN DE REELS/1. BRUTOS/REELS` |
+| Brutos (entrada) | `<proyecto>/EDICIÓN DE REELS/1. BRUTOS` |
 | Listos (salida) | `<proyecto>/EDICIÓN DE REELS/3. LISTOS/REELS` |
 | Estilo de Reels | `<proyecto>/ MI ESTILO/REELS` (con `REFERENCIAS/`) |
 
-- Las subcarpetas `YOUTUBE` que hay dentro de `EDICIÓN DE REELS/1. BRUTOS` y `3. LISTOS` **no se usan**: lo de YouTube va en `EDICIÓN DE YT` y lo lleva `youtube/YOUTUBE.md`.
+- Lo de YouTube nunca va en `EDICIÓN DE REELS`: va en `EDICIÓN DE YT` y lo lleva `youtube/YOUTUBE.md`.
 - Dentro de la carpeta de brutos puede dejar también su **miniatura** (`miniatura.jpg`), fotos suyas o carpetas de ejemplos: son para este reel, no son brutos.
 
-## Lo que manda hoy (17 nov 2026)
+## Lo que manda hoy (20 nov 2026)
 
-Si algo de más abajo choca con esto, manda esto (son las reglas 34, 35 y 36):
+Si algo de más abajo choca con esto, manda esto (reglas 34, 35, 36, 38 y 39, y la común 15):
+
+- **Animaciones de SUS PÁGINAS de reels**, puestas con `<Animacion formato="reels">` (`comun/plantillas/catalogo/`), idénticas a la página: solo las **aprobadas** de `antiguo/catalogo-animaciones-antiguo.md` y **sin las de emojis**. Plantilla aprobada: `EjemploReel` de `comun/plantillas/catalogo/Ejemplos.tsx` (regla 39).
+- **Desde el segundo 0 pasa algo**, y **cada pieza lleva dentro la palabra o representa lo que dice** (regla común 16).
+- **Cosas que salen DETRÁS de ella** (regla 41): 38 animaciones aprobadas en `catalogo-detras/banco-detras.html`, puestas con `<Animacion formato="detras">` + su recorte delante. Nunca encima de ella.
+- **Equilibrio** (regla 38): como mucho **una pantalla partida** por reel; el resto, ratos solo con ella, algún toque sobre ella y pantallas completas limpias pero no vacías. Flechas finas, enteras y con aire.
 
 - **Lenguaje visual de SUS referencias** (` MI ESTILO/REELS/REFERENCIAS`, `igexport-*.mp4`), no iconos ni emojis.
 - **Pantalla partida recta:** arriba la animación sobre gris claro, ella abajo, sin esquinas redondeadas.
@@ -25,7 +30,7 @@ Si algo de más abajo choca con esto, manda esto (son las reglas 34, 35 y 36):
 - **Objetos reales que se construyen despacio:** ventanas de informe, tickets, fichas que se rellenan, móvil con vídeo real de Pexels, tarjetas oscuras de mensaje, conexiones que se dibujan, estanterías, calendario.
 - **Pocas escenas y largas** (3–5 s), contenido continuo, texto grande y legible en móvil (≥ 40 px).
 - **Plantilla de partida:** `plantillas/n2/kit3.tsx` con los ejemplos aprobados `ReelDBNR1368v2.tsx` y `ReelJHWI0526v2.tsx`.
-- Los catálogos (`comun/catalogo-animaciones.md` y `antiguo/catalogo-animaciones-antiguo.md`) son **solo de apoyo** para ideas sueltas; nunca para montar una secuencia de iconos.
+- El catálogo de reels (`antiguo/catalogo-animaciones-antiguo.md`) **vuelve a valer desde el 20 nov 2026** a través de `<Animacion>` (ver arriba); el de YouTube (`comun/catalogo-animaciones.md`), solo ideas sueltas. Nunca una secuencia de iconos.
 
 ## Formato y exportación
 - Vertical **1080×1920**, 30 fps. Se monta con la skill `it-reelsmaker` (leer su SKILL.md y su archivo de proyecto `it-reelsmaker.json` en la raíz).
@@ -99,3 +104,13 @@ Correcciones que ella ha ido haciendo en reels, con su fecha. **Al recibir una c
 35. **Aprobada la regla 34** (17 nov 2026): le gustaron DBNR1368 v2 y JHWI0526 v2 («Me gustan»). Son la plantilla de partida para los siguientes reels: copiar `plantillas/n2/kit3.tsx` y adaptar las escenas de `ReelDBNR1368v2.tsx` / `ReelJHWI0526v2.tsx`.
 36. **Textos de una sola palabra, más abajo** (17 nov 2026): la palabra grande metálica («Productos», «Dependencia», «Ficha», «Venderlos») y la palabra final «comenta PALABRA» no van pegadas arriba. En pantalla completa de ella: hacia y ≈ 280–330 (sin tapar pelo ni frente; si ella queda muy alta, bajar el plano en vez de subir la palabra). En la mitad de arriba de la pantalla partida: a la altura de y ≈ 100–150, con los objetos debajo (no a y ≈ 10–30). En `kit3.tsx` el parámetro `y` de `Title` y el `top` de `CtaWord` lo controlan.
 37. **Cuando enumera recursos (lista de PDF, web o vídeos), solo portadas y subtítulos** (20 nov 2026, reel 3F1D929C): si lo pide así, nada más (sin cortes, animaciones ni sonidos). La portada de cada recurso sale grande arriba a la derecha (≈ 290 px de ancho, sin tapar cara ni mano) cuando lo nombra y, al nombrar el siguiente, **encoge y sube a una fila arriba (y ≈ 200) donde se van acumulando**, alineadas, hasta verse todas juntas al final. Portadas: las de su web `Descargas/biblioteca-recursos/img`, o la primera página del PDF si existe (más nítida). Ejemplo: `_herramientas/remotion-reels/src/n2/Reel3F1D929C.tsx`.
+38. **Equilibrio: poca pantalla partida, pocos elementos, y que nada tape las flechas** (20 nov 2026, ejemplo de reel con las animaciones de sus páginas): «no abuses de pantalla dividida ni de muchos elementos». Como mucho **una pantalla partida larga por reel**. Mezclarla con animaciones a **pantalla completa**, que sean limpias pero no vacías («minimalista, no muy minimalista»), y con tramos en los que solo sale ella. En los diagramas de pasos (cuadros unidos con flechas), **las flechas van delante y enteras**: nunca tapadas por los cuadros.
+39. **Aprobado el reel hecho con sus páginas** (20 nov 2026, «guay»): `EjemploReel` (DBNR1368; **v4 aprobada el 20 nov 2026**, «me gusta», con las correcciones de la regla común 16) de `comun/plantillas/catalogo/Ejemplos.tsx`. Pedido al aprobarlo: **flechas más finas** (trazo 2 de 200, no 3) y **más espacio entre elementos** (cuadros de 36 con ~34 de hueco, flechas con aire a los dos lados, etiquetas separadas debajo). Es la plantilla de partida de los reels junto con `kit3.tsx` (que sigue sirviendo para subtítulos y piezas propias).
+40. **Primer reel real con sus páginas, aprobado** (21 nov 2026, «me gusta»): BBBA8ECF v2 (`comun/plantillas/catalogo/ReelBBBA8ECFv2.tsx`). Desde el segundo 0, dos tarjetas con las cifras que dice; tabla ✕/✓ con las palabras dentro de cada fila; tarjeta «lo que haces ✕ / cómo se percibe ✓»; cuadrícula con precios en la que se elige uno; tachado sobre ella, abajo para no tapar las manos; «PRECIO» que se escribe al cerrar. Sin pantalla partida, cada pieza con su palabra dentro, entre medias ella con encuadre alterno (1 / 1,08, origen abajo) y subtítulos a y ≈ 1500. Partir de este archivo para los siguientes reels.
+41. **Animaciones que salen DETRÁS de ella** (21 nov 2026): pidió «añadir elementos o vídeos y que salgan por detrás del sujeto, que no se superpongan». De 56 propuestas aprobó **38** (página `reels/catalogo-detras/banco-detras.html`, solo trae las aprobadas). Cómo se hacen:
+    - **Capas:** su vídeo entero de fondo → la pieza de la página → **su recorte delante** (nada la tapa nunca).
+    - **Recorte:** `comun/scripts/recorte-detras.sh <video.mp4> <desde> <hasta> public/<id>/recorte-<desde>.webm` (rembg `u2net_human_seg`, local y gratis; ~1 s por fotograma). El recorte es del **mismo tramo** que la animación.
+    - **En el montaje:** en la lista de tramos, `{ desde, hasta, formato: "detras", id, recorte: "<id>/recorte-<desde>.webm", cambios, sonidos }`. Si falta `recorte`, el render avisa `FALTA EL RECORTE`. En las de vídeos, `clips: ["pexels/…mp4", …]` pone clips reales (Pexels de ` MI ESTILO/COMUN/RECURSOS-PEXELS` o suyos) en los recuadros, en orden. Las posiciones de la página están pensadas para una cabeza a ~30 % de alto: si en su vídeo está más alta o más baja, mover las piezas con `cambios` (`top:`) para que asomen bien, y revisar con `npx remotion still`. Sin encuadre alterno ni zoom de ella en esos tramos (el recorte tiene que coincidir con el fondo); el subtítulo puede ir abajo (y ≈ 1500).
+    - **Le gustan:** dos tarjetas por los hombros, círculo/halo tras la cabeza, tarjeta que cae y se posa, ventana web que se abre, de borrosa a nítida, llega desde el fondo; vídeos (detrás del hombro, uno a cada lado, el fondo pasa a vídeo, vídeo que crece hasta el fondo, tira de vídeos, móvil o pantalla con vídeo, ventana que cambia de vídeo, antes/después en vídeo, cuatro vídeos); cifra gigante, barras desde los hombros, línea que sube, anillo alrededor de la cabeza, lista con ticks, calendario, ticket, mensaje que se escribe, pasos en abanico, carrusel, arco de etiquetas, productos que suben, estantería, fotos; fondo a blanco, capas con profundidad, cortina de color, marco retrato, zoom con profundidad, cuadrícula, pared en dos colores, ventana que se acerca.
+    - **No le gustan (no usar):** una sola tarjeta junto a la cara o que asoma por un lado (también alternando), píldora que cruza, barrido de luz, vídeo desenfocado + tarjeta, palabra gigante letra a letra, etiqueta de precio colgando, burbujas de chat, tarjetas antes/después, pila de tarjetas, conexiones, ranking, etiqueta justo encima de la cabeza, foco de luz, pared que se oscurece, círculo con palabra al lado, vídeo de fondo con palabra encima.
+    - Como el resto: cada pieza con **su palabra** o algo que represente lo que dice, sonido suave al entrar, y sin abusar (una o dos por reel, mezcladas con las otras).
