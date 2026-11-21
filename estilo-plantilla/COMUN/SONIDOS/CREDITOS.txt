@@ -1,0 +1,25 @@
+Biblioteca de sonidos y músicas — todo CC0 1.0 (dominio público: uso comercial libre, sin atribución obligatoria).
+Encontrado vía Openverse (api.openverse.org) y descargado de Freesound sin cuenta. Usado en los primeros vídeos (noviembre de 2026).
+
+Uso (YouTube, regla del 9 de noviembre de 2026): sonido en cada animación, variado (no repetir siempre el mismo barrido).
+Pico objetivo de cada efecto sobre la voz original (pico normal de voz ≈ −21 dBFS): pop −35,5 · tick −36,5 · stamp −34,5 ·
+phone −35,5 · whoosh −38,5 · count −38,5 · swish (frases clave) −38 · trazo −39 · notas −39. Ver _herramientas/plantillas/ejemplo-sfx.json.
+"start" = segundo en que empieza a sonar dentro del archivo: pop/pop2 0,089 · tick 0,041 · stamp 0,021 · phone 0,031 · whoosh 0,025 ·
+count 0,041 · swishA 0,51 · swishB 0,46 · swishC 0 · trazo 0,26 · notas 0. Pico del archivo (dBFS): pop −4,6 · pop2 −2,5 · tick −12,1 ·
+stamp −2,3 · phone −11,5 · whoosh −5,3 · count −11,8 · swishA −21,6 · swishB −18,1 · swishC −0,3 · trazo −24,6 · notaE2 −5,3 · notaG2 −9 · notaC3 −4,4 · notaC4 −6,5.
+
+Efectos:
+- pop.mp3 / pop2.mp3 (aparecer): "GASP_UI_Pop_1/2.wav" de Rob_Marion — https://freesound.org/people/Rob_Marion/sounds/541993/ y /541991/
+- tick.mp3 (✓ de listas): "Click Tick.wav" de malle99 — https://freesound.org/people/malle99/sounds/384187/
+- count.wav (contadores): 8 tics de tick.mp3 seguidos, hecho aquí.
+- stamp.mp3 (tachar / sello): "Stamp" de kermite607 — https://freesound.org/people/kermite607/sounds/362624/
+- phone.mp3 (teléfono): "Phone vibration" de Breviceps — https://freesound.org/people/Breviceps/sounds/515295/
+- whoosh.mp3 (entrada de pantalla completa): "digital_whoosh_soft.wav" de ludvique — https://freesound.org/people/ludvique/sounds/71852/
+- swishA / swishB (frases clave): "Swishes_11_gentle" / "Swishes_16_soft_slower" de videofueralle — https://freesound.org/people/videofueralle/sounds/614153/ y /614156/
+- swishC (frases clave): "Slow Swosh 40" de qubodup — https://freesound.org/people/qubodup/sounds/60027/
+- trazo.mp3 (líneas y flechas que se dibujan): "Underlining Stroke on Paper" de zembacraftworks — https://freesound.org/people/zembacraftworks/sounds/428338/
+- notaE2/G2/C3/C4.mp3 (barras que suben, en escala): marimba de joesh2 — https://freesound.org/people/joesh2/sounds/577694/ (577702, 577692, 577691)
+- click.mp3 (clic suave, reels): "Soft UI Button Click" de Jummit — https://freesound.org/people/Jummit/sounds/528561/
+- swoosh.mp3 / rise.mp3: "Swoosh 10/16" de AudioPapkin — NO usar a menudo: a ella le cansó (se repetía demasiado).
+
+Música: no viene incluida. Busca música sin letra y con licencia CC0 (Freesound / Openverse) y guárdala aquí como musica1.mp3, musica2.mp3…
