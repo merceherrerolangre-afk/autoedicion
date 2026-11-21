@@ -29,11 +29,11 @@ Pregunta dónde quiere la carpeta. Si no tiene preferencia, usa `~/Documents/EDI
 
 ## Paso 2 · Copiar la skill y el estilo
 1. Copia la carpeta entera del repositorio a `~/.claude/skills/autoedicion/` (que `SKILL.md` quede justo dentro).
-2. Copia **el contenido** de `estilo/` a `<proyecto>/ MI ESTILO/`. El nombre empieza por un espacio: hazlo exactamente así, porque la skill lo busca con ese nombre. Resultado: `<proyecto>/ MI ESTILO/COMUN`, `/REELS` y `/YOUTUBE`.
+2. **Si es una persona nueva** (en el repositorio público no hay carpeta `estilo/`, solo `estilo-plantilla/`): copia **el contenido** de `estilo-plantilla/` a `<proyecto>/ MI ESTILO/` y sigue `estilo-plantilla/LEEME.md`: pídele su **manual de marca / brand book** (PDF, imagen o enlace) y guárdalo en ` MI ESTILO/COMUN/`; rellena con él `mi-estilo-comun.md` (sobre todo **sus colores y su color de acento**) y, con unas pocas preguntas, `mi-estilo-reels.md` y `mi-estilo-youtube.md`. Si no tiene manual, entrevista corta (colores, letra, qué le gusta y qué no). Pídele también enlaces de creadores que le gusten para `REFERENCIAS`. Si existe `estilo/` (copia privada de quien la compartió), copia **el contenido** de `estilo/` a `<proyecto>/ MI ESTILO/`. El nombre empieza por un espacio: hazlo exactamente así, porque la skill lo busca con ese nombre. Resultado: `<proyecto>/ MI ESTILO/COMUN`, `/REELS` y `/YOUTUBE`.
 3. En `~/.claude/skills/autoedicion/SKILL.md`, cambia la línea `<proyecto>` = `~/Documents/EDICIÓN DE VÍDEOS` por la carpeta del paso 1, si es otra.
 
 ## Paso 3 · Recursos de Pexels (gratis, sin cuenta)
-No vienen en el repositorio. Descárgalos tú:
+Persona nueva: pregúntale de qué va su contenido y baja 6–10 vídeos y fotos de Pexels de su sector (HD, sin cuenta) a ` MI ESTILO/COMUN/RECURSOS-PEXELS/videos` y `/fotos`, apuntando cada enlace en `CREDITOS.txt`. Si la lista de `CREDITOS.txt` ya trae números de Pexels, descárgalos así:
 1. Lee `<proyecto>/ MI ESTILO/COMUN/RECURSOS-PEXELS/CREDITOS.txt`.
 2. Baja cada vídeo en **HD** (1080 de ancho o más) a `RECURSOS-PEXELS/videos/` con su nombre (`pexels-<número>.mp4`). Las fotos van a `RECURSOS-PEXELS/fotos/` (`p<número>.jpg`, 1000 px de ancho).
 3. Usa el servidor público `videos.pexels.com/video-files/<número>/…`. Si Pexels pide «verificar que eres humano», **no lo marques**: dile a la persona que los descargue ella desde los enlaces del archivo.
